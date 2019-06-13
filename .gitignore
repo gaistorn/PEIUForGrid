@@ -6,6 +6,11 @@
 .vscode
 docker-compose.yml
 docker-compose.*.yml
-*/bin
-*/obj
+bin/
+obj/
 /bin/Debug
+/bin/Debug
+/bin/*
+/obj/*
+*/bin/*
+netcoreapp2.1/
