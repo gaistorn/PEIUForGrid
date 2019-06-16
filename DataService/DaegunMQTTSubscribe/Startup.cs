@@ -27,25 +27,39 @@ namespace PES.Service.DataService
 
         public IConfiguration Configuration { get; }
         public ILoggerFactory loggerFactory { get; }
+   
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+           NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
+            NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
+            //errorLogger.Info("Looo");
+            services.AddSingleton(errorLogger);
+            //Models.DaegunPcsPacket pcsPacket = new Models.DaegunPcsPacket();
+            //pcsPacket.ActivePower = 100;
+            //pcsPacket.Temp = new float[] { 1.1f, 1.2f, 5.1f, 3.4f };
+            //NLog.Logger logger =  NLog.LogManager.Configuration.LogFactory.GetLogger("record.pcs");
+            //NLog.LogEventInfo logEvent = LogEventMaker.CreateLogEvent("record.pcs", pcsPacket);
+            //logEvent.Properties["SiteId"] = 100;
+            //logger.Log(logEvent);
 
             var mqttOptions = Configuration.GetSection("MQTTSubscribeConfig").Get<MqttSubscribeConfig>();
             services.AddSingleton(mqttOptions);
 
-            var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
-            services.AddSingleton(redisConfiguration);
-            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+#if RASPIAN
+            //var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
+            //services.AddSingleton(redisConfiguration);
+            //services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
-            IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
-            services.AddSingleton(queue_service);
+            //IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
+            //services.AddSingleton(queue_service);
 
-            services.AddHostedService<MongoBackgroundHostService>();
-
-
-            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
+            //services.AddHostedService<MongoBackgroundHostService>();
+            //MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
+#endif
+            //services.AddHostedService<MQTTDaegunSubscribe>();
+            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, mqttOptions, errorLogger);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

@@ -54,7 +54,7 @@ namespace PES.Service.DataService
                 DaegunPacket modbusWorkItem = await TaskQueue.DequeueAsync(stoppingToken);
                 try
                 {
-                    modbusWorkItem.timestamp = DateTime.Now;
+                    //modbusWorkItem.timestamp = DateTime.Now;
                     
                     string pcs_key = $"site_{modbusWorkItem.sSiteId}_PCS";
                     string bsc_key = $"site_{modbusWorkItem.sSiteId}_BSC";

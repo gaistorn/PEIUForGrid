@@ -15,7 +15,7 @@ namespace PES.Models
         public DaegunBSCPacket Bsc;
         public DaegunMeterPacket Ess;
         public DaegunMeterPacket Pv;
-        public DateTime timestamp;
+       // public DateTime timestamp;
         //public DaegunPcsPacket Pcs;
     }
 
@@ -130,7 +130,7 @@ namespace PES.Models
 
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-        public uint[] Warrning;
+        public uint[] Warning;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public uint[] Faults;
@@ -218,11 +218,11 @@ namespace PES.Models
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct IntegerRange
     {
-        public uint uiMax;
-        public uint uiMin;
+        public uint Max;
+        public uint Min;
         public override string ToString()
         {
-            return $"{uiMin}~{uiMax}";
+            return $"{Min}~{Max}";
         }
     }
 
