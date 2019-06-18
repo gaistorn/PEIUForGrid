@@ -20,7 +20,6 @@ namespace PES.Service.DataService
     {
         readonly MqttSubscribeConfig mqttOptions;
         readonly ILogger<MQTTDaegunSubscribe> _logger;
-        readonly NLog.ILogger nLogger;
         IMqttClient client;
 
 #if RASPIAN
@@ -39,13 +38,11 @@ namespace PES.Service.DataService
         readonly NLog.ILogger pvMeterLogger = NLog.LogManager.Configuration.LogFactory.GetLogger(PV_METER_LOG);
         readonly NLog.ILogger bscMeterLogger = NLog.LogManager.Configuration.LogFactory.GetLogger(BSC_METER_LOG);
 
-        public MQTTDaegunSubscribe(ILoggerFactory logger, MqttSubscribeConfig mqtt_config, NLog.ILogger nlog)
+        public MQTTDaegunSubscribe(ILoggerFactory logger, MqttSubscribeConfig mqtt_config)
         {
             _logger = logger.CreateLogger< MQTTDaegunSubscribe>();
             mqttOptions = mqtt_config;
-            nLogger = nlog;
             StartSubscribe();
-            
         }
 #else
         readonly IBackgroundMongoTaskQueue queue;
@@ -82,13 +79,13 @@ namespace PES.Service.DataService
             }
             catch (Exception exception)
             {
-                nLogger.Error(exception, "### CONNECTING FAILED ###" + Environment.NewLine + exception);
+                _logger.LogError(exception, "### CONNECTING FAILED ###" + Environment.NewLine + exception);
             }
         }
 
         private async void Client_Disconnected(object sender, MqttClientDisconnectedEventArgs e)
         {
-            _logger.LogInformation($"### DISCONNECTED FROM SERVER. TRY CONNECT AFTER {mqttOptions.RecordInterval} ###");
+            _logger.LogWarning($"### DISCONNECTED FROM SERVER. TRY CONNECT AFTER {mqttOptions.RecordInterval} ###");
             await Task.Delay(mqttOptions.RecordInterval);
 
             try
@@ -112,7 +109,7 @@ namespace PES.Service.DataService
 
         private async void ManagedClient_Connected(object sender, MqttClientConnectedEventArgs e)
         {
-            _logger.LogTrace($"### CONNECTED WITH SERVER (TOPIC FILTER:{mqttOptions.Topic}) ###");
+            _logger.LogInformation($"### CONNECTED WITH SERVER (TOPIC FILTER:{mqttOptions.Topic}) ###");
             await client.SubscribeAsync(new TopicFilterBuilder().WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)mqttOptions.QoSLevel).WithTopic(mqttOptions.Topic).Build());
             
         }
@@ -178,28 +175,6 @@ namespace PES.Service.DataService
                 Console.WriteLine(ex.Message);
                 _logger.LogError(ex, ex.Message);
             }
-        }
-
-    }
-
-    class DIC
-    {
-        private string[] players = new string[9];
-        private readonly List<string> positionAbbreviations = new List<string>
-        {
-            "P", "C", "1B", "2B", "3B", "SS", "LF", "CF", "RF"
-        };
-
-        public string this[int position]
-        {
-            // Baseball positions are 1 - 9.
-            get { return players[position - 1]; }
-            set { players[position - 1] = value; }
-        }
-        public string this[string position]
-        {
-            get { return players[positionAbbreviations.IndexOf(position)]; }
-            set { players[positionAbbreviations.IndexOf(position)] = value; }
         }
 
     }

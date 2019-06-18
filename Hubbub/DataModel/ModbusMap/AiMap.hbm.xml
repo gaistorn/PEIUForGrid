@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="AiMap" table="AI_MAP" lazy="false" >
+    <id name="DocumentAddress" column="DocumentAddress" />
+    <property name="Unit">
+      <column name="Unit" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Scale">
+      <column name="Scale" sql-type="REAL " not-null="false" />
+    </property>
+    <property name="Name">
+      <column name="Name" sql-type="VARCHAR " not-null="true" />
+    </property>
+    <property name="Description">
+      <column name="Description" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Address">
+      <column name="Address" sql-type="SMALLINT" not-null="true" />
+    </property>
+    <!--<property name="Type">
+      <column name="Type" sql-type="INT" not-null="true" />
+    </property>-->
+    <many-to-one name="DataType" class="DataType" lazy="false">
+      <column name="Type" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>
+    <property name="Disable">
+      <column name="Disable" sql-type="SMALLINT" not-null="false" />
+    </property>
+    <property name="GroupId">
+      <column name="GroupId" sql-type="INT" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="BatInfo" table="bat_info" lazy="true" >
+    <id name="Uniqueid" column="uniqueId" />
+    <many-to-one name="Deviceinfo">
+      <column name="deviceinfo" sql-type="int(11)" not-null="true" />
+    </many-to-one>
+    <property name="Heartbeat">
+      <column name="heartBeat" sql-type="smallint(6)" not-null="false" />
+    </property>
+    <property name="Chgpwrlmt">
+      <column name="chgPwrLmt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Dhgpwrlmt">
+      <column name="dhgPwrLmt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Pvpwrhigh">
+      <column name="pvPwrHigh" sql-type="float" not-null="false" />
+    </property>
+    <property name="Pvpwrlow">
+      <column name="pvPwrLow" sql-type="float" not-null="false" />
+    </property>
+    <property name="Status">
+      <column name="status" sql-type="int(11)" not-null="false" />
+    </property>
+    <property name="Fault1">
+      <column name="fault1" sql-type="int(11)" not-null="false" />
+    </property>
+    <property name="Fault2">
+      <column name="fault2" sql-type="int(11)" not-null="false" />
+    </property>
+    <property name="Fault3">
+      <column name="fault3" sql-type="int(11)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

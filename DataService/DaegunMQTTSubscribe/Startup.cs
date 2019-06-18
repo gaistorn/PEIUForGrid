@@ -32,10 +32,10 @@ namespace PES.Service.DataService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
-            NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
-            //errorLogger.Info("Looo");
-            services.AddSingleton(errorLogger);
+           //NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
+           // NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
+           // //errorLogger.Info("Looo");
+           // services.AddSingleton(errorLogger);
             //Models.DaegunPcsPacket pcsPacket = new Models.DaegunPcsPacket();
             //pcsPacket.ActivePower = 100;
             //pcsPacket.Temp = new float[] { 1.1f, 1.2f, 5.1f, 3.4f };
@@ -59,7 +59,7 @@ namespace PES.Service.DataService
             //MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
 #endif
             //services.AddHostedService<MQTTDaegunSubscribe>();
-            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, mqttOptions, errorLogger);
+            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, mqttOptions);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

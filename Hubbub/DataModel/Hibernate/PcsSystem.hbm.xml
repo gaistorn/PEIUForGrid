@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="PcsSystem" table="pcs_system" lazy="true" >
+    <id name="Uniqueid" column="UniqueId" />
+    <many-to-one name="Deviceinfo">
+      <column name="deviceinfo" sql-type="int(11)" not-null="true" />
+    </many-to-one>
+    <property name="Frequency">
+      <column name="freq" sql-type="float" not-null="false" />
+    </property>
+    <property name="Acvlt">
+      <column name="acVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Accrtlow">
+      <column name="acCrtLow" sql-type="float" not-null="false" />
+    </property>
+    <property name="Accrthigh">
+      <column name="acCrtHigh" sql-type="float" not-null="false" />
+    </property>
+    <property name="Acpwr">
+      <column name="acPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="Actpwr">
+      <column name="actPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="Rctpwr">
+      <column name="rctPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="Pf">
+      <column name="pf" sql-type="float" not-null="false" />
+    </property>
+    <property name="Acvltr">
+      <column name="acVltR" sql-type="float" not-null="false" />
+    </property>
+    <property name="Accrtr">
+      <column name="acCrtR" sql-type="float" not-null="false" />
+    </property>
+    <property name="Acvlts">
+      <column name="acVltS" sql-type="float" not-null="false" />
+    </property>
+    <property name="Accrts">
+      <column name="acCrtS" sql-type="float" not-null="false" />
+    </property>
+    <property name="Acvltt">
+      <column name="acVltT" sql-type="float" not-null="false" />
+    </property>
+    <property name="Accrtt">
+      <column name="acCrtT" sql-type="float" not-null="false" />
+    </property>
+    <property name="Actpwrcmdlmtlowdhg">
+      <column name="actPwrCmdLmtLowDhg" sql-type="float" not-null="false" />
+    </property>
+    <property name="Actpwrcmdlmthighdhg">
+      <column name="actPwrCmdLmtHighDhg" sql-type="float" not-null="false" />
+    </property>
+    <property name="Actpwrcmdlmtlowchg">
+      <column name="actPwrCmdLmtLowChg" sql-type="float" not-null="false" />
+    </property>
+    <property name="Actpwrcmdlmthighchg">
+      <column name="actPwrCmdLmtHighChg" sql-type="float" not-null="false" />
+    </property>
+    <property name="Soc">
+      <column name="soc" sql-type="float" not-null="false" />
+    </property>
+    <property name="Soh">
+      <column name="soh" sql-type="float" not-null="false" />
+    </property>
+    <property name="Dcpwrkw">
+      <column name="dcPwrkW" sql-type="float" not-null="false" />
+    </property>
+    <property name="Dcvlt">
+      <column name="dcVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Dccrt">
+      <column name="dcCrt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Cellmintemp">
+      <column name="cellMinTemp" sql-type="float" not-null="false" />
+    </property>
+    <property name="Cellmaxtemp">
+      <column name="cellMaxTemp" sql-type="float" not-null="false" />
+    </property>
+    <property name="Cellminvlt">
+      <column name="cellMinVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="Cellmaxvlt">
+      <column name="cellMaxVlt" sql-type="float" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

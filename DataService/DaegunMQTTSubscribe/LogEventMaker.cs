@@ -10,7 +10,7 @@ namespace PES.Service.DataService
     {
         public static NLog.LogEventInfo CreateLogEvent(string loggerName, object target)
         {
-            var logEvent = new NLog.LogEventInfo(NLog.LogLevel.Info, loggerName, "");
+            var logEvent = new NLog.LogEventInfo(NLog.LogLevel.Trace, loggerName, "");
             var properties = target.GetType().GetFields();
 
             ExportFields(logEvent.Properties, null, target);
@@ -19,6 +19,7 @@ namespace PES.Service.DataService
 
         public static void ExportFields(IDictionary<object, object> propertiesMap, string aliasName, object target)
         {
+
             var properties = target.GetType().GetFields();
             string attachName = string.IsNullOrEmpty(aliasName) ? "" : aliasName + "_";
             foreach (FieldInfo field in properties)

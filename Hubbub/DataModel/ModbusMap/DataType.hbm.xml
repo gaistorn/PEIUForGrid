@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="DataType" table="DataType" lazy="true" >
+    <id name="TypeCode" column="TypeCode" />
+    <property name="TypeName">
+      <column name="TypeName" sql-type="STRING " not-null="true" />
+    </property>
+    <property name="Size">
+      <column name="Size" sql-type="INTEGER" not-null="true" />
+    </property>
+    <property name="IsUnsigned">
+      <column name="IsUnsigned" sql-type="BOOLEAN" not-null="true" />
+    </property>
+  </class>
+</hibernate-mapping>

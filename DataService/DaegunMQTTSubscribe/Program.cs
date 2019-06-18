@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace PES.Service.DataService
 {
@@ -15,10 +16,12 @@ namespace PES.Service.DataService
         public static NLog.Logger NLogger = null;
         public static void Main(string[] args)
         {
+            // NLog: setup the logger first to catch all errors
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
-                NLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
+                
+                logger.Error("DEBUG~ INIT");
                 //LogFactory = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config");
                 //var logger = LogFactory.GetCurrentClassLogger();
                 //logger.Info("start");
@@ -26,7 +29,8 @@ namespace PES.Service.DataService
             }
             catch(Exception ex)
             {
-                NLogger.Error(ex.Message + "\n" + ex.StackTrace);
+                logger.Error(ex.Message + "\n" + ex.StackTrace);
+                throw;
             }
             finally
             {
@@ -38,11 +42,11 @@ namespace PES.Service.DataService
             WebHost.CreateDefaultBuilder(args)
                  //.UseKestrel()
                  .UseUrls("http://*:16000")
-                .UseStartup<Startup>();
-                //.ConfigureLogging(logging =>
-                //{
-                //    logging.ClearProviders();
-                //    logging.SetMinimumLevel(LogLevel.Trace);
-                //}).UseNLog();
+                .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+            logging.ClearProviders();
+            logging.SetMinimumLevel(LogLevel.Trace);
+        }).UseNLog();
     }
 }

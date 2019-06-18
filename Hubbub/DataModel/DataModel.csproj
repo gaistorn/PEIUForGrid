@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Hibernate\**" />
+    <EmbeddedResource Remove="Hibernate\**" />
+    <None Remove="Hibernate\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ModbusMap\AiMap.hbm.xml" />
+    <None Remove="ModbusMap\DataType.hbm.xml" />
+    <None Remove="ModbusMap\DiFlag.hbm.xml" />
+    <None Remove="ModbusMap\DiMap.hbm.xml" />
+    <None Remove="ModbusMap\EventGroupPoint.hbm.xml" />
+    <None Remove="ModbusMap\GroupPoint.hbm.xml" />
+    <None Remove="ModbusMap\IoTypeFlag.hbm.xml" />
+    <None Remove="ModbusMap\ModbusSystem.hbm.xml" />
+    <None Remove="MysqlMap\Activeevent.hbm.xml" />
+    <None Remove="MysqlMap\LogEvent.hbm.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ModbusMap\AiMap.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\DataType.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\DiFlag.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\DiMap.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\EventGroupPoint.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
+    <EmbeddedResource Include="ModbusMap\ModbusSystem.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\LogEvent.hbm.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NHibernate" Version="5.2.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System">
+      <HintPath>System</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>System.Data</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>System.Xml</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

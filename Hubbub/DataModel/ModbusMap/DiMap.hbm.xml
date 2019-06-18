@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="DiMap" table="DI_MAP" lazy="false" >
+    <id name="DocumentAddress" column="DocumentAddress" />
+    <property name="Description">
+      <column name="Description" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Index">
+      <column name="PointIndex" sql-type="INTEGER" not-null="false" />
+    </property>
+    <property name="Event">
+      <column name="Event" sql-type="BOOLEAN" not-null="true" />
+    </property>
+    <property name="Level">
+      <column name="Level" sql-type="INT" not-null="true" />
+    </property>
+    <property name="Disable">
+      <column name="Disable" sql-type="BOOLEAN" not-null="false" />
+    </property>
+    <!--<property name="EventGroupId">
+      <column name="EventGroupId" sql-type="INTEGER" not-null="true" />
+    </property>-->
+    <bag name="Flags" lazy="false">
+      <key column="RefDiMap" not-null="true" />
+      <one-to-many class="DiFlag"/>
+    </bag>
+  </class>
+</hibernate-mapping>
