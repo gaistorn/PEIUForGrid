@@ -11,8 +11,8 @@ namespace PES.Service.WebApiService
 {
     public class AccountRecordContext : IdentityDbContext<AccountModel>
     {
-        public DbSet<AssetDBModel> Assets { get; set; }
-        public DbSet<AddressModel> Address { get; set; }
+        public DbSet<DevicesInfos> DevicesInfos { get; set; }
+        public DbSet<AssetLocation> AssetLocations { get; set; }
 
         public AccountRecordContext(DbContextOptions<AccountRecordContext> options) : base(options)
         {
@@ -23,8 +23,8 @@ namespace PES.Service.WebApiService
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<AssetDBModel>().HasKey(x => x.PK);
-            builder.Entity<AddressModel>().HasKey(m => m.PK);
+            builder.Entity<DevicesInfos>().HasKey(x => x.DeviceId);
+            builder.Entity<AssetLocation>().HasKey(m => m.PK);
 
             //// shadow properties
             //builder.Entity<EventLogData>().Property<DateTime>("UpdatedTimestamp");

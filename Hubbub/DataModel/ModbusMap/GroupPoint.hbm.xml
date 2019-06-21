@@ -17,11 +17,14 @@
     <property name="RetryIntervalSec">
       <column name="RetryIntervalSec" sql-type="INT" not-null="true" />
     </property>
-    <property name="DeviceId">
-      <column name="DeviceId" sql-type="INT" not-null="true" />
+    <property name="SlaveId">
+      <column name="SlaveId" sql-type="INT" not-null="true" />
     </property>
     <property name="Disable">
       <column name="Disable" sql-type="SMALLINT" not-null="false" />
+    </property>
+    <property name="DeviceUniqueId">
+      <column name="DeviceUniqueId" sql-type="INT" not-null="false" />
     </property>
     <bag name='AiMaps' table='AI_MAP' lazy='false'>
       <key column='GroupId'/>

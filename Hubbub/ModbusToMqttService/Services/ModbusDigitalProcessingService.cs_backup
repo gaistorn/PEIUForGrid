@@ -19,10 +19,9 @@ namespace PEIU.Hubbub.Services
         ILogger<ModbusBackgroundService> logger;
         IModbusFactory modbusFactory;
         IConfiguration config;
-        MqttConfig mqtt_config;
+        MqttAddress[] mqtt_config;
         ModbusSystem modbus;
         IDatabaseAsync redis;
-        int SiteId = -1;
         readonly TimeSpan UpdatePeriod = TimeSpan.FromSeconds(1);
 
         private readonly object locker = new object();
@@ -35,10 +34,9 @@ namespace PEIU.Hubbub.Services
             logger = loggerFactory.CreateLogger<ModbusBackgroundService>();
             config = configuration;
             modbusFactory = modbus_factory;
-            mqtt_config = configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
+            mqtt_config = configuration.GetSection("MQTTBrokers:EventBrokerAddress").Get<MqttAddress[]>();
             UpdatePeriod = configuration.GetSection("EventPollInterval").Get<TimeSpan>();
             modbus = modbusSystem;
-            SiteId = configuration.GetSection("SiteId").Get<int>();
             redis = redisFactory.Connection().GetDatabase();
             
             dbAccess = mysql_dataAccess;
@@ -68,7 +66,7 @@ namespace PEIU.Hubbub.Services
                             continue;
                         //cache.Get()
 
-                        string redis_key = $"{x.DeviceUniqueId}.{map.DocumentAddress}";
+                        string redis_key = $"{modbus.DeviceName}.{x.DeviceId}.{map.DocumentAddress}";
                         ushort redis_value = 0;
                         if(await redis.KeyExistsAsync(redis_key))
                         {
@@ -114,9 +112,8 @@ namespace PEIU.Hubbub.Services
                                     if(existEvent == null && IsActive)
                                     {
                                         existEvent = new ActiveEvent();
-                                        existEvent.DeviceUniqueId = x.DeviceUniqueId;
                                         existEvent.Description = evt.BitName;
-                                        existEvent.SlaveId = x.SlaveId;
+                                        existEvent.DeviceId = x.DeviceId;
                                         existEvent.DeviceName = modbus.DeviceName;
                                         existEvent.EventLevel = map.Level;
                                         existEvent.EventName = evt.BitName;
@@ -151,9 +148,8 @@ namespace PEIU.Hubbub.Services
                 return false;
             LogEvent NewEvent = new LogEvent();
             NewEvent.EventId = evt.EventId;
-            NewEvent.DeviceUniqueId = evt.DeviceUniqueId;
             NewEvent.DeviceName = evt.DeviceName;
-            NewEvent.SlaveId = evt.SlaveId;
+            NewEvent.DeviceId = evt.DeviceId;
             NewEvent.EventName = evt.EventName;
             NewEvent.Description = evt.Description;
             NewEvent.OccurTimestamp = evt.OccurTimestamp;

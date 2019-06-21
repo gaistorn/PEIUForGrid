@@ -52,7 +52,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
             services.AddSingleton(redisConfiguration);
             var mysql_conn = Configuration.GetConnectionString("mysql");
-            //var mqtt_informations = Configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
+            var mqtt_informations = Configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
             //services.AddSingleton(mqtt_informations);
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             LoadMqttConfig(services);
@@ -83,6 +83,10 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
 
             //byte[] buffer = packet.ToByteArray();
 
+
+
+            services.AddCors();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             //MqttDataPacket copyPacket = MqttDataPacket.Parse(buffer);
         }
 
@@ -193,7 +197,18 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             {
                 app.UseDeveloperExceptionPage();
             }
+            //var withOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
+            app.UseHttpsRedirection();
+            app.UseCors(builder =>
+            {
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .WithMethods("GET", "POST", "PUT", "DELETE")
+                    .AllowCredentials();
+            });
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

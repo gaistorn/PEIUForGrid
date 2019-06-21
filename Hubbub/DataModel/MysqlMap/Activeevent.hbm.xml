@@ -5,8 +5,8 @@
     <property name="DeviceName">
       <column name="DeviceName" sql-type="varchar(45)" not-null="true" />
     </property>
-    <property name="DeviceId">
-      <column name="DeviceId" sql-type="int(11)" not-null="true" />
+    <property name="SlaveId">
+      <column name="SlaveId" sql-type="int(11)" not-null="true" />
     </property>
     <property name="EventName">
       <column name="EventName" sql-type="varchar(50)" not-null="true" />
@@ -31,6 +31,9 @@
     </property>
     <property name="RecoverTimestamp">
       <column name="RecoverTimestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="DeviceUniqueId">
+      <column name="DeviceUniqueId" sql-type="int(11)" not-null="true" />
     </property>
   </class>
 </hibernate-mapping>

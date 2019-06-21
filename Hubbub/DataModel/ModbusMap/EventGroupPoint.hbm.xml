@@ -8,8 +8,8 @@
     <property name="PollIntervalMs">
       <column name="PollIntervalMS" sql-type="INT" not-null="false" />
     </property>
-    <property name="DeviceId">
-      <column name="DeviceId" sql-type="INT" not-null="true" />
+    <property name="SlaveId">
+      <column name="SlaveId" sql-type="INT" not-null="true" />
     </property>
     <property name="Disable">
       <column name="Disable" sql-type="BOOLEAN" not-null="false" />
@@ -20,7 +20,9 @@
     <property name="StartAddress">
       <column name="StartAddress" sql-type="INTEGER " not-null="true" />
     </property>
-
+    <property name="DeviceUniqueId">
+      <column name="DeviceUniqueId" sql-type="INT" not-null="false" />
+    </property>
     <bag name="DigitalPoints" lazy="false">
       <key column="EventGroupId" not-null="true" />
       <one-to-many class="DiMap"/>

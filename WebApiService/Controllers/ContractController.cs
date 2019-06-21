@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
 using PES.Models;
 using PES.Service.WebApiService.Localization;
@@ -27,16 +25,11 @@ namespace PES.Service.WebApiService.Controllers
     {
         private readonly UserManager<AccountModel> userManager;
         ILogger<ContractController> logger;
-        MongoDB.Driver.MongoClient mongoClient;
-        MongoDB.Driver.IMongoDatabase monogodb;
         AccountRecordContext accountContext;
         private readonly LocalizedIdentityErrorDescriber describer;
         public ContractController(IConfiguration configuration, ILoggerFactory loggerFactory, AccountRecordContext _accountContext, UserManager<AccountModel> _userManager)
         {
             logger = loggerFactory.CreateLogger<ContractController>();
-            string conn_str = configuration.GetConnectionString("mongodb");
-            mongoClient = new MongoDB.Driver.MongoClient(conn_str);
-            monogodb = mongoClient.GetDatabase("PEIU");
             accountContext = _accountContext;
             userManager = _userManager;
             describer = userManager.ErrorDescriber as LocalizedIdentityErrorDescriber;
@@ -50,75 +43,45 @@ namespace PES.Service.WebApiService.Controllers
 
         //    return Ok();
         //}
-
-        
-
-        [HttpPost("inputcontract")]
-        public async void GetContractorList([FromBody] ContractModel model)
+       
+        [HttpGet("getAsset")]
+        public async Task<IActionResult> GetAllAsset(int? rcc = null)
         {
-
-            var cols = monogodb.GetCollection<ContractModel>("ContractInfo");
-            await cols.InsertOneAsync(model);
-        }
-
-        [HttpPost("AppendAsset")]
-        public async Task<IActionResult> AppendAsset(string email, [FromBody] AssetModel addAssets)
-        {
-            var user = userManager.FindByEmailAsync(email);
-            if(user == null)
+            IEnumerable<AssetLocation> result = null;
+            JArray return_value = new JArray();
+            if (rcc != null)
             {
-                return BadRequest(LocalizedIdentityErrorDescriber.UserNotFound(describer));
+                result = accountContext.AssetLocations.Where(x => x.RCC == rcc.Value);
             }
+            else
+                result = accountContext.AssetLocations;
 
-            AssetDBModel asset = new AssetDBModel();
-            asset.AssetName = addAssets.AssetName;
-            asset.DLNo = addAssets.DLNo;
-            asset.InstallDate = addAssets.InstallDate;
-            asset.ServiceCode = addAssets.ServiceCode;
-            asset.SiteId = addAssets.SiteId;
-            asset.TotalAvaliableESSMountKW = addAssets.TotalAvaliableESSMountKW;
-            asset.TotalAvaliablePCSMountKW = addAssets.TotalAvaliablePCSMountKW;
-            asset.TotalAvaliablePVMountKW = addAssets.TotalAvaliablePVMountKW;
-
-            AddressModel address = new AddressModel();
-            LocationModel add_address = addAssets.Address;
-            address.Address1 = add_address.Address1;
-            address.Address2 = add_address.Address2;
-            address.Latitude = add_address.Latitude;
-            address.Longtidue = add_address.Longtidue;
-            address.LawFirstCode = add_address.LawFirstCode;
-            address.LawMiddleCode = add_address.LawMiddleCode;
-            address.LawLasttCode = add_address.LawLasttCode;
-            address.RCC = add_address.RCC;
-            asset.Address = address;
-
-            accountContext.Address.Add(address);
-            accountContext.Assets.Add(asset);
-            await accountContext.SaveChangesAsync();
-            return Ok();
+            foreach(AssetLocation loc in result)
+            {
+                JObject obj = JObject.FromObject(loc);
+                return_value.Add(obj);
+            }
+            return Ok(return_value);
         }
 
-        [HttpGet("getsitedbyrcc")]
-        public async Task<IActionResult> getsitedbyrcc()
+        [HttpGet("getClusterValuesByRCC")]
+        public async Task<IActionResult> getClusterValuesByRCC()
         {
             JArray result = new JArray();
-            var rcc_keys = PMSController.rcc_list.Keys.OrderBy(x => x);
-            foreach(int rcc in rcc_keys)
+            for(int rcc = 1;rcc<=15;rcc++)
             {
-                JObject obj = new JObject();
-                obj.Add("rcc", rcc);
-                obj.Add("name", PMSController.rcc_list[rcc]);
-
-                if (PMSController.RccBySiteMap.ContainsKey(rcc))
+                AssetLocation ac = accountContext.AssetLocations.FirstOrDefault(x => x.RCC == rcc);
+                if(ac == null)
                 {
-                    obj.Add("sites", JArray.FromObject( PMSController.RccBySiteMap[rcc]));
+                    result.Add("");
                 }
                 else
                 {
-                    obj.Add("sites", JArray.FromObject(new int[0]));
+
                 }
-                result.Add(obj);
             }
+            accountContext.AssetLocations
+            
             return Ok(result);
         }
 

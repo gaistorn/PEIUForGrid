@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NModbus;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace PEIU.Hubbub
         bool TryConnectModbus(ModbusSystem config);
         bool ReconnectWhenDisconnected();
         // Task<MqttRegister[]> ReadModbus(SlaveInfoYaml slaves);
-        JObject ReadModbusToJson(GroupPoint slaves);
+        JObject ReadModbusToJson(GroupPoint slaves, out HashEntry[] hashEntry);
         Task<List<DiMap>> ReadModbusEvent(EventGroupPoint map);
         //Task<IEnumerable<MqttInlineRegisterJsonModel>> ReadModbusToArray(SlaveInfoYaml slaves);
     }
@@ -109,7 +110,8 @@ namespace PEIU.Hubbub
         public async Task<List<DiMap>> ReadModbusEvent(EventGroupPoint map)
         {
             List<DiMap> result = new List<DiMap>();
-            ushort[] datas = await master.ReadHoldingRegistersAsync(map.DeviceId, map.StartAddress, (ushort)map.DigitalPoints.Count);
+            if (master == null) return result;
+            ushort[] datas = await master.ReadHoldingRegistersAsync(map.SlaveId, map.StartAddress, (ushort)map.DigitalPoints.Count);
             int idx = 0;
             foreach (DiMap m in map.DigitalPoints)
             {
@@ -119,13 +121,19 @@ namespace PEIU.Hubbub
             return result;
         }
 
-        public JObject ReadModbusToJson(GroupPoint slaves)
+        public JObject ReadModbusToJson(GroupPoint slaves, out HashEntry[] hashEntries)
         {
+            JObject datarow = new JObject();
+            List<HashEntry> entries = new List<HashEntry>();
+            hashEntries = entries.ToArray();
             try
             {
+               
+                if (master == null)
+                    return datarow;
                 ushort minAddr = slaves.AiMaps.Min(x => x.Address);
                 ushort maxAddr = slaves.AiMaps.Max(x => x.Address);
-                minAddr = (ushort)(minAddr - 1);
+                //minAddr = (ushort)(minAddr - 1);
                 ushort pointCnt = (ushort)((maxAddr - minAddr) + 1);
                 ushort[] datas = null;
                 lock (lockerObj)
@@ -135,26 +143,29 @@ namespace PEIU.Hubbub
                     switch ((DataModel.modbus_io)slaves.IoType)
                     {
                         case DataModel.modbus_io.ANALOG_INPUT:
-                            datas = master.ReadInputRegisters(slaves.DeviceId, minAddr, pointCnt);
+                            datas = master.ReadInputRegisters(slaves.SlaveId, minAddr, pointCnt);
                             break;
                         case DataModel.modbus_io.HOLDING_REGISTER:
-                            datas = master.ReadHoldingRegisters(slaves.DeviceId, minAddr, pointCnt);
+                            datas = master.ReadHoldingRegisters(slaves.SlaveId, minAddr, pointCnt);
                             break;
                     }
                 }
-                JObject datarow = new JObject();
+                DateTime timeStamp = DateTime.Now;
                 datarow.Add("groupid", slaves.GroupId);
                 datarow.Add("groupname", slaves.GroupName);
-                datarow.Add("timestamp", DateTime.Now);
+                datarow.Add("deviceId", slaves.DeviceUniqueId);
+                entries.Add(new HashEntry("timestamp", timeStamp.ToString()));
+                datarow.Add("timestamp", DateTime.Now.ToString("yyyyMMddHHmmss"));
+                int bitIdx = 0;
                 foreach (AiMap register in slaves.AiMaps)
                 {
                     if (register.Disable == 1)
                         continue;
                     //Console.WriteLine("READ REGISTER: " + register.Name);
-                    int addr = (register.Address - 1) - minAddr;
-                    byte[] buffer = GetReadBytes(register.DataType, addr, datas);
-                    object value = 0f;
-                    switch ((DataModel.modbus_type)register.Type)
+                    byte[] buffer = GetReadBytes(register.DataType, bitIdx, datas);
+                    bitIdx += register.DataType.Size;
+                    dynamic value = 0f;
+                    switch ((DataModel.modbus_type)register.DataType.TypeCode)
                     {
                         case modbus_type.DT_BOOLEAN:
                             value = BitConverter.ToBoolean(buffer);
@@ -176,11 +187,12 @@ namespace PEIU.Hubbub
                             break;
                     }
 
-                    
                      value = register.ConvertValue(value);
+                    entries.Add(new HashEntry(register.Name, value.ToString()));
                     datarow.Add(register.Name, value.ToString());
                     //registers.Add(register.ConvertRegister(Convert.ToSingle(value)));
                 }
+                hashEntries = entries.ToArray();
                 return datarow;
             }
             catch(Exception ex)
@@ -311,7 +323,7 @@ namespace PEIU.Hubbub
                     return false;
                 if (tcpClient == null || tcpClient.Connected == false)
                     TryConnectModbus(_config);
-                return tcpClient.Connected;
+                return tcpClient != null && tcpClient.Connected;
             }
             catch(Exception ex)
             {

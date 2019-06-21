@@ -19,17 +19,12 @@ namespace DataModel {
         public virtual short? Disable { get; set; }
         public virtual int? GroupId { get; set; }
 
-        public virtual object ConvertValue(object x)
+        public virtual object ConvertValue(dynamic x)
         {
             if (Type == 1 || Scale == 0 || Scale == 1)
                 return x;
-            if (x is float)
-                return (float)x * Scale;
             else
-            {
-                Int64 x64 = (Int64)x;
-                return x64 * Scale;
-            }
+                return x * Scale;
         }
 
         public override string ToString()
