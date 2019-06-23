@@ -20,7 +20,6 @@ namespace PEIU.Hubbub.Controllers
         IDatabase redis_ai;
         IDatabase redis_di;
         IModbusFactory modbus;
-        IModbusMaster modbus_master = null;
         ILogger<DeviceController> logger;
         IDataAccess dataAccess;
         public DeviceController(IRedisConnectionFactory redisConnectionFactory,
@@ -30,7 +29,6 @@ namespace PEIU.Hubbub.Controllers
             redis_ai = redisConnectionFactory.Connection().GetDatabase(1);
             redis_di = redisConnectionFactory.Connection().GetDatabase();
             modbus = modbusFactory;
-            modbus_master = modbus.GetModbusMaster();
             logger = loggerFactory.CreateLogger<DeviceController>();
             dataAccess = mysql_dataAccess;
         }
@@ -61,26 +59,23 @@ namespace PEIU.Hubbub.Controllers
         }
 
         [HttpGet("manualcontrol")]
-        public async Task<IActionResult> ManualControl(byte deviceId, ushort DocumentAddress, ushort Value)
+        public async Task<IActionResult> ManualControl(string deviceName, ushort DocumentAddress, ushort Value)
         {
-            if (modbus.ReconnectWhenDisconnected() == false)
-            {
-                return NoContent();
-            }
+            if (await modbus.WriteMultipleRegisters(deviceName, DocumentAddress, new ushort[] { Value }))
+                return Ok();
+            else
+                return base.BadRequest();
 
-            await modbus_master.WriteMultipleRegistersAsync(deviceId, DocumentAddress, new ushort[] { Value });
-            return Ok();
         }
 
         [HttpPost("ReadHoldingRegister")]
         public async Task<IActionResult> ReadHoldingRegister([FromBody] ManualQueryParameter parameter)
         {
-            if (modbus.ReconnectWhenDisconnected() == false)
-            {
-                return NoContent();
-            }
-
-            ushort[] datas = await modbus_master.ReadHoldingRegistersAsync(parameter.SlaveId, parameter.StartAddress, parameter.Length);
+            
+            
+            ushort[] datas = await modbus.ReadHoldingRegisters(parameter.DeviceName, parameter.StartAddress, parameter.Length);
+            if (datas == null)
+                return BadRequest();
             ushort newAddr = parameter.StartAddress;
 
             JObject data = new JObject();

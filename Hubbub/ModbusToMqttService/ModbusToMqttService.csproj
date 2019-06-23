@@ -38,6 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ModbusEntier.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="modbusmap.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

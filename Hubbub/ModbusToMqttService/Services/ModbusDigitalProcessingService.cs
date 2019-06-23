@@ -20,27 +20,18 @@ namespace PEIU.Hubbub.Services
         IModbusFactory modbusFactory;
         IConfiguration config;
         MqttConfig mqtt_config;
-        ModbusSystem modbus;
         IDatabaseAsync redis;
-        int SiteId = -1;
-        readonly TimeSpan UpdatePeriod = TimeSpan.FromSeconds(1);
-
         private readonly object locker = new object();
         IDataAccess dbAccess;
         public ModbusDigitalProcessingService(Microsoft.Extensions.Logging.ILoggerFactory loggerFactory,
             IDataAccess mysql_dataAccess, IRedisConnectionFactory redisFactory,
-            IModbusFactory modbus_factory, IConfiguration configuration,
-            ModbusSystem modbusSystem)
+            IModbusFactory modbus_factory, IConfiguration configuration)
         {
             logger = loggerFactory.CreateLogger<ModbusBackgroundService>();
             config = configuration;
             modbusFactory = modbus_factory;
             mqtt_config = configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
-            UpdatePeriod = configuration.GetSection("EventPollInterval").Get<TimeSpan>();
-            modbus = modbusSystem;
-            SiteId = configuration.GetSection("SiteId").Get<int>();
             redis = redisFactory.Connection().GetDatabase();
-            
             dbAccess = mysql_dataAccess;
         }
 
@@ -51,95 +42,94 @@ namespace PEIU.Hubbub.Services
             return srcValue == descValue;
         }
 
+        private async Task ReadDigitalData(IEnumerable<PointList> readDiDatas, ModbusSystem system, CancellationToken token)
+        {
+            foreach (PointList map in readDiDatas)
+            {
+                if (map.Disable == 1)
+                    continue;
+                //cache.Get()
+                string redis_key = $"{system.DeviceName}.DI.{map.GroupName}.{map.Address}";
+                string topic = $"hubbub/{modbusFactory.SiteNo}/{system.DeviceName}/{map.GroupName}/AI";
+                ushort redis_value = 0;
+                if (await redis.KeyExistsAsync(redis_key))
+                {
+                    string redis_str = await redis.StringGetAsync(redis_key);
+                    redis_value = ushort.Parse(redis_str);
+                }
+                ushort mapValue = Convert.ToUInt16(map.Value);
+                if (mapValue == redis_value)
+                    continue;
+                else
+                {
+                    await redis.StringSetAsync(redis_key, mapValue.ToString());
+                }
+
+
+
+                using (var session = dbAccess.SessionFactory.OpenSession())
+                {
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        foreach (DiFlag evt in map.Flags)
+                        {
+                            bool IsActive = evt.IsActivate(mapValue);
+                            string redis_event_key = redis_key + "." + evt.No;
+
+                            if (await redis.KeyExistsAsync(redis_event_key) == false)
+                            {
+                                await redis.HashSetAsync(redis_event_key, CreateEventNode(map, evt));
+                            }
+                            else
+                            {
+                                await redis.HashSetAsync(redis_event_key, "Status", IsActive);
+                            }
+
+                            if (map.Disable == 1 || map.Level == 0)
+                                continue;
+
+                            string mysql_key_str = $"{modbusFactory.SiteNo}{map.ID}{evt.No}";
+                            int mysql_key_id = int.Parse(mysql_key_str);
+
+
+                            ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_id);
+                            if (existEvent == null && IsActive)
+                            {
+                                existEvent = new ActiveEvent();
+                                existEvent.DeviceUniqueId = system.DeviceId;
+                                existEvent.Description = evt.BitName;
+                                existEvent.DeviceName = system.DeviceName;
+                                existEvent.EventLevel = map.Level;
+                                existEvent.EventName = evt.BitName;
+                                existEvent.OccurTimestamp = DateTime.Now;
+                                existEvent.EventId = mysql_key_id;
+                                await session.SaveAsync(existEvent, token);
+                            }
+                            else if (existEvent != null && IsActive == false) // 복구됨
+                            {
+                                existEvent.HasRecovered = true;
+                                existEvent.RecoverTimestamp = DateTime.Now;
+                                await session.SaveOrUpdateAsync(existEvent, token);
+                            }
+
+                            //await EventTransitionAsync(stoppingToken, existEvent, session);
+
+                        }
+                        await transaction.CommitAsync(token);
+                    }
+                }
+            }
+
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 stoppingToken.ThrowIfCancellationRequested();
-                //var parallelResult = Parallel.ForEach<GroupPoint>(modbus.GroupPoints, (async x =>
-                foreach (var x in modbus.GroupDigitalPoints)
-                {
-                    if (x.Disable == true)
-                        continue;
-                    List<DiMap> results = await modbusFactory.ReadModbusEvent(x);
-                    foreach (DiMap map in results)
-                    {
-                        if (map.Disable == true)
-                            continue;
-                        //cache.Get()
+                await modbusFactory.ReadDigitalData(ReadDigitalData, stoppingToken);
+                await Task.Delay(10);
 
-                        string redis_key = $"{x.DeviceUniqueId}.{map.DocumentAddress}";
-                        ushort redis_value = 0;
-                        if(await redis.KeyExistsAsync(redis_key))
-                        {
-                            string redis_str = await redis.StringGetAsync(redis_key);
-                            redis_value = ushort.Parse(redis_str);
-                        }
-
-                        if (map.Value == redis_value)
-                            continue;
-                        else
-                        {
-                            await redis.StringSetAsync(redis_key, map.Value.ToString());
-                        }
-
-
-
-                        using (var session = dbAccess.SessionFactory.OpenSession())
-                        {
-                            using (var transaction = session.BeginTransaction())
-                            {
-                                foreach (DiFlag evt in map.Flags)
-                                {
-                                    bool IsActive = evt.IsActivate(map.Value);
-                                    string redis_event_key = redis_key + "." + evt.No;
-
-                                    if (await redis.KeyExistsAsync(redis_event_key) == false)
-                                    {
-                                        await redis.HashSetAsync(redis_event_key, CreateEventNode(map, evt));
-                                    }
-                                    else
-                                    {
-                                        await redis.HashSetAsync(redis_event_key, "Status", IsActive);
-                                    }
-
-                                    if (map.Disable == true || map.Level == 0)
-                                        continue;
-
-                                    string mysql_key_str = $"{x.DeviceUniqueId}{map.DocumentAddress}{evt.No}";
-                                    int mysql_key_id = int.Parse(mysql_key_str);
-
-
-                                    ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_id);
-                                    if(existEvent == null && IsActive)
-                                    {
-                                        existEvent = new ActiveEvent();
-                                        existEvent.DeviceUniqueId = x.DeviceUniqueId;
-                                        existEvent.Description = evt.BitName;
-                                        existEvent.SlaveId = x.SlaveId;
-                                        existEvent.DeviceName = modbus.DeviceName;
-                                        existEvent.EventLevel = map.Level;
-                                        existEvent.EventName = evt.BitName;
-                                        existEvent.OccurTimestamp = DateTime.Now;
-                                        existEvent.EventId = mysql_key_id;
-                                        await session.SaveAsync(existEvent, stoppingToken);
-                                    }
-                                    else if(existEvent != null && IsActive == false) // 복구됨
-                                    {
-                                        existEvent.HasRecovered = true;
-                                        existEvent.RecoverTimestamp = DateTime.Now;
-                                        await session.SaveOrUpdateAsync(existEvent, stoppingToken);
-                                    }
-
-                                    //await EventTransitionAsync(stoppingToken, existEvent, session);
-                                    
-                                }
-                                await transaction.CommitAsync(stoppingToken);
-                            }
-                        }
-                    }
-                }
-                Thread.Sleep(UpdatePeriod);
             }
         }
 
@@ -153,7 +143,6 @@ namespace PEIU.Hubbub.Services
             NewEvent.EventId = evt.EventId;
             NewEvent.DeviceUniqueId = evt.DeviceUniqueId;
             NewEvent.DeviceName = evt.DeviceName;
-            NewEvent.SlaveId = evt.SlaveId;
             NewEvent.EventName = evt.EventName;
             NewEvent.Description = evt.Description;
             NewEvent.OccurTimestamp = evt.OccurTimestamp;
@@ -164,17 +153,17 @@ namespace PEIU.Hubbub.Services
             return HasCompleted;
         }
 
-        private HashEntry[] CreateEventNode(DiMap map, DiFlag flag)
+        private HashEntry[] CreateEventNode(PointList map, DiFlag flag)
         {
             HashEntry[] result = new HashEntry[]
             {
-                new HashEntry("DocumentAddress", map.DocumentAddress),
+                new HashEntry("Address", (int)map.Address),
                 new HashEntry("EventName", map.Description),
-                new HashEntry("IsEvent", map.Event),
+                new HashEntry("IsEvent", map.Level > 1),
                 new HashEntry("Level", map.Level),
                 new HashEntry("Description", flag.BitName),
                 new HashEntry("BitValue", (int)flag.BitValue),
-                new HashEntry("Status", flag.IsActivate(map.Value))
+                new HashEntry("Status", flag.IsActivate((ushort)map.Value))
             };
             return result;
         }

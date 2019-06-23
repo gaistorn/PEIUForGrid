@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="PointList" table="PointList" lazy="false" >
+    <id name="ID" column="ID" />
+    <property name="Unit">
+      <column name="Unit" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Scale">
+      <column name="Scale" sql-type="REAL" not-null="false" />
+    </property>
+    <property name="Description">
+      <column name="Description" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Address">
+      <column name="Address" sql-type="SMALLINT" not-null="true" />
+    </property>
+    <many-to-one name="DataType" class="DataType" lazy="false">
+      <column name="Type" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>
+    <!--<many-to-one name="ModbusFamily" class="ModbusFamily" lazy="false">
+      <column name="ModbusFamilyId" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>-->
+    <!--<property name="Type">
+      <column name="Type" sql-type="SMALLINT" not-null="true" />
+    </property>-->
+    <property name="Level">
+      <column name="Level" sql-type="INT" not-null="false" />
+    </property>
+    <property name="Disable">
+      <column name="Disable" sql-type="SMALLINT" not-null="true" />
+    </property>
+    <property name="GroupId">
+      <column name="GroupId" sql-type="INT" not-null="true" />
+    </property>
+    <property name="GroupName">
+      <column name="GroupName" sql-type="TEXT" not-null="false" />
+    </property>
+    <property name="Name">
+      <column name="Name" sql-type="VARCHAR " not-null="true" />
+    </property>
+    <property name="IOType">
+      <column name="IOType" sql-type="INT" not-null="true" />
+    </property>
+    <bag name="Flags" lazy="false">
+      <key column="PointListId" not-null="true" />
+      <one-to-many class="DiFlag"/>
+    </bag>
+    <!--<property name="ModbusFamilyId">
+      <column name="ModbusFamilyId" sql-type="INT" not-null="true" />
+    </property>-->
+  </class>
+</hibernate-mapping>

@@ -57,7 +57,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             LoadMqttConfig(services);
             LoadConfigModbusMapper(services);
-            services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
+            
             IDataAccess mysql_access = new MysqlDataAccess(mysql_conn);
             services.AddSingleton(mysql_access);
             //using (DataAccess da = new DataAccess(dam))
@@ -100,40 +100,20 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
         private void LoadConfigModbusMapper(IServiceCollection services)
         {
             string sqlite_conn_str = Configuration.GetConnectionString("sqlite");
-            var target_modbus = Configuration.GetSection("TargetModbus").Get<string>();
+            var target_modbus = Configuration.GetSection("ModbusConfig:TargetFamily").Get<string>();
+            
             DataAccessManager dam = new DataAccessManager(sqlite_conn_str);
-            ModbusSystem modbusList = null;
+            ModbusFamily modbusList = null;
             using (DataAccess da = new DataAccess(dam))
             {
 
-                modbusList = da.Select<ModbusSystem>().FirstOrDefault(x => x.DeviceName == target_modbus);
-                if(modbusList == null)
-                {
-                    string err_msg = $"대상 모드버스 '{target_modbus}'를 찾을 수 없습니다. 모드버스 관련 서비스는 실행되지 않습니다.";
-                    logger.LogError(new InvalidDataException(err_msg), err_msg);
-                    return;
-                }
-                else if(modbusList.Disable == true)
-                {
-                    string err_msg = $"대상 모드버스 '{target_modbus}'는 현재 비활성화 상태(Disable=1)입니다. 모드버스 관련 서비스는 실행되지 않습니다.";
-                    logger.LogError(new InvalidOperationException(err_msg), err_msg);
-                    return;
-                }
-
-                //foreach (var i in modbusList.GroupPoints)
-                //{
-                //    foreach (var j in i.AiMaps)
-                //    {
-                //        string tn = j.DataType.TypeName;
-                //    }
-                //}
-              
-                //var eventList = da.Select<>
-
-                services.AddSingleton(modbusList);
-                services.AddHostedService<ModbusBackgroundService>();
-                services.AddHostedService<ModbusDigitalProcessingService>();
+                modbusList = da.Select<ModbusFamily>().FirstOrDefault(x => x.FamilyName == target_modbus && x.Disable == false);
+                
             }
+            services.AddSingleton(modbusList);
+            services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
+            services.AddHostedService<ModbusBackgroundService>();
+            services.AddHostedService<ModbusDigitalProcessingService>();
         }
 
         private async Task<MqttClientProxyCollection> TryInitializeMqtt(MqttConfig config)

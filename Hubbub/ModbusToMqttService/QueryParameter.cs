@@ -13,7 +13,7 @@ namespace PEIU.Hubbub
 
     public class ManualQueryParameter
     {
-        public byte SlaveId { get; set; }
+        public string DeviceName  { get; set; }
         public ushort StartAddress { get; set; }
         public ushort Length { get; set; }
     }
