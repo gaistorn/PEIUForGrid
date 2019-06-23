@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
   <class name="ModbusSystem" table="ModbusSystem" lazy="false" >
-    <id name="Id" column="ID" />
+    <id name="DeviceId" column="DeviceId" />
     <property name="DeviceName">
       <column name="DeviceName" sql-type="TEXT " not-null="true" />
     </property>
@@ -14,14 +14,14 @@
     <property name="PortNum">
       <column name="PortNum" sql-type="INT" not-null="true" />
     </property>
-    <bag name='GroupPoints' table='GroupPoint' lazy='false'>
-      <key column='ModbusId'/>
-      <one-to-many class='GroupPoint'/>
-    </bag>
-    <bag name='GroupDigitalPoints' table='EventGroupPoint' lazy='false'>
-      <key column='ModbusId'/>
-      <one-to-many class='EventGroupPoint'/>
-    </bag>
-    
+    <property name="SlaveId">
+      <column name="SlaveId" sql-type="INT" not-null="true" />
+    </property>
+    <!--<property name="ModbusFamilyId">
+      <column name="ModbusFamilyId" sql-type="INT" not-null="true" />
+    </property>-->
+    <many-to-one name="ModbusFamily" class="ModbusFamily" lazy="false">
+      <column name="ModbusFamilyId" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>
   </class>
 </hibernate-mapping>

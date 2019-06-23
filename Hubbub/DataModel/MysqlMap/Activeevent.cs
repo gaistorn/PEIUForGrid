@@ -8,7 +8,6 @@ namespace DataModel {
     public class ActiveEvent {
         public virtual int EventId { get; set; }
         public virtual string DeviceName { get; set; }
-        public virtual byte SlaveId { get; set; }
         public virtual string EventName { get; set; }
         public virtual string Description { get; set; }
         public virtual DateTime OccurTimestamp { get; set; }

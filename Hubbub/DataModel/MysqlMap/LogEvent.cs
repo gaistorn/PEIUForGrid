@@ -9,7 +9,6 @@ namespace DataModel {
         public virtual long LogEventId { get; set; }
         public virtual int EventId { get; set; }
         public virtual string DeviceName { get; set; }
-        public virtual byte SlaveId { get; set; }
         public virtual string EventName { get; set; }
         public virtual string Description { get; set; }
         public virtual DateTime OccurTimestamp { get; set; }

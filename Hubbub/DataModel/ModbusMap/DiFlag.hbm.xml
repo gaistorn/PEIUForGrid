@@ -8,8 +8,8 @@
     <property name="BitName">
       <column name="BitName" sql-type="VARCHAR " not-null="false" />
     </property>
-    <property name="RefDiMap">
-      <column name="RefDIMap" sql-type="INTEGER" not-null="false" />
-    </property>
+    <!--<property name="PointListId">
+      <column name="PointListId" sql-type="INTEGER" not-null="false" />
+    </property>-->
   </class>
 </hibernate-mapping>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="ModbusFamily" table="ModbusFamily" lazy="false" >
+    <id name="ID" column="ID" />
+    <property name="FamilyName">
+      <column name="FamilyName" sql-type="TEXT" not-null="false" />
+    </property>
+    <property name="Disable">
+      <column name="Disable" sql-type="BOOLEAN" not-null="true" />
+    </property>
+    <property name="SiteNo">
+      <column name="SiteNo" sql-type="INT" not-null="true" />
+    </property>
+    <bag name='ModbusSystems' table='ModbusSystem' lazy='false'>
+      <key column='ModbusFamilyId'/>
+      <one-to-many class='ModbusSystem'/>
+    </bag>
+    <bag name='PointList' table='PointList' lazy='false'>
+      <key column='ModbusFamilyId'/>
+      <one-to-many class='PointList'/>
+    </bag>
+    <!--<bag name='DI_MAP' table='DI_MAP' lazy='false'>
+      <key column='ModbusFamilyId'/>
+      <many-to-many class='DiMAP'/>
+    </bag>-->
+  </class>
+</hibernate-mapping>

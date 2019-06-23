@@ -29,29 +29,87 @@ namespace PEIU.Hubbub.Services
         IModbusFactory modbusFactory;
         IConfiguration config;
         MqttConfig mqtt_config;
-        ModbusSystem modbus;
         IDatabase redis;
         MqttClientProxyCollection mqtt_clients;
-        int SiteId = 0;
         readonly static ConcurrentDictionary<int, DateTime> dtMap = new ConcurrentDictionary<int, DateTime>();
         private readonly object locker = new object();
         IMemoryCache cache;
         public ModbusBackgroundService(ILoggerFactory loggerFactory, IModbusFactory modbus_factory,
             MqttClientProxyCollection mqttClientProxies, IRedisConnectionFactory redisFactory,
-            IConfiguration configuration, ModbusSystem modbusSystem, IMemoryCache memoryCache)
+            IConfiguration configuration, IMemoryCache memoryCache)
         {
             logger = loggerFactory.CreateLogger<ModbusBackgroundService>();
             config = configuration;
             modbusFactory = modbus_factory;
             mqtt_clients = mqttClientProxies;
             mqtt_config = configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
-            SiteId = configuration.GetSection("SiteId").Get<int>();
-            modbus = modbusSystem;
             cache = memoryCache;
             redis = redisFactory.Connection().GetDatabase(1);
         }
 
-       
+       private async Task ReadAnalogeData(IEnumerable<PointList> readAimapDatas, ModbusSystem system, CancellationToken token)
+        {
+            var groups = readAimapDatas.OrderBy(x => x.Address).GroupBy(x => x.GroupName, y => y);
+            foreach(var group_row in groups)
+            {
+                if (token.IsCancellationRequested)
+                    break;
+                string redis_key = $"{system.DeviceName}.AI.{group_row.Key}";
+                string topic = $"hubbub/{modbusFactory.SiteNo}/{system.DeviceName}/{group_row.Key}/AI";
+                JObject jObj = new JObject();
+                List<HashEntry> hashEntries = new List<HashEntry>();
+                jObj.Add("deviceName", system.DeviceName);
+                jObj.Add("groupName", group_row.Key);
+                string timeStamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+                jObj.Add("timestamp", timeStamp);
+                hashEntries.Add(new HashEntry("deviceName", system.DeviceName));
+                hashEntries.Add(new HashEntry("groupName", group_row.Key));
+                hashEntries.Add(new HashEntry("timestamp", timeStamp));
+                foreach (PointList ai in readAimapDatas)
+                {
+                    if (token.IsCancellationRequested)
+                        break;
+                    jObj.Add(ai.Name, ai.Value.ToString());
+                    hashEntries.Add(new HashEntry(ai.Name, ai.Value.ToString()));
+                }
+
+                await redis.HashSetAsync(redis_key, hashEntries.ToArray());
+
+                foreach (var mqtt_proxy in mqtt_clients)
+                {
+                    try
+                    {
+                        if (token.IsCancellationRequested)
+                            break;
+                        var msg = CreateMqttMessage(topic, jObj.ToString(), mqtt_proxy.Options.QosLevel);
+                        var mqtt_client = mqtt_proxy.MqttClient;
+
+                        if (mqtt_client.IsConnected == false)
+                            RetryConnected(mqtt_proxy);
+
+                        if (mqtt_client.IsConnected)
+                        {
+                            await mqtt_client.PublishAsync(msg);
+                            logger.LogInformation($"{mqtt_client.Options.ChannelOptions} Topic:{topic} Device: {system.DeviceName} Group: {group_row.Key}");
+                            //Console.WriteLine($"[{DateTime.Now}][{mqtt_client.Options.ChannelOptions}] Topic:{topic} Read Register = {x.GroupName}, Interval: {x.PollIntervalSec} sec");
+                        }
+                        else
+                        {
+                            logger.LogError($"MQTT has not connected. {mqtt_client.Options.ChannelOptions}");
+
+                        }
+                        Thread.Sleep(1);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, ex.Message);
+                    }
+                }
+
+            }
+
+            
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -65,79 +123,10 @@ namespace PEIU.Hubbub.Services
                     break;
                 }
                 stoppingToken.ThrowIfCancellationRequested();
-                //var parallelResult = Parallel.ForEach<GroupPoint>(modbus.GroupPoints, (async x =>
-                foreach (var x in modbus.GroupPoints)
-                {
-                    if (x.Disable == 1)
-                        continue;
-                    if (dtMap.ContainsKey(x.GroupId) == false)
-                        dtMap[x.GroupId] = DateTime.MinValue;
-                    if (DateTime.Now > dtMap[x.GroupId])
-                    {
-                        dtMap[x.GroupId] = DateTime.Now.Add(TimeSpan.FromSeconds(x.PollIntervalSec));
-                        bool isConnected = modbusFactory.ReconnectWhenDisconnected();
-                        if (isConnected == false)
-                        {
-                            logger.LogWarning("모드버스 접속에 실패했습니다.");
-                            dtMap[x.GroupId] = DateTime.Now.Add(TimeSpan.FromSeconds(x.RetryIntervalSec));
-                            continue;
-                        }
-                        HashEntry[] hashEntries = null;
-                        JObject parentModel = modbusFactory.ReadModbusToJson(x, out hashEntries);
-                        if (parentModel == null)
-                        {
-                            dtMap[x.GroupId] = DateTime.Now.Add(TimeSpan.FromSeconds(x.RetryIntervalSec));
-                            continue;
-                        }
 
-                        string redis_key = $"{x.DeviceUniqueId}";
-                        await redis.HashSetAsync(redis_key, hashEntries);
-                        string topic = $"hubbub/{SiteId}/{x.DeviceUniqueId}/AI";
-                        foreach (var mqtt_proxy in mqtt_clients)
-                        {
-                            try
-                            {
-                                var msg = CreateMqttMessage(topic, parentModel.ToString(), mqtt_proxy.Options.QosLevel);
-                                var mqtt_client = mqtt_proxy.MqttClient;
+                await modbusFactory.ReadAnalogData(ReadAnalogeData, stoppingToken);
 
-                                if (mqtt_client.IsConnected == false)
-                                    RetryConnected(mqtt_proxy);
-
-                                if (mqtt_client.IsConnected)
-                                {
-                                    await mqtt_client.PublishAsync(msg);
-                                    Console.WriteLine($"[{DateTime.Now}][{mqtt_client.Options.ChannelOptions}] Topic:{topic} Read Register = {x.GroupName}, Interval: {x.PollIntervalSec} sec");
-                                }
-                                else
-                                {
-                                    logger.LogError($"MQTT has not connected. {mqtt_client.Options.ChannelOptions}");
-                                    
-                                }
-                                Thread.Sleep(1);
-                            }
-                            catch (Exception ex)
-                            {
-                                logger.LogError(ex, ex.Message);
-                            }
-                        }
-
-
-                    }
-
-                    Thread.Sleep(10);
-
-                    //}));
-                }
-                //Console.WriteLine("ForEach Working...");
-                //while (true)
-                //{
-                //    if (parallelResult.IsCompleted)
-                //        break;
-                //    Thread.Sleep(10);
-                //}
-
-                //Console.WriteLine("ForEach Completed");
-                Thread.Sleep(1);
+                await Task.Delay(10);
                 //}
                 //managedClient.sub
             }
@@ -234,6 +223,7 @@ namespace PEIU.Hubbub.Services
         {
             var ClientOptions = CreateMqttOption(proxy.Options);
             await proxy.MqttClient.ConnectAsync(ClientOptions);
+            bool isConnected = proxy.MqttClient.IsConnected;
         }
 
         private async Task ManagedClient_ApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)

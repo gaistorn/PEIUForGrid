@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
   <class name="DiMap" table="DI_MAP" lazy="false" >
-    <id name="DocumentAddress" column="DocumentAddress" />
+    <id name="ID" column="ID" />
+   
     <property name="Description">
       <column name="Description" sql-type="VARCHAR " not-null="false" />
     </property>
-    <property name="Index">
-      <column name="PointIndex" sql-type="INTEGER" not-null="false" />
+    <property name="Address">
+      <column name="Address" sql-type="SMALLINT" not-null="true" />
     </property>
+    <property name="Disable">
+      <column name="Disable" sql-type="SMALLINT" not-null="true" />
+    </property>
+    <property name="Name">
+      <column name="Name" sql-type="VARCHAR " not-null="true" />
+    </property>
+   
     <property name="Event">
       <column name="Event" sql-type="BOOLEAN" not-null="true" />
     </property>
+    <property name="GroupId">
+      <column name="GroupId" sql-type="INT" not-null="true" />
+    </property>
+    <property name="GroupName">
+      <column name="GroupName" sql-type="TEXT" not-null="false" />
+    </property>
     <property name="Level">
-      <column name="Level" sql-type="INT" not-null="true" />
+      <column name="Level" sql-type="INT" not-null="false" />
     </property>
-    <property name="Disable">
-      <column name="Disable" sql-type="BOOLEAN" not-null="false" />
+    <property name="IOType">
+      <column name="IOType" sql-type="INT" not-null="true" />
     </property>
-    <!--<property name="EventGroupId">
-      <column name="EventGroupId" sql-type="INTEGER" not-null="true" />
-    </property>-->
-    <bag name="Flags" lazy="false">
-      <key column="RefDiMap" not-null="true" />
+    <property name="Type">
+      <column name="Type" sql-type="INT" not-null="true" />
+    </property>
+    <many-to-one name="DataType" class="DataType" lazy="false">
+      <column name="Type" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>
+    <many-to-one name="ModbusFamily" class="ModbusFamily" lazy="false">
+      <column name="ModbusFamilyId" not-null="false" precision="10" scale="0" sql-type="int" />
+    </many-to-one>
+    <!--<bag name="Flags" lazy="false">
+      <key column="DI_MAPId" not-null="true" />
       <one-to-many class="DiFlag"/>
-    </bag>
+    </bag>-->
   </class>
 </hibernate-mapping>
