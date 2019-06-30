@@ -26,7 +26,7 @@ namespace PEIU.DataServices
         public string BindAddress { get; private set; }
         public ushort Port { get; private set; }
         public string Topic { get; private set; }
-        public ushort QoS { get; set; }
+        public ushort QoS { get; set; } 
         public bool AutoConnectWhenDisconnect { get; set; } = true;
 
         private IMqttClient mqtt_client;

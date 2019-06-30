@@ -69,7 +69,7 @@ namespace PES.Service.DataService
             };
 
             client = new MqttFactory().CreateMqttClient();
-            client.ApplicationMessageReceived += ManagedClient_ApplicationMessageReceived; ;
+            client.ApplicationMessageReceived += ManagedClient_ApplicationMessageReceived;
             client.Connected += ManagedClient_Connected;
             client.Disconnected += Client_Disconnected;
 
