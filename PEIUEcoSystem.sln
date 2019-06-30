@@ -37,9 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModbusToMqttService", "Hubb
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{F6F8479B-9CB0-4B43-B6D9-9BA1D03133AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventReceiveMqtt", "Hubbub\EventReceiveMqtt\EventReceiveMqtt.csproj", "{4F5ED1F1-714D-497F-AF67-40F8F0EB9A7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventReceiveMqtt", "Hubbub\EventReceiveMqtt\EventReceiveMqtt.csproj", "{4F5ED1F1-714D-497F-AF67-40F8F0EB9A7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroProcessor", "MicroProcessor\MicroProcessor.csproj", "{435D4987-DED4-49A9-A285-8C5965FA443C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroProcessor", "MicroProcessor\MicroProcessor.csproj", "{435D4987-DED4-49A9-A285-8C5965FA443C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CentralizeDataCollector", "DataService\CentralizeDataCollector\CentralizeDataCollector.csproj", "{F6EB238D-A687-404E-9722-00AD8BFDF5EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataCollectorLib", "DataService\DataCollectorLib\DataCollectorLib.csproj", "{8B767858-DAA1-481D-9957-6C07BA436C0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +157,22 @@ Global
 		{435D4987-DED4-49A9-A285-8C5965FA443C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{435D4987-DED4-49A9-A285-8C5965FA443C}.Release|x64.ActiveCfg = Release|Any CPU
 		{435D4987-DED4-49A9-A285-8C5965FA443C}.Release|x64.Build.0 = Release|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA}.Release|x64.Build.0 = Release|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Debug|x64.Build.0 = Debug|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B767858-DAA1-481D-9957-6C07BA436C0A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +190,8 @@ Global
 		{18644A59-F379-4BD1-BC87-B5EB4827DE98} = {57CD6975-C0C5-42D3-AF5A-18524D8F10DF}
 		{4F5ED1F1-714D-497F-AF67-40F8F0EB9A7F} = {57CD6975-C0C5-42D3-AF5A-18524D8F10DF}
 		{435D4987-DED4-49A9-A285-8C5965FA443C} = {57CD6975-C0C5-42D3-AF5A-18524D8F10DF}
+		{F6EB238D-A687-404E-9722-00AD8BFDF5EA} = {B3D6F20B-8C55-4BF6-99B7-6CFDFE2D5098}
+		{8B767858-DAA1-481D-9957-6C07BA436C0A} = {B3D6F20B-8C55-4BF6-99B7-6CFDFE2D5098}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {56B88DD4-7D56-40EF-8599-7FC5D2EC9128}

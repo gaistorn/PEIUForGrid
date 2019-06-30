@@ -35,17 +35,18 @@ namespace PEIU.Hubbub.Controllers
             dataAccess = mysql_dataAccess;
         }
 
-        [HttpGet("EventAck")]
-        public async Task<IActionResult> EventAck(int[] EventIds)
+        [HttpPost("EventAck")]
+        public async Task<IActionResult> EventAck([FromBody] JObject EventIds)
         {
             using (var session = dataAccess.SessionFactory.OpenSession())
             {
+                var ids = EventIds["EventIds"].Select(x => x.Value<string>());
                 using (var transaction = session.BeginTransaction())
                 {
-                    foreach(int key in EventIds)
+                    foreach(string key in ids)
                     {
                         ActiveEvent evt = await session.GetAsync<ActiveEvent>(key);
-                        if (evt.IsAck)
+                        if (evt == null || evt.IsAck)
                             continue;
                         evt.IsAck = true;
                         evt.AckTimestamp = DateTime.Now;
@@ -61,14 +62,14 @@ namespace PEIU.Hubbub.Controllers
         }
 
         [HttpGet("manualcontrol")]
-        public async Task<IActionResult> ManualControl(byte deviceId, ushort DocumentAddress, ushort Value)
+        public async Task<IActionResult> ManualControl(byte deviceId, ushort DocumentAddress, short Value)
         {
+            ushort uvalue = (ushort)Value;
             if (modbus.ReconnectWhenDisconnected() == false)
             {
                 return NoContent();
             }
-
-            await modbus_master.WriteMultipleRegistersAsync(deviceId, DocumentAddress, new ushort[] { Value });
+            await modbus.WriteMultipleRegistersAsync(DocumentAddress, new ushort[] { uvalue });
             return Ok();
         }
 
@@ -80,7 +81,7 @@ namespace PEIU.Hubbub.Controllers
                 return NoContent();
             }
 
-            ushort[] datas = await modbus_master.ReadHoldingRegistersAsync(parameter.SlaveId, parameter.StartAddress, parameter.Length);
+            ushort[] datas = await modbus.ReadHoldingRegistersAsync(parameter.StartAddress, parameter.Length);
             ushort newAddr = parameter.StartAddress;
 
             JObject data = new JObject();
@@ -99,30 +100,26 @@ namespace PEIU.Hubbub.Controllers
         //}
 
         [HttpPost("Query")]
-        public async Task<IActionResult> Query([FromBody] QueryParameter[] requests)
+        public async Task<IActionResult> Query([FromBody] string[] Fields)
         {
-            JArray jArray = new JArray();
-            foreach (QueryParameter p in requests)
+            string deviceName = modbus.GetModbusSystem().DeviceName;
+            JObject row = new JObject();
+            row.Add("deviceId", deviceName);
+            string timeStamp = await redis_ai.HashGetAsync(deviceName, "timestamp");
+            row.Add("timestamp", timeStamp);
+            if (await redis_ai.KeyExistsAsync(deviceName) == false)
             {
-                JObject row = new JObject();
-                jArray.Add(row);
-                row.Add("deviceId", p.DeviceId);
-                if (await redis_ai.KeyExistsAsync(p.DeviceId) == false)
+                return NoContent();
+            }
+            foreach (string field in Fields)
+            {
+                if(await redis_ai.HashExistsAsync(deviceName, field))
                 {
-                    continue;
-                }
-                string timeStamp = await redis_ai.HashGetAsync(p.DeviceId, "timestamp");
-                row.Add("timestamp", timeStamp);
-                foreach (string field in p.Fields)
-                {
-                    if (await redis_ai.HashExistsAsync(p.DeviceId, field))
-                    {
-                        RedisValue value = await redis_ai.HashGetAsync(p.DeviceId, field);
-                        row.Add(field, (float)value);
-                    }
+                    RedisValue value = await redis_ai.HashGetAsync(deviceName, field);
+                    row.Add(field, (float)value);
                 }
             }
-            return Ok(jArray);
+            return Ok(row);
         }
     }
 }

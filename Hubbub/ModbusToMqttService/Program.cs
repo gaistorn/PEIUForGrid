@@ -27,7 +27,8 @@ namespace PEIU.Hubbub
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .UseUrls("http://*:2121")
+            .UseUrls(args.Length == 0 ? new string[] { "http://*:2121" } : args)
+            //.UseUrls("http://*:2121")
                 .UseStartup<Startup>();
     }
 }

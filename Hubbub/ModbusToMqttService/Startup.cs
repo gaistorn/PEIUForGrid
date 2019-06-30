@@ -17,6 +17,9 @@ using PEIU.Hubbub.Services;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Options;
+using MQTTnet.Client.Connecting;
+using MQTTnet.Client.Disconnecting;
+using MQTTnet.Client.Receiving;
 using NHibernate;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -57,7 +60,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             LoadMqttConfig(services);
             LoadConfigModbusMapper(services);
-            services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
+            
             IDataAccess mysql_access = new MysqlDataAccess(mysql_conn);
             services.AddSingleton(mysql_access);
             //using (DataAccess da = new DataAccess(dam))
@@ -100,37 +103,15 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
         private void LoadConfigModbusMapper(IServiceCollection services)
         {
             string sqlite_conn_str = Configuration.GetConnectionString("sqlite");
-            var target_modbus = Configuration.GetSection("TargetModbus").Get<string>();
             DataAccessManager dam = new DataAccessManager(sqlite_conn_str);
-            ModbusSystem modbusList = null;
+            ModbusSystem modbusList = Configuration.GetSection("Modbus").Get<ModbusSystem>();
             using (DataAccess da = new DataAccess(dam))
             {
 
-                modbusList = da.Select<ModbusSystem>().FirstOrDefault(x => x.DeviceName == target_modbus);
-                if(modbusList == null)
-                {
-                    string err_msg = $"대상 모드버스 '{target_modbus}'를 찾을 수 없습니다. 모드버스 관련 서비스는 실행되지 않습니다.";
-                    logger.LogError(new InvalidDataException(err_msg), err_msg);
-                    return;
-                }
-                else if(modbusList.Disable == true)
-                {
-                    string err_msg = $"대상 모드버스 '{target_modbus}'는 현재 비활성화 상태(Disable=1)입니다. 모드버스 관련 서비스는 실행되지 않습니다.";
-                    logger.LogError(new InvalidOperationException(err_msg), err_msg);
-                    return;
-                }
-
-                //foreach (var i in modbusList.GroupPoints)
-                //{
-                //    foreach (var j in i.AiMaps)
-                //    {
-                //        string tn = j.DataType.TypeName;
-                //    }
-                //}
-              
-                //var eventList = da.Select<>
-
+                modbusList.GroupPoints = da.Select<GroupPoint>();
+                modbusList.GroupDigitalPoints = da.Select<EventGroupPoint>();
                 services.AddSingleton(modbusList);
+                services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
                 services.AddHostedService<ModbusBackgroundService>();
                 services.AddHostedService<ModbusDigitalProcessingService>();
             }
@@ -164,7 +145,21 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             };
 
             var mqttClient = new MqttFactory().CreateMqttClient();
+            
+            mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(async e =>
+            {
+                //Console.WriteLine("### DISCONNECTED FROM SERVER ###");
+                await Task.Delay(TimeSpan.FromSeconds(1));
 
+                try
+                {
+                    await mqttClient.ConnectAsync(ClientOptions);
+                }
+                catch
+                {
+                    Console.WriteLine("### RECONNECTING FAILED ###");
+                }
+            });
             bool IsSuccess = false;
             for (int i = 0; i < 3; i++)
             {
@@ -198,7 +193,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
                 app.UseDeveloperExceptionPage();
             }
             //var withOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>();
-
+            var withOrigins = Configuration.GetSection("AllowedOrigins").Get<string[]>();
             app.UseHttpsRedirection();
             app.UseCors(builder =>
             {

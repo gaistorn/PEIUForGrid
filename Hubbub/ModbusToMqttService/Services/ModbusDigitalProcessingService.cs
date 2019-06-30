@@ -68,7 +68,7 @@ namespace PEIU.Hubbub.Services
                             continue;
                         //cache.Get()
 
-                        string redis_key = $"{x.DeviceUniqueId}.{map.DocumentAddress}";
+                        string redis_key = $"{modbus.DeviceName}.{map.DocumentAddress}";
                         ushort redis_value = 0;
                         if(await redis.KeyExistsAsync(redis_key))
                         {
@@ -106,22 +106,19 @@ namespace PEIU.Hubbub.Services
                                     if (map.Disable == true || map.Level == 0)
                                         continue;
 
-                                    string mysql_key_str = $"{x.DeviceUniqueId}{map.DocumentAddress}{evt.No}";
-                                    int mysql_key_id = int.Parse(mysql_key_str);
+                                    string mysql_key_str = $"{modbus.DeviceName}{map.DocumentAddress}{evt.No}";
 
 
-                                    ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_id);
+                                    ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_str);
                                     if(existEvent == null && IsActive)
                                     {
                                         existEvent = new ActiveEvent();
-                                        existEvent.DeviceUniqueId = x.DeviceUniqueId;
                                         existEvent.Description = evt.BitName;
-                                        existEvent.SlaveId = x.SlaveId;
                                         existEvent.DeviceName = modbus.DeviceName;
                                         existEvent.EventLevel = map.Level;
                                         existEvent.EventName = evt.BitName;
                                         existEvent.OccurTimestamp = DateTime.Now;
-                                        existEvent.EventId = mysql_key_id;
+                                        existEvent.EventId = mysql_key_str;
                                         await session.SaveAsync(existEvent, stoppingToken);
                                     }
                                     else if(existEvent != null && IsActive == false) // 복구됨
@@ -151,9 +148,7 @@ namespace PEIU.Hubbub.Services
                 return false;
             LogEvent NewEvent = new LogEvent();
             NewEvent.EventId = evt.EventId;
-            NewEvent.DeviceUniqueId = evt.DeviceUniqueId;
             NewEvent.DeviceName = evt.DeviceName;
-            NewEvent.SlaveId = evt.SlaveId;
             NewEvent.EventName = evt.EventName;
             NewEvent.Description = evt.Description;
             NewEvent.OccurTimestamp = evt.OccurTimestamp;

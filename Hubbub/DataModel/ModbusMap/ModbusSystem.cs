@@ -6,14 +6,12 @@ using System.Collections.Generic;
 namespace DataModel {
     
     public class ModbusSystem {
-        public virtual int Id { get; set; }
-        public virtual string DeviceName { get; set; }
-        public virtual string IpAddress { get; set; }
-        public virtual bool Disable { get; set; }
-        public virtual int PortNum { get; set; }
+        public string DeviceName { get; set; }
+        public string IpAddress { get; set; }
+        public int PortNum { get; set; }
+        public byte SlaveId { get; set; }
 
-        public virtual IList<GroupPoint> GroupPoints{ get; set; }
-
-        public virtual IList<EventGroupPoint> GroupDigitalPoints { get; set; }
+        public  IEnumerable<GroupPoint> GroupPoints{ get; set; }
+        public  IEnumerable<EventGroupPoint> GroupDigitalPoints { get; set; }
 }
 }

@@ -83,37 +83,39 @@ namespace PEIU.Hubbub.Services
                             continue;
                         }
                         HashEntry[] hashEntries = null;
-                        JObject parentModel = modbusFactory.ReadModbusToJson(x, out hashEntries);
+                        JObject parentModel = modbusFactory.ReadModbusToJson(SiteId,  x, out hashEntries);
                         if (parentModel == null)
                         {
                             dtMap[x.GroupId] = DateTime.Now.Add(TimeSpan.FromSeconds(x.RetryIntervalSec));
                             continue;
                         }
 
-                        string redis_key = $"{x.DeviceUniqueId}";
+                        string redis_key = $"{modbus.DeviceName}";
                         await redis.HashSetAsync(redis_key, hashEntries);
-                        string topic = $"hubbub/{SiteId}/{x.DeviceUniqueId}/AI";
+                        string topic = $"hubbub/{SiteId}/{modbus.DeviceName}/AI";
                         foreach (var mqtt_proxy in mqtt_clients)
                         {
                             try
                             {
+
                                 var msg = CreateMqttMessage(topic, parentModel.ToString(), mqtt_proxy.Options.QosLevel);
                                 var mqtt_client = mqtt_proxy.MqttClient;
 
                                 if (mqtt_client.IsConnected == false)
-                                    RetryConnected(mqtt_proxy);
-
-                                if (mqtt_client.IsConnected)
-                                {
-                                    await mqtt_client.PublishAsync(msg);
-                                    Console.WriteLine($"[{DateTime.Now}][{mqtt_client.Options.ChannelOptions}] Topic:{topic} Read Register = {x.GroupName}, Interval: {x.PollIntervalSec} sec");
-                                }
-                                else
-                                {
-                                    logger.LogError($"MQTT has not connected. {mqtt_client.Options.ChannelOptions}");
+                                    continue;
+                                await mqtt_client.PublishAsync(msg);
+                                
+                                //if (mqtt_client.IsConnected)
+                                //{
+                                   
+                                //}
+                                //else
+                                //{
+                                //    logger.LogError($"MQTT has not connected. {mqtt_client.Options.ChannelOptions}");
                                     
-                                }
-                                Thread.Sleep(1);
+                                //}
+                                Thread.Sleep(10);
+                                break;
                             }
                             catch (Exception ex)
                             {
@@ -157,10 +159,10 @@ namespace PEIU.Hubbub.Services
 
         private MqttApplicationMessage CreateMqttMessage(string topic, string payload, int qos)
         {
-
+            byte[] payload_buffer = System.Text.Encoding.UTF8.GetBytes(payload);
             var applicationMessage = new MqttApplicationMessageBuilder()
                        .WithTopic(topic)
-                       .WithPayload(payload)
+                       .WithPayload(payload_buffer)
                        .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
                        .Build();
             return applicationMessage;

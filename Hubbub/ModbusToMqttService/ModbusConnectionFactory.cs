@@ -17,10 +17,15 @@ namespace PEIU.Hubbub
         IModbusMaster GetModbusMaster();
         bool TryConnectModbus(ModbusSystem config);
         bool ReconnectWhenDisconnected();
+        ModbusSystem GetModbusSystem();
         // Task<MqttRegister[]> ReadModbus(SlaveInfoYaml slaves);
-        JObject ReadModbusToJson(GroupPoint slaves, out HashEntry[] hashEntry);
+        JObject ReadModbusToJson(int siteId, GroupPoint slaves, out HashEntry[] hashEntry);
         Task<List<DiMap>> ReadModbusEvent(EventGroupPoint map);
         //Task<IEnumerable<MqttInlineRegisterJsonModel>> ReadModbusToArray(SlaveInfoYaml slaves);
+
+        Task<bool> WriteMultipleRegistersAsync(ushort startAddress, params ushort[] values);
+        Task<ushort[]> ReadHoldingRegistersAsync(ushort startAddress, ushort count);
+        Task<bool> WriteMultipleCoilsAsync(ushort startAddress, params bool[] values);
     }
 
     public class ModbusConnectionFactory : IModbusFactory
@@ -35,6 +40,11 @@ namespace PEIU.Hubbub
             //config = configYaml;
             logger = loggerFactory.CreateLogger<ModbusConnectionFactory>();
             _config = modbusConfig;
+        }
+
+        public ModbusSystem GetModbusSystem()
+        {
+            return _config;
         }
 
         public void Dispose()
@@ -111,7 +121,7 @@ namespace PEIU.Hubbub
         {
             List<DiMap> result = new List<DiMap>();
             if (master == null) return result;
-            ushort[] datas = await master.ReadHoldingRegistersAsync(map.SlaveId, map.StartAddress, (ushort)map.DigitalPoints.Count);
+            ushort[] datas = await master.ReadHoldingRegistersAsync(_config.SlaveId, map.StartAddress, (ushort)map.DigitalPoints.Count);
             int idx = 0;
             foreach (DiMap m in map.DigitalPoints)
             {
@@ -121,7 +131,32 @@ namespace PEIU.Hubbub
             return result;
         }
 
-        public JObject ReadModbusToJson(GroupPoint slaves, out HashEntry[] hashEntries)
+        public async Task<bool> WriteMultipleRegistersAsync(ushort startAddress, params ushort[] values)
+        {
+            if (ReconnectWhenDisconnected() == false)
+                return false;
+            await master.WriteMultipleRegistersAsync(_config.SlaveId, startAddress, values);
+            return true;
+
+        }
+
+        public async Task<ushort[]> ReadHoldingRegistersAsync(ushort startAddress, ushort count)
+        {
+            if (ReconnectWhenDisconnected() == false)
+                return null;
+            ushort[] values = await master.ReadHoldingRegistersAsync(_config.SlaveId, startAddress, count);
+            return values;
+        }
+
+        public async Task<bool> WriteMultipleCoilsAsync(ushort startAddress, params bool[] values)
+        {
+            if (ReconnectWhenDisconnected() == false)
+                return false;
+            await master.WriteMultipleCoilsAsync(_config.SlaveId, startAddress, values);
+            return true;
+        }
+
+        public JObject ReadModbusToJson(int siteId, GroupPoint slaves, out HashEntry[] hashEntries)
         {
             JObject datarow = new JObject();
             List<HashEntry> entries = new List<HashEntry>();
@@ -131,10 +166,8 @@ namespace PEIU.Hubbub
                
                 if (master == null)
                     return datarow;
-                ushort minAddr = slaves.AiMaps.Min(x => x.Address);
-                ushort maxAddr = slaves.AiMaps.Max(x => x.Address);
-                //minAddr = (ushort)(minAddr - 1);
-                ushort pointCnt = (ushort)((maxAddr - minAddr) + 1);
+                ushort startAddr = slaves.StartAddress;
+                ushort pointCnt = (ushort)slaves.AiMaps.Sum(x => x.DataType.Size);
                 ushort[] datas = null;
                 lock (lockerObj)
                 {
@@ -143,17 +176,18 @@ namespace PEIU.Hubbub
                     switch ((DataModel.modbus_io)slaves.IoType)
                     {
                         case DataModel.modbus_io.ANALOG_INPUT:
-                            datas = master.ReadInputRegisters(slaves.SlaveId, minAddr, pointCnt);
+                            datas = master.ReadInputRegisters(_config.SlaveId, startAddr, pointCnt);
                             break;
                         case DataModel.modbus_io.HOLDING_REGISTER:
-                            datas = master.ReadHoldingRegisters(slaves.SlaveId, minAddr, pointCnt);
+                            datas = master.ReadHoldingRegisters(_config.SlaveId, startAddr, pointCnt);
                             break;
                     }
                 }
                 DateTime timeStamp = DateTime.Now;
                 datarow.Add("groupid", slaves.GroupId);
                 datarow.Add("groupname", slaves.GroupName);
-                datarow.Add("deviceId", slaves.DeviceUniqueId);
+                datarow.Add("deviceId", _config.DeviceName);
+                datarow.Add("siteId", siteId);
                 entries.Add(new HashEntry("timestamp", timeStamp.ToString()));
                 datarow.Add("timestamp", DateTime.Now.ToString("yyyyMMddHHmmss"));
                 int bitIdx = 0;
