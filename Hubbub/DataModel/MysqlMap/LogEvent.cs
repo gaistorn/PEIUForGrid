@@ -16,5 +16,6 @@ namespace DataModel {
         public virtual DateTime AckTimestamp { get; set; }
         public virtual DateTime ResolvedTimestamp { get; set; }
         public virtual DateTime RecoverTimestamp { get; set; }
+        public virtual string Source { get; set; }
     }
 }

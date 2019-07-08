@@ -16,6 +16,7 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -32,13 +33,16 @@ namespace PEIU.Hubbub.Services
         ModbusSystem modbus;
         IDatabase redis;
         MqttClientProxyCollection mqtt_clients;
+#if CONTROL_TEST
+        public static float Soc { get; set; } = -1;
+#endif
+
         int SiteId = 0;
         readonly static ConcurrentDictionary<int, DateTime> dtMap = new ConcurrentDictionary<int, DateTime>();
         private readonly object locker = new object();
-        IMemoryCache cache;
         public ModbusBackgroundService(ILoggerFactory loggerFactory, IModbusFactory modbus_factory,
             MqttClientProxyCollection mqttClientProxies, IRedisConnectionFactory redisFactory,
-            IConfiguration configuration, ModbusSystem modbusSystem, IMemoryCache memoryCache)
+            IConfiguration configuration, ModbusSystem modbusSystem)
         {
             logger = loggerFactory.CreateLogger<ModbusBackgroundService>();
             config = configuration;
@@ -47,7 +51,6 @@ namespace PEIU.Hubbub.Services
             mqtt_config = configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
             SiteId = configuration.GetSection("SiteId").Get<int>();
             modbus = modbusSystem;
-            cache = memoryCache;
             redis = redisFactory.Connection().GetDatabase(1);
         }
 
@@ -57,7 +60,6 @@ namespace PEIU.Hubbub.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                
                 //Console.WriteLine($"Entry TokenCancel: {stoppingToken.IsCancellationRequested}");
                 if (stoppingToken.IsCancellationRequested)
                 {
@@ -89,6 +91,9 @@ namespace PEIU.Hubbub.Services
                             dtMap[x.GroupId] = DateTime.Now.Add(TimeSpan.FromSeconds(x.RetryIntervalSec));
                             continue;
                         }
+
+                        if (parentModel.ContainsKey("bms_soc"))
+                            ModbusBackgroundService.Soc = parentModel["bms_soc"].Value<float>();
 
                         string redis_key = $"{modbus.DeviceName}";
                         await redis.HashSetAsync(redis_key, hashEntries);

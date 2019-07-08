@@ -17,6 +17,9 @@
     <property name="Disable">
       <column name="Disable" sql-type="BOOLEAN" not-null="false" />
     </property>
+    <property name="Source">
+      <column name="Source" sql-type="VARCHAR " not-null="false" />
+    </property>
     <!--<property name="EventGroupId">
       <column name="EventGroupId" sql-type="INTEGER" not-null="true" />
     </property>-->

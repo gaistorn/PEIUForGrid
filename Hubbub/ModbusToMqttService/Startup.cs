@@ -55,14 +55,21 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
             services.AddSingleton(redisConfiguration);
             var mysql_conn = Configuration.GetConnectionString("mysql");
+
             var mqtt_informations = Configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
             //services.AddSingleton(mqtt_informations);
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             LoadMqttConfig(services);
             LoadConfigModbusMapper(services);
-            
+
+           
+#if CONTROL_TEST
+            services.AddHostedService<ControlLogService>();
+#endif
             IDataAccess mysql_access = new MysqlDataAccess(mysql_conn);
             services.AddSingleton(mysql_access);
+
+            //MsSqlAccessManager mssql_access = new MsSqlAccessManager(mssql_conn);
             //using (DataAccess da = new DataAccess(dam))
             //{
             //    var list = da.Select<ModbusSystem>();
@@ -103,7 +110,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
         private void LoadConfigModbusMapper(IServiceCollection services)
         {
             string sqlite_conn_str = Configuration.GetConnectionString("sqlite");
-            DataAccessManager dam = new DataAccessManager(sqlite_conn_str);
+            MySqlAccessManager dam = new MySqlAccessManager(sqlite_conn_str);
             ModbusSystem modbusList = Configuration.GetSection("Modbus").Get<ModbusSystem>();
             using (DataAccess da = new DataAccess(dam))
             {
@@ -198,7 +205,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             app.UseCors(builder =>
             {
                 builder
-                    .AllowAnyOrigin()
+                    .WithOrigins(withOrigins)
                     .AllowAnyHeader()
                     .WithMethods("GET", "POST", "PUT", "DELETE")
                     .AllowCredentials();

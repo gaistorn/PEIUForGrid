@@ -7,10 +7,32 @@ using System.Text;
 
 namespace DataModel
 {
-    public class DataAccessManager
+    public interface IDataAccessManager
+    {
+        ISessionFactory CreateSessionFactory(string connectionString);
+    }
+
+    public class MsSqlAccessManager : IDataAccessManager
+    {
+        public ISessionFactory CreateSessionFactory(string conn)
+        {
+            var SessionFactory = new Configuration()
+                        .AddProperties(new Dictionary<string, string> {
+                    {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.SqlClientDriver).FullName},
+                   // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
+                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MsSql2012Dialect).FullName},
+                    {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
+                    {NHibernate.Cfg.Environment.ConnectionString, conn},
+                    })
+                    .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
+            return SessionFactory;
+        }
+    }
+
+    public class MySqlAccessManager : IDataAccessManager
     {
         internal ISessionFactory SessionFactory { get; private set; }
-        public DataAccessManager(string connectionString)
+        public MySqlAccessManager(string connectionString)
         {
             SessionFactory = new Configuration()
                         .AddProperties(new Dictionary<string, string> {
@@ -25,9 +47,24 @@ namespace DataModel
 
         }
 
+        public ISessionFactory CreateSessionFactory(string connectionString)
+        {
+            SessionFactory = new Configuration()
+                        .AddProperties(new Dictionary<string, string> {
+                    {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.SQLite20Driver).FullName},
+                   // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
+                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.SQLiteDialect).FullName},
+                    {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
+                    {NHibernate.Cfg.Environment.ConnectionString, connectionString},
+                    })
+                    .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
+            return SessionFactory;
+        }
 
 
-       
+
+
+
     }
 
     public class DataAccess : IDisposable
@@ -39,7 +76,7 @@ namespace DataModel
                 _session.Dispose();
         }
 
-        public DataAccess(DataAccessManager manager)
+        public DataAccess(MySqlAccessManager manager)
         {
             _session = manager.SessionFactory.OpenSession();
         }

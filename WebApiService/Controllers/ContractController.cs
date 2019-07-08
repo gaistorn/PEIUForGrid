@@ -80,7 +80,7 @@ namespace PES.Service.WebApiService.Controllers
 
                 }
             }
-            accountContext.AssetLocations
+            //accountContext.AssetLocations;
             
             return Ok(result);
         }

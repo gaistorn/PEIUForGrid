@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="INVERTER_DATA_RT" table="INVERTER_DATA_RT" lazy="true" >
+    <id name="ID_CODE" column="ID_CODE">
+      <generator class="identity" />
+    </id>
+    <property name="INVERTER_ID">
+      <column name="INVERTER_ID" sql-type="char" not-null="true" />
+    </property>
+    <property name="ID_POWER">
+      <column name="ID_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="ID_VOLTAGE">
+      <column name="ID_VOLTAGE" sql-type="float" not-null="false" />
+    </property>
+    <property name="ID_CURRENT">
+      <column name="ID_CURRENT" sql-type="float" not-null="false" />
+    </property>
+    <property name="ID_DATE">
+      <column name="ID_DATE" sql-type="datetime" not-null="true" />
+    </property>
+    <property name="CM_KEY_COUNTRY">
+      <column name="CM_KEY_COUNTRY" sql-type="char" not-null="true" />
+    </property>
+    <property name="CM_KEY_ZONE">
+      <column name="CM_KEY_ZONE" sql-type="char" not-null="true" />
+    </property>
+    <property name="CM_KEY_EXCHANGE">
+      <column name="CM_KEY_EXCHANGE" sql-type="char" not-null="true" />
+    </property>
+    <property name="CM_KEY_NUMBER">
+      <column name="CM_KEY_NUMBER" sql-type="char" not-null="true" />
+    </property>
+    <property name="A_VOLTAGE">
+      <column name="A_VOLTAGE" sql-type="float" not-null="false" />
+    </property>
+    <property name="B_VOLTAGE">
+      <column name="B_VOLTAGE" sql-type="float" not-null="false" />
+    </property>
+    <property name="C_VOLTAGE">
+      <column name="C_VOLTAGE" sql-type="float" not-null="false" />
+    </property>
+    <property name="A_CURRENT">
+      <column name="A_CURRENT" sql-type="float" not-null="false" />
+    </property>
+    <property name="B_CURRENT">
+      <column name="B_CURRENT" sql-type="float" not-null="false" />
+    </property>
+    <property name="C_CURRENT">
+      <column name="C_CURRENT" sql-type="float" not-null="false" />
+    </property>
+    <property name="G_POWER">
+      <column name="G_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="TOTAL_POWER">
+      <column name="TOTAL_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="FREQUENCY">
+      <column name="FREQUENCY" sql-type="float" not-null="false" />
+    </property>
+    <property name="PV_ACCU_POWER">
+      <column name="PV_ACCU_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="POWER_FACTOR">
+      <column name="POWER_FACTOR" sql-type="float" not-null="false" />
+    </property>
+    <property name="TODAY_POWER">
+      <column name="TODAY_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="PREVIOUS_POWER">
+      <column name="PREVIOUS_POWER" sql-type="float" not-null="false" />
+    </property>
+    <property name="SENSORBOX_ID">
+      <column name="SENSORBOX_ID" sql-type="char" not-null="false" />
+    </property>
+    <property name="H_SOLAR">
+      <column name="H_SOLAR" sql-type="float" not-null="false" />
+    </property>
+    <property name="I_SOLAR">
+      <column name="I_SOLAR" sql-type="float" not-null="false" />
+    </property>
+    <property name="A_TEMPERATURE">
+      <column name="A_TEMPERATURE" sql-type="float" not-null="false" />
+    </property>
+    <property name="S_TEMPERATURE">
+      <column name="S_TEMPERATURE" sql-type="float" not-null="false" />
+    </property>
+    <property name="STATE_LPL">
+      <column name="STATE_LPL" sql-type="char" not-null="false" />
+    </property>
+    <property name="STATE_RUN">
+      <column name="STATE_RUN" sql-type="char" not-null="false" />
+    </property>
+    <property name="STATE_PROTECTION">
+      <column name="STATE_PROTECTION" sql-type="char" not-null="false" />
+    </property>
+    <property name="STATE_A">
+      <column name="STATE_A" sql-type="char" not-null="false" />
+    </property>
+    <property name="STATE_B">
+      <column name="STATE_B" sql-type="char" not-null="false" />
+    </property>
+    <property name="STATE_C">
+      <column name="STATE_C" sql-type="char" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>
