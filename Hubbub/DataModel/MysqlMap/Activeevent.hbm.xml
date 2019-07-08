@@ -28,7 +28,10 @@
       <column name="HasRecovered" sql-type="bit(1)" not-null="true" />
     </property>
     <property name="RecoverTimestamp">
-      <column name="RecoverTimestamp" sql-type="datetime" not-null="false" />
+      <column name="RecoverTimestamp" sql-type="datetime" not-null="false" />      
+    </property>
+    <property name="Source">
+      <column name="Source" sql-type="VARCHAR " not-null="false" />
     </property>
   </class>
 </hibernate-mapping>

@@ -18,6 +18,7 @@
     <None Remove="ModbusMap\EventGroupPoint.hbm.xml" />
     <None Remove="ModbusMap\GroupPoint.hbm.xml" />
     <None Remove="ModbusMap\IoTypeFlag.hbm.xml" />
+    <None Remove="MssqlMap\InverterDataRt.hbm.xml" />
     <None Remove="MysqlMap\Activeevent.hbm.xml" />
     <None Remove="MysqlMap\LogEvent.hbm.xml" />
   </ItemGroup>
@@ -30,11 +31,13 @@
     <EmbeddedResource Include="ModbusMap\EventGroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
+    <EmbeddedResource Include="MssqlMap\InverterDataRt.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\LogEvent.hbm.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.11" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NHibernate" Version="5.2.5" />
   </ItemGroup>

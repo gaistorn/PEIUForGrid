@@ -112,11 +112,13 @@ namespace PEIU.Hubbub.Services
                                     ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_str);
                                     if(existEvent == null && IsActive)
                                     {
+                                        
                                         existEvent = new ActiveEvent();
                                         existEvent.Description = evt.BitName;
                                         existEvent.DeviceName = modbus.DeviceName;
                                         existEvent.EventLevel = map.Level;
                                         existEvent.EventName = evt.BitName;
+                                        existEvent.Source = map.Source;
                                         existEvent.OccurTimestamp = DateTime.Now;
                                         existEvent.EventId = mysql_key_str;
                                         await session.SaveAsync(existEvent, stoppingToken);
@@ -136,7 +138,8 @@ namespace PEIU.Hubbub.Services
                         }
                     }
                 }
-                Thread.Sleep(UpdatePeriod);
+                await Task.Delay(UpdatePeriod.Milliseconds);
+                //Thread.Sleep(UpdatePeriod);
             }
         }
 

@@ -12,6 +12,7 @@ namespace DataModel {
         public virtual bool Event { get; set; }
         public virtual int Level { get; set; }
         public virtual bool? Disable { get; set; }
+        public virtual string Source { get; set; }
 
         public virtual ushort Value { get; set; } = 0;
         //public virtual int EventGroupId { get; set; }

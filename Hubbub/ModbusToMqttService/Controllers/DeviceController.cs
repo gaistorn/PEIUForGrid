@@ -6,6 +6,7 @@ using DataModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using NHibernate.Criterion;
 using NModbus;
 using StackExchange.Redis;
 
@@ -23,8 +24,9 @@ namespace PEIU.Hubbub.Controllers
         IModbusMaster modbus_master = null;
         ILogger<DeviceController> logger;
         IDataAccess dataAccess;
+        
         public DeviceController(IRedisConnectionFactory redisConnectionFactory,
-            IDataAccess mysql_dataAccess,
+            IDataAccess mysql_dataAccess, 
             IModbusFactory modbusFactory, ILoggerFactory loggerFactory)
         {
             redis_ai = redisConnectionFactory.Connection().GetDatabase(1);
@@ -33,6 +35,33 @@ namespace PEIU.Hubbub.Controllers
             modbus_master = modbus.GetModbusMaster();
             logger = loggerFactory.CreateLogger<DeviceController>();
             dataAccess = mysql_dataAccess;
+        }
+
+        [HttpGet("RequestActiveEvent")]
+        public async Task<IActionResult> RequestActiveEvent()
+        {
+            JArray arr = new JArray();
+            using (var session = dataAccess.SessionFactory.OpenSession())
+            {
+
+                var list = await session.CreateCriteria<ActiveEvent>().Add(
+                   // Restrictions.Ge("OccurTimestamp", DateTime.Now.AddMinutes(5))).Add(
+                    Restrictions.Eq("IsAck", false)
+                   
+                    )
+                    .Add(Restrictions.Lt("EventLevel", 3))
+                    .ListAsync<ActiveEvent>();
+                foreach(ActiveEvent ev in list)
+                {
+                    DateTime occurTime = ev.OccurTimestamp.AddMinutes(1).AddSeconds(30);
+                    if (occurTime > DateTime.Now)
+                        continue;
+                    JObject obj = JObject.FromObject(ev);
+                    arr.Add(obj);
+                }
+            }
+
+            return Ok(arr);
         }
 
         [HttpPost("EventAck")]
@@ -61,6 +90,37 @@ namespace PEIU.Hubbub.Controllers
             
         }
 
+        public static bool TestMode = false;
+
+        [HttpGet("SwitchTestMode")]
+        public async Task<IActionResult> SwitchTestMode(bool OnOff)
+        {
+            TestMode = OnOff;
+            return Ok();
+        }
+
+        [HttpGet("GetLocalRemoteStatus")]
+        public async Task<IActionResult> GetLocalRemoteStatus()
+        {
+            string deviceName = modbus.GetModbusSystem().DeviceName;
+            var status = await redis_ai.HashGetAsync(deviceName, "LocalRemote");
+            return Ok(status);
+        }
+
+        [HttpGet("SetLocalRemoteStatus")]
+        public async Task<IActionResult> SetLocalRemoteStatus(int IsRemote)
+        {
+            string deviceName = modbus.GetModbusSystem().DeviceName;
+
+            await redis_ai.HashSetAsync(deviceName, "LocalRemote", IsRemote);
+            //await modbus.WriteMultipleRegistersAsync(189, new ushort[] { IsRemote == 1 ? (ushort)16 : (ushort)0 });
+            return Ok();
+        }
+
+#if CONTROL_TEST
+        public static float LastControl = 0;
+#endif
+
         [HttpGet("manualcontrol")]
         public async Task<IActionResult> ManualControl(byte deviceId, ushort DocumentAddress, short Value)
         {
@@ -69,6 +129,15 @@ namespace PEIU.Hubbub.Controllers
             {
                 return NoContent();
             }
+
+#if CONTROL_TEST
+            if(DocumentAddress == 190)
+            {
+                LastControl = (Value / 10);
+            }
+#endif
+
+
             await modbus.WriteMultipleRegistersAsync(DocumentAddress, new ushort[] { uvalue });
             return Ok();
         }
@@ -102,24 +171,33 @@ namespace PEIU.Hubbub.Controllers
         [HttpPost("Query")]
         public async Task<IActionResult> Query([FromBody] string[] Fields)
         {
-            string deviceName = modbus.GetModbusSystem().DeviceName;
-            JObject row = new JObject();
-            row.Add("deviceId", deviceName);
-            string timeStamp = await redis_ai.HashGetAsync(deviceName, "timestamp");
-            row.Add("timestamp", timeStamp);
-            if (await redis_ai.KeyExistsAsync(deviceName) == false)
+            string lastReadField = "";
+            try
+            {
+                string deviceName = modbus.GetModbusSystem().DeviceName;
+                JObject row = new JObject();
+                row.Add("deviceId", deviceName);
+                string timeStamp = await redis_ai.HashGetAsync(deviceName, "timestamp");
+                row.Add("timestamp", timeStamp);
+                if (await redis_ai.KeyExistsAsync(deviceName) == false)
+                {
+                    return NoContent();
+                }
+                foreach (string field in Fields)
+                {
+                    lastReadField = field;
+                    if (await redis_ai.HashExistsAsync(deviceName, field))
+                    {
+                        RedisValue value = await redis_ai.HashGetAsync(deviceName, field);
+                        row.Add(field, value.ToString());
+                    }
+                }
+                return Ok(row);
+            }
+            catch(Exception ex)
             {
                 return NoContent();
             }
-            foreach (string field in Fields)
-            {
-                if(await redis_ai.HashExistsAsync(deviceName, field))
-                {
-                    RedisValue value = await redis_ai.HashGetAsync(deviceName, field);
-                    row.Add(field, (float)value);
-                }
-            }
-            return Ok(row);
         }
     }
 }

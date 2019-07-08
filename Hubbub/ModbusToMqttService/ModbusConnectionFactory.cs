@@ -50,7 +50,11 @@ namespace PEIU.Hubbub
         public void Dispose()
         {
             if (GetTcpClient() != null)
+            {
+                master.Dispose();
                 GetTcpClient().Dispose();
+               
+            }
         }
 
         public IModbusMaster GetModbusMaster()

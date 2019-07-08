@@ -31,5 +31,8 @@
     <property name="RecoverTimestamp">
       <column name="RecoverTimestamp" sql-type="datetime" not-null="true" />
     </property>
+    <property name="Source">
+      <column name="Source" sql-type="VARCHAR " not-null="false" />
+    </property>
   </class>
 </hibernate-mapping>
