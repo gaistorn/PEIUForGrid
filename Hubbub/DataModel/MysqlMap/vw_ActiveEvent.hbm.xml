@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="vw_ActiveEvent" table="vw_activeevent" entity-name="View" schema="grid" schema-action="none" >
+    <id name="EventId" column="EventId" />
+    <property name="DeviceName">
+      <column name="DeviceName" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="EventCode">
+      <column name="EventCode" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="EventName">
+      <column name="Name" sql-type="varchar(128)" not-null="true" />
+    </property>
+    <property name="Description">
+      <column name="Description" sql-type="varchar(128)" not-null="true" />
+    </property>
+    <property name="Category">
+      <column name="Category" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="Source">
+      <column name="Source" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="EventLevel">
+      <column name="Level" sql-type="smallint(6)" not-null="true" />
+    </property>
+    <property name="EventType">
+      <column name="Type" sql-type="smallint(6)" not-null="true" />
+    </property>
+    <property name="OccurTimestamp">
+      <column name="OccurTimestamp" sql-type="datetime" not-null="true" />
+    </property>
+    <property name="IsAck">
+      <column name="IsAck" sql-type="bit(1)" not-null="true" />
+    </property>
+    <property name="AckTimestamp">
+      <column name="AckTimestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="HasRecovered">
+      <column name="HasRecovered" sql-type="bit(1)" not-null="true" />
+    </property>
+    <property name="RecoverTimestamp">
+      <column name="RecoverTimestamp" sql-type="datetime" not-null="false" />      
+    </property>
+    <property name="SiteId">
+      <column name="siteId" sql-type="smallint(6)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

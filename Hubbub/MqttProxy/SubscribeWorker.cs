@@ -28,8 +28,27 @@ namespace MqttProxy
 
         protected override async Task OnApplicationMessageReceived(string ClientId, string Topic, string ContentType, uint QosLevel, byte[] payload)
         {
+            
+            string json_str = Encoding.UTF8.GetString(payload);
+            JObject obj = JObject.Parse(json_str);
+            int groupid = obj["groupid"].Value<int>();
+            if (groupid == 1 || groupid == 2)
+                logger.Trace($"RECEIVED Local Broker({obj["deviceId"]}.{obj["groupname"]}) from {Topic}. {obj["timestamp"]}");
+            
             var msg = CreateMqttMessage(Topic, payload, QosLevel);
-            await _client.PublishAsync(msg);
+            if (_client.IsConnected == false)
+                await _client.ReconnectAsync();
+            //if(_client.IsConnected == false && groupid == 1 || groupid == 2)
+            //{
+            //    logger.Trace($"DISCONNECTED REMOTE BROKER (ClientId: {_client.Options.ClientId}");
+            //    return;
+            //}
+            var result = await _client.PublishAsync(msg);
+            
+            if (groupid == 1 || groupid == 2)
+            {
+                logger.Trace($"SENDING REMOTE BROKER. Result:{Enum.GetName(typeof(MQTTnet.Client.Publishing.MqttClientPublishReasonCode), result.ReasonCode)}");
+            }
             await Task.CompletedTask;
         }
 
@@ -66,11 +85,12 @@ namespace MqttProxy
 
                 try
                 {
-                    await mqttClient.ConnectAsync(ClientOptions);
+                    await mqttClient.ReconnectAsync();
+                    logger.Trace("RECONNECTED BROKER");
                 }
                 catch
                 {
-                    logger.Info("### RECONNECTING FAILED ###");
+                    logger.Trace("### RECONNECTING FAILED ###");
                 }
             });
             bool IsSuccess = false;

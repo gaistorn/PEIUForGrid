@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Configuration;
 using MQTTnet;
 using MQTTnet.Client;
@@ -9,6 +9,7 @@ using StackExchange.Redis.Extensions.Core.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PEIU.DataServices;
 
 namespace PVMeasure
 {
@@ -29,7 +30,7 @@ namespace PVMeasure
             var mqtt_informations = config.GetSection("MQTTBrokers").Get<MqttConfig>();
             RedisConnectionFactory redisConnectionFactory = new RedisConnectionFactory(redisConfiguration);
             string mssql_conn = config.GetConnectionString("mssql");
-            ISessionFactory sessionFactory = new MsSqlAccessManager().CreateSessionFactory(mssql_conn);
+            //ISessionFactory sessionFactory = new MsSqlAccessManager().CreateSessionFactory(mssql_conn);
             var proxy = TryInitializeMqtt(mqtt_informations);
             source = new CancellationTokenSource();
             PVBackgroundService service = new PVBackgroundService(logger, proxy, redisConnectionFactory, config);
@@ -40,7 +41,6 @@ namespace PVMeasure
         private static MqttClientProxyCollection TryInitializeMqtt(MqttConfig config)
         {
             MqttClientProxyCollection result = new MqttClientProxyCollection();
-            int idx = 0;
             foreach (MqttAddress addr in config.DataBrokerAddress)
             {
                 IMqttClient client = CreateMqttClient(addr);
@@ -91,7 +91,7 @@ namespace PVMeasure
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex, $"#### MQTT BROKER CONNECTING FAILED ### \n{addr.ToJson()}");
+                    logger.Error(ex, $"#### MQTT BROKER CONNECTING FAILED ### \n{addr}");
                     Thread.Sleep(TimeSpan.FromSeconds(30));
                     continue;
                 }

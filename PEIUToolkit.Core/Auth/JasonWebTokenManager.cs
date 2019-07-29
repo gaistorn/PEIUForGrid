@@ -40,7 +40,7 @@ namespace PES.Toolkit.Auth
                 ClaimsPrincipal principal = tokenHandler.ValidateToken(token, parameters, out securityToken);
                 return principal;
             }
-            catch (Exception ex)
+            catch/* (Exception ex)*/
             {
                 return null;
             }
@@ -58,7 +58,7 @@ namespace PES.Toolkit.Auth
             {
                 identity = (ClaimsIdentity)principal.Identity;
             }
-            catch (Exception ex)
+            catch /*(Exception ex)*/
             {
                 return null;
             }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="BmsData" table="bms_data" lazy="true" >
+    <id name="UniqueId" column="UniqueId" />
+    <property name="deviceId">
+      <column name="deviceId" sql-type="varchar(45)" not-null="false" />
+    </property>
+    <property name="groupId">
+      <column name="groupId" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="groupName">
+      <column name="groupName" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="soc">
+      <column name="soc" sql-type="float" not-null="false" />
+    </property>
+    <property name="soh">
+      <column name="soh" sql-type="float" not-null="false" />
+    </property>
+    <property name="dcPwr">
+      <column name="dcPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="dcVlt">
+      <column name="dcVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="dcCrt">
+      <column name="dcCrt" sql-type="float" not-null="false" />
+    </property>
+    <property name="cellMaxTemp">
+      <column name="cellMaxTemp" sql-type="float" not-null="false" />
+    </property>
+    <property name="cellMinTemp">
+      <column name="cellMinTemp" sql-type="float" not-null="false" />
+    </property>
+    <property name="cellMaxVlt">
+      <column name="cellMaxVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="cellMinVlt">
+      <column name="cellMinVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="timestamp">
+      <column name="timestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="siteId">
+      <column name="siteId" sql-type="smallint(6)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

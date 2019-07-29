@@ -78,7 +78,10 @@ namespace PES.Service.WebApiService
                 .AddCookie();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
+            services.AddSingleton<PeiuGridDataContext>();
+
             ConfigureIdentity(services);
+            ConfigureAuthrozation(services);
             services.AddCors();
 
             var map_reduces = Configuration.GetSection("MongoMapReduces").Get<IEnumerable<MongoMapReduceConfig>>();
@@ -155,6 +158,15 @@ namespace PES.Service.WebApiService
             app.UseAuthentication();
             
             app.UseMvc();
+        }
+
+        private void ConfigureAuthrozation(IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("SiteOwner", policy =>
+                policy.RequireClaim("ManagerSiteId"));
+            });
         }
 
         private void ConfigureIdentity(IServiceCollection services)

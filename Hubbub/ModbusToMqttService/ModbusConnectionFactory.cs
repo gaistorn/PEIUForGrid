@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using NModbus;
@@ -177,12 +177,12 @@ namespace PEIU.Hubbub
                 {
 
 
-                    switch ((DataModel.modbus_io)slaves.IoType)
+                    switch ((modbus_io)slaves.IoType)
                     {
-                        case DataModel.modbus_io.ANALOG_INPUT:
+                        case modbus_io.ANALOG_INPUT:
                             datas = master.ReadInputRegisters(_config.SlaveId, startAddr, pointCnt);
                             break;
-                        case DataModel.modbus_io.HOLDING_REGISTER:
+                        case modbus_io.HOLDING_REGISTER:
                             datas = master.ReadHoldingRegisters(_config.SlaveId, startAddr, pointCnt);
                             break;
                     }
@@ -203,12 +203,12 @@ namespace PEIU.Hubbub
                     byte[] buffer = GetReadBytes(register.DataType, bitIdx, datas);
                     bitIdx += register.DataType.Size;
                     dynamic value = 0f;
-                    switch ((DataModel.modbus_type)register.DataType.TypeCode)
+                    switch ((modbus_type)register.DataType.TypeCode)
                     {
                         case modbus_type.DT_BOOLEAN:
                             value = BitConverter.ToBoolean(buffer);
                             break;
-                        case DataModel.modbus_type.DT_INT32:
+                        case modbus_type.DT_INT32:
                             value = BitConverter.ToInt32(buffer);
                             break;
                         case modbus_type.DT_INT16:

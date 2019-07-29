@@ -1,9 +1,10 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using MQTTnet.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PEIU.DataServices;
 
 namespace PVMeasure
 {
@@ -19,8 +20,13 @@ namespace PVMeasure
         }
     }
 
+    //public class MqttClientProxyCollection : List<MqttClientProxy>
+    //{
+
+    //}
+
     public class MqttClientProxyCollection : List<MqttClientProxy>
     {
-
+        public MqttClientProxy PeiuEventBrokerProxy { get; set; }
     }
 }

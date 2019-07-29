@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using PEIU.DataServices;
 
 namespace PEIU.Hubbub.Services
 {

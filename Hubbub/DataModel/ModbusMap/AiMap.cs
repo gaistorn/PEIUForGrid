@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace DataModel {
+namespace PEIU.Models {
 
     public class AiMap {
         public virtual int DocumentAddress { get; set; }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace DataModel
+namespace PEIU.Models
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class MqttJsonModel
@@ -128,5 +128,7 @@ namespace DataModel
     {
         [JsonProperty("DataBrokerAddress")]
         public MqttAddress[] DataBrokerAddress { get; set; }
+
+        public MqttAddress PEIUEventBrokerAddress { get; set; }
     }
 }

@@ -16,4 +16,12 @@ namespace PEIU.Hubbub
         public ushort StartAddress { get; set; }
         public ushort Length { get; set; }
     }
+
+    public enum EventStatus
+    {
+        Already,
+        New,
+        Recover,
+        NoEvent
+    }
 }

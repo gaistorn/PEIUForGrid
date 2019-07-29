@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
   <class name="DiMap" table="DI_MAP" lazy="false" >
     <id name="DocumentAddress" column="DocumentAddress" />
     <property name="Description">
@@ -19,6 +19,9 @@
     </property>
     <property name="Source">
       <column name="Source" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="Name">
+      <column name="Name" sql-type="VARCHAR " not-null="false" />
     </property>
     <!--<property name="EventGroupId">
       <column name="EventGroupId" sql-type="INTEGER" not-null="true" />

@@ -43,15 +43,30 @@ namespace PES.Service.WebApiService.Controllers
 
         //    return Ok();
         //}
-       
-        [HttpGet("getAsset")]
-        public async Task<IActionResult> GetAllAsset(int? rcc = null)
+
+        [HttpGet("getAssetByCustomer")]
+        public async Task<IActionResult> getAssetByCustomer(string email = null)
         {
             IEnumerable<AssetLocation> result = null;
             JArray return_value = new JArray();
-            if (rcc != null)
+            result = accountContext.AssetLocations.Where(x => x.AccountId == email);
+
+            foreach (AssetLocation loc in result)
             {
-                result = accountContext.AssetLocations.Where(x => x.RCC == rcc.Value);
+                JObject obj = JObject.FromObject(loc);
+                return_value.Add(obj);
+            }
+            return Ok(return_value);
+        }
+
+        [HttpGet("getAsset")]
+        public async Task<IActionResult> GetAllAsset(int? siteId = null)
+        {
+            IEnumerable<AssetLocation> result = null;
+            JArray return_value = new JArray();
+            if (siteId != null)
+            {
+                result = accountContext.AssetLocations.Where(x => x.SiteId == siteId.Value);
             }
             else
                 result = accountContext.AssetLocations;
@@ -64,76 +79,16 @@ namespace PES.Service.WebApiService.Controllers
             return Ok(return_value);
         }
 
-        [HttpGet("getClusterValuesByRCC")]
-        public async Task<IActionResult> getClusterValuesByRCC()
-        {
-            JArray result = new JArray();
-            for(int rcc = 1;rcc<=15;rcc++)
-            {
-                AssetLocation ac = accountContext.AssetLocations.FirstOrDefault(x => x.RCC == rcc);
-                if(ac == null)
-                {
-                    result.Add("");
-                }
-                else
-                {
-
-                }
-            }
-            //accountContext.AssetLocations;
-            
-            return Ok(result);
-        }
-
         [HttpGet("getcontractorlist")]
-        public async Task<IActionResult> GetContractorList(string modeltypecode)
+        public async Task<IActionResult> GetContractorList()
         {
-            ContractModel testModel = new ContractModel();
-            testModel.Assets.Add(new AssetModel());
-
-            string model =  Newtonsoft.Json.JsonConvert.SerializeObject(testModel);
-
-            var cols = monogodb.GetCollection<ContractModel>("ContractInfo");
-            var filter = "{ ModelTypeCode: '" + modeltypecode + "'}";
-            IAsyncCursor<ContractModel> cursor = await cols.FindAsync(filter);
-            JArray jArray = new JArray();
-
-            //List<ServiceModel> result_models = new List<ServiceModel>();
-            await cursor.ForEachAsync(db =>
+            JArray array = new JArray();
+            foreach(AccountModel account in accountContext.Users)
             {
-                JObject obj = JObject.FromObject(db);
-                jArray.Add(obj);
-            });
-            return Ok(jArray);
-        }
-
-        [HttpGet("getservicelist")]
-        public async Task<IActionResult> GetServiceList()
-        {
-            var cols = monogodb.GetCollection<ServiceModel>("ContractInfo");
-
-            //ServiceModel[] defaultModels = new ServiceModel[]
-            //{
-            //    new ServiceModel() { ServiceCode = 100, ServiceName = "스케쥴링", Describe = "스케쥴링 알고리즘"},
-            //    new ServiceModel() { ServiceCode = 101, ServiceName = "Peak-cut", Describe = "피크컷 알고리즘"},
-            //    new ServiceModel() { ServiceCode = 102, ServiceName = "주파수 조정(Frequency Regulation)", Describe = "주파수 조정 알고리즘"},
-            //    new ServiceModel() { ServiceCode = 100, ServiceName = "DR", Describe = "수요반응"}
-            //};
-
-            //await cols.InsertManyAsync(defaultModels);
-
-            var filter = "{ ModelTypeCode: '3'}";
-            IAsyncCursor<ServiceModel> cursor = await cols.FindAsync(filter);
-            JArray jArray = new JArray();
-
-            //List<ServiceModel> result_models = new List<ServiceModel>();
-            await cursor.ForEachAsync(db =>
-            {
-                JObject obj = JObject.FromObject(db);
-                jArray.Add(obj);
-            });
-            return Ok(jArray);
-
+                JObject row = JObject.FromObject(account);
+                array.Add(row);
+            }
+            return Ok(array);
         }
 
         //// GET: api/Contract

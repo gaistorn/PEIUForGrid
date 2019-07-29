@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using DataModel;
+using PEIU.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,9 +21,9 @@ using MQTTnet.Client.Connecting;
 using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Receiving;
 using NHibernate;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 using StackExchange.Redis.Extensions.Core.Configuration;
+using PEIU.Models;
+using PEIU.DataServices;
 
 namespace PEIU.Hubbub
 {
@@ -43,18 +43,19 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
         }
 
         public IConfiguration Configuration { get; }
+        public static TimeSpan NotifyEventInterval { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            var deserializer_yaml = new DeserializerBuilder()
-                .Build();
-
             var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
             services.AddSingleton(redisConfiguration);
             var mysql_conn = Configuration.GetConnectionString("mysql");
+
+            NotifyEventInterval = Configuration.GetSection("NotifyEventInterval").Get<TimeSpan>();
+               
 
             var mqtt_informations = Configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
             //services.AddSingleton(mqtt_informations);
@@ -119,15 +120,18 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
                 modbusList.GroupDigitalPoints = da.Select<EventGroupPoint>();
                 services.AddSingleton(modbusList);
                 services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
-                services.AddHostedService<ModbusBackgroundService>();
-                services.AddHostedService<ModbusDigitalProcessingService>();
+                //services.AddHostedService<ModbusBackgroundService>();
+                //services.AddHostedService<ModbusDigitalProcessingService>();
             }
         }
 
         private async Task<MqttClientProxyCollection> TryInitializeMqtt(MqttConfig config)
         {
             MqttClientProxyCollection result = new MqttClientProxyCollection();
-            int idx = 0;
+
+            IMqttClient peiu_client = await CreateMqttClient(config.PEIUEventBrokerAddress);
+            result.PeiuEventBrokerProxy = new MqttClientProxy(peiu_client, config.PEIUEventBrokerAddress);
+
             foreach (MqttAddress addr in config.DataBrokerAddress)
             {
                 IMqttClient client = await CreateMqttClient(addr);
@@ -178,7 +182,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, $"#### MQTT BROKER CONNECTING FAILED ### \n{addr.ToJson()}");
+                    logger.LogError(ex, $"#### MQTT BROKER CONNECTING FAILED ###");
                     Thread.Sleep(TimeSpan.FromSeconds(30));
                     continue;
                 }

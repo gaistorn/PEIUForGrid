@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace DataModel {
+namespace PEIU.Models {
     
     public class DiMap {
         public virtual int DocumentAddress { get; set; }
@@ -13,6 +13,7 @@ namespace DataModel {
         public virtual int Level { get; set; }
         public virtual bool? Disable { get; set; }
         public virtual string Source { get; set; }
+        public virtual string Name { get; set; }
 
         public virtual ushort Value { get; set; } = 0;
         //public virtual int EventGroupId { get; set; }

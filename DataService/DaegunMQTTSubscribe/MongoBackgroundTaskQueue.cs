@@ -11,14 +11,14 @@ namespace PES.Service.DataService
 {
     public interface IBackgroundMongoTaskQueue
     {
-        void QueueBackgroundWorkItem(DaegunPacket workItem);
-        Task<DaegunPacket> DequeueAsync(CancellationToken cancellationToken);
+        void QueueBackgroundWorkItem(DaegunPacketClass workItem);
+        Task<DaegunPacketClass> DequeueAsync(CancellationToken cancellationToken);
     }
 
     public class MongoBackgroundTaskQueue : IBackgroundMongoTaskQueue
     {
-        private ConcurrentQueue<DaegunPacket> _workItems =
-        new ConcurrentQueue<DaegunPacket>();
+        private ConcurrentQueue<DaegunPacketClass> _workItems =
+        new ConcurrentQueue<DaegunPacketClass>();
         //readonly MongoDB.Driver.MongoClient client;
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
         
@@ -27,7 +27,7 @@ namespace PES.Service.DataService
            
         }
 
-        public async Task<DaegunPacket> DequeueAsync(CancellationToken cancellationToken)
+        public async Task<DaegunPacketClass> DequeueAsync(CancellationToken cancellationToken)
         {
             await _signal.WaitAsync(cancellationToken);
             _workItems.TryDequeue(out var workItem);
@@ -36,7 +36,7 @@ namespace PES.Service.DataService
 
         }
 
-        public void QueueBackgroundWorkItem(DaegunPacket workItem)
+        public void QueueBackgroundWorkItem(DaegunPacketClass workItem)
         {
          //   DaegunPacket workItem = new DaegunPacket(client, packetStruct);
             _workItems.Enqueue(workItem);

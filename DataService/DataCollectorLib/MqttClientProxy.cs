@@ -1,11 +1,10 @@
-﻿using DataModel;
-using MQTTnet.Client;
+﻿using MQTTnet.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PEIU.Hubbub
+namespace PEIU.DataServices
 {
     public class MqttClientProxy
     {
@@ -21,6 +20,6 @@ namespace PEIU.Hubbub
 
     public class MqttClientProxyCollection : List<MqttClientProxy>
     {
-
+        public MqttClientProxy PeiuEventBrokerProxy { get; set; }
     }
 }

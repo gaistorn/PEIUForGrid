@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using PEIU.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,11 +17,12 @@ using System.Threading.Tasks;
 
 namespace PES.Service.DataService
 {
-    public class MQTTDaegunSubscribe
+    public class MQTTDaegunSubscribe : IDisposable
     {
         readonly MqttSubscribeConfig mqttOptions;
         readonly ILogger<MQTTDaegunSubscribe> _logger;
         IMqttClient client;
+       
 
 #if RASPIAN
         //    <logger name = "record.pcs" levels="Info" writeTo="pcs" />
@@ -50,7 +52,7 @@ namespace PES.Service.DataService
         {
             mqttOptions = mqtt_config;
             queue = taskQueue;
-            logger = loggerFactory.CreateLogger<MQTTDaegunSubscribe>();
+            _logger = loggerFactory.CreateLogger<MQTTDaegunSubscribe>();
             StartSubscribe();
         }
 #endif
@@ -116,7 +118,7 @@ namespace PES.Service.DataService
 
         //Dictionary<int, DateTime> lastRecordTime = new Dictionary<int, DateTime>();
 
-        Dictionary<int, DateTime> lastRecordTime = new Dictionary<int, DateTime>();
+        //Dictionary<int, DateTime> lastRecordTime = new Dictionary<int, DateTime>();
         private void ManagedClient_ApplicationMessageReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
         {
             try
@@ -129,17 +131,21 @@ namespace PES.Service.DataService
                 //Array.Copy(pay_load, new_fileArray, pay_load.Length);
                 //File.WriteAllBytes($"{DateTime.Now.TimeOfDay}_dump.bin", e.ApplicationMessage.Payload);
                 DaegunPacket packet = PacketParser.ByteToStruct<DaegunPacket>(e.ApplicationMessage.Payload);
-                if (lastRecordTime.ContainsKey(packet.sSiteId) == false)
-                    lastRecordTime.Add(packet.sSiteId, DateTime.MinValue);
-                if (DateTime.Now < lastRecordTime[packet.sSiteId])
-                    return;
+                //if (lastRecordTime.ContainsKey(packet.sSiteId) == false)
+                //    lastRecordTime.Add(packet.sSiteId, DateTime.MinValue);
+                //if (DateTime.Now < lastRecordTime[packet.sSiteId])
+                //    return;
                 _logger.LogInformation($"RECEIVED DAEGUN : siteid({packet.sSiteId}) from({e.ClientId}) t({e.ApplicationMessage.Topic}) QoS({e.ApplicationMessage.QualityOfServiceLevel}) size({e.ApplicationMessage.Payload.Length})");
                 //nLogger.Info($"RECEIVED DAEGUN : siteid({packet.sSiteId}) from({e.ClientId}) t({e.ApplicationMessage.Topic}) QoS({e.ApplicationMessage.QualityOfServiceLevel}) size({e.ApplicationMessage.Payload.Length})");
-                lastRecordTime[packet.sSiteId] = DateTime.Now.Add(mqttOptions.RecordInterval);
+                //lastRecordTime[packet.sSiteId] = DateTime.Now.Add(mqttOptions.RecordInterval);
                 //packet.timestamp = DateTime.Now;
+                DateTime dt = DateTime.Now.Date
+                    .AddHours(DateTime.Now.Hour)
+                    .AddMinutes(DateTime.Now.Minute)
+                    .AddSeconds(DateTime.Now.Second);
 
 #if RASPIAN == false
-            queue.QueueBackgroundWorkItem(packet);
+            queue.QueueBackgroundWorkItem(new DaegunPacketClass(packet, dt));
 #else
                 NLog.LogEventInfo pcsEventInfo = LogEventMaker.CreateLogEvent(PCS_LOG, packet.Pcs);
                 NLog.LogEventInfo bscEventInfo = LogEventMaker.CreateLogEvent(BSC_LOG, packet.Bsc);
@@ -177,5 +183,10 @@ namespace PES.Service.DataService
             }
         }
 
+        public void Dispose()
+        {
+            if (client != null)
+                client.Dispose();
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace DataModel {
+namespace PEIU.Models {
     
     public class DataType {
         public virtual int TypeCode { get; set; }

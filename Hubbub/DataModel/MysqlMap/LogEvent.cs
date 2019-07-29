@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace DataModel {
+namespace PEIU.Models {
     
     public class LogEvent {
         public virtual long LogEventId { get; set; }
@@ -17,5 +17,6 @@ namespace DataModel {
         public virtual DateTime ResolvedTimestamp { get; set; }
         public virtual DateTime RecoverTimestamp { get; set; }
         public virtual string Source { get; set; }
+        public virtual short? siteId { get; set; }
     }
 }

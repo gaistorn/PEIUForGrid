@@ -1,5 +1,4 @@
-﻿using DataModel;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Connecting;
@@ -63,6 +62,7 @@ namespace PEIU.DataServices
                     Port = this.Port,
 
                 }
+                
 
             };
             return ClientOptions;
@@ -110,7 +110,7 @@ namespace PEIU.DataServices
             await OnDisconnected(e.ClientWasConnected, e.Exception);
 
             if (AutoConnectWhenDisconnect)
-                await TryConnecting();
+                await mqtt_client.ReconnectAsync();
 
             
         }
@@ -125,6 +125,8 @@ namespace PEIU.DataServices
                 mqtt_client.ConnectedHandler = new MqttClientConnectedHandlerDelegate(ManagedClient_Connected);
                 mqtt_client.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(ManagedClient_Disconnected);
             }
+
+            
             var result = await mqtt_client.ConnectAsync(options);
 
             return result.ResultCode == MqttClientConnectResultCode.Success;

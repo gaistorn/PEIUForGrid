@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using PEIU.DataServices;
 
 namespace PEIU.Hubbub.Services
 {
@@ -97,6 +98,7 @@ namespace PEIU.Hubbub.Services
 
                         string redis_key = $"{modbus.DeviceName}";
                         await redis.HashSetAsync(redis_key, hashEntries);
+                        
                         string topic = $"hubbub/{SiteId}/{modbus.DeviceName}/AI";
                         foreach (var mqtt_proxy in mqtt_clients)
                         {
@@ -174,95 +176,7 @@ namespace PEIU.Hubbub.Services
         }
 
 
-        private async Task< IMqttClient[]> TryInitializeMqtt(MqttConfig config)
-        {
-            List<IMqttClient> result = new List<IMqttClient>();
-            int idx = 0;
-            foreach(MqttAddress addr in config.DataBrokerAddress)
-            {
-                IMqttClient client = await CreateMqttClient(addr);
-                if (client != null)
-                    result.Add(client);
-            }
-            return result.ToArray();
-        }
-
-        private MqttClientOptions CreateMqttOption(MqttAddress addr)
-        {
-            var ClientOptions = new MqttClientOptions
-            {
-                ClientId = addr.ClientId,
-                ChannelOptions = new MqttClientTcpOptions
-                {
-                    Server = addr.BindAddress,
-                    Port = addr.Port,
-
-                }
-
-            };
-            return ClientOptions;
-        }
-
-        private async Task<IMqttClient> CreateMqttClient(MqttAddress addr)
-        {
-
-            var ClientOptions = CreateMqttOption(addr);
-            var mqttClient = new MqttFactory().CreateMqttClient();
-            mqttClient.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(ManagedClient_ApplicationMessageReceived);
-            mqttClient.ConnectedHandler = new MqttClientConnectedHandlerDelegate(ManagedClient_Connected);
-            mqttClient.DisconnectedHandler = new MqttClientDisconnectedHandlerDelegate(ManagedClient_Disconnected);
-
-            bool IsSuccess = false;
-            for (int i = 0; i < 3; i++)
-            {
-                try
-                {
-                    await mqttClient.ConnectAsync(ClientOptions);
-                    IsSuccess = true;
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "#### MQTT BROKER CONNECTING FAILED ####");
-                    Thread.Sleep(TimeSpan.FromSeconds(30));
-                    continue;
-                }
-            }
-
-            if (IsSuccess == false)
-            {
-                logger.LogError("#### 브로커 접속에 실패했습니다. 다시 실행해주세요. ####");
-                return null;
-            }
-            return mqttClient;
-        }
-
-        private async void RetryConnected(MqttClientProxy proxy)
-        {
-            var ClientOptions = CreateMqttOption(proxy.Options);
-            await proxy.MqttClient.ConnectAsync(ClientOptions);
-        }
-
-        private async Task ManagedClient_ApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
-        {
-            
-        }
-
-        private async Task ManagedClient_Connected(MqttClientConnectedEventArgs e)
-        {
-
-        }
-
-        private async Task ManagedClient_Disconnected(MqttClientDisconnectedEventArgs e)
-        {
-            string errorMEssage = $"MQTT Disconnected. ErrorCode = 0x{e.AuthenticateResult.ResultCode:X} - {e.AuthenticateResult.ResultCode.ToString()}";
-            logger.LogWarning(errorMEssage);
-            if(e.Exception != null)
-            {
-                logger.LogError(e.Exception, e.Exception.Message);
-            }
-            
-        }
+       
 
     }
 }

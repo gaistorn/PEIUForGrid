@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace DataModel {
+namespace PEIU.Models {
     
     public class ModbusSystem {
         public string DeviceName { get; set; }

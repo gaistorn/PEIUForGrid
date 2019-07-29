@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
   <class name="DiFlag" table="DI_FLAG" lazy="false" >
     <id name="No" column="No" />
     <property name="BitValue">
@@ -10,6 +10,9 @@
     </property>
     <property name="RefDiMap">
       <column name="RefDIMap" sql-type="INTEGER" not-null="false" />
+    </property>
+    <property name="EventCode">
+      <column name="EventCode" sql-type="INTEGER" not-null="false" />
     </property>
   </class>
 </hibernate-mapping>

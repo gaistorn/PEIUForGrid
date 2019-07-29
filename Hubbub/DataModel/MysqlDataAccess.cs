@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace DataModel
+namespace PEIU.Models
 {
     public interface IDataAccess
     {
@@ -24,8 +24,14 @@ namespace DataModel
                     {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MySQLDialect).FullName},
                     {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
                     {NHibernate.Cfg.Environment.ConnectionString, connectionString},
-                    })
+
+#if DEBUG
+                            {NHibernate.Cfg.Environment.ShowSql, "true" }
+#endif
+
+                        })
                     .AddAssembly(Assembly.GetExecutingAssembly())
+                   
                    // .AddAssembly(Assembly.LoadFrom())
                     .BuildSessionFactory();
 

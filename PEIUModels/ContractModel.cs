@@ -15,18 +15,18 @@ namespace PES.Models
     {
         public AssetLocation() { }
         [Key]
-        public virtual int PK { get; set; }
+        public virtual int SiteId { get; set; }
         public virtual int RCC { get; set; }
-        public virtual string Longtidue { get; set; }
-        public virtual string Latitude { get; set; }
+        public virtual double Longtidue { get; set; }
+        public virtual double Latitude { get; set; }
         public virtual string LawFirstCode { get; set; }
         public virtual string LawMiddleCode { get; set; }
-        public virtual string LawLasttCode { get; set; }
+        public virtual string LawLastCode { get; set; }
         public virtual string Address1 { get; set; }
         public virtual string Address2 { get; set; }
         public virtual string AssetName { get; set; }
         public virtual int? DLNo { get; set; }
-        public virtual int SiteId { get; set; }
+     
         public virtual DateTime InstallDate { get; set; }
         public virtual string AccountId { get; set; }
         public virtual float TotalAvaliableESSMountKW { get; set; }
@@ -34,22 +34,24 @@ namespace PES.Models
         public virtual float TotalAvaliablePCSMountKW { get; set; }
         public virtual int ServiceCode { get; set; }
         public virtual string Comment { get; set; }
+        public virtual bool ControlOwner { get; set; }
 
-        public ICollection<DevicesInfos> Devices { get; set; }
+        public ICollection<AssetDevices> Devices { get; set; }
     }
 
-    [Table("Devices")]
-    public class DevicesInfos
+    [Table("AssetDevices")]
+    public class AssetDevices
     {
         [Key]
-        public virtual int DeviceId { get; set; }
+        public virtual int PK { get; set; }
 
         [ForeignKey("AssetLocation")]
-        public int AssetLocationId { get; set; }
+        public int SiteId { get; set; }
 
         public virtual AssetLocation AssetLocation { get; set; }
         public virtual int? DeviceType { get; set; }
         public virtual string Device_Name { get; set; }
+        public int VolumeKW { get; set; }
     }
 
     //[Key]

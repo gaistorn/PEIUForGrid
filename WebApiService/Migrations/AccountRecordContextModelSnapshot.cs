@@ -124,50 +124,60 @@ namespace PES.Service.WebApiService.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("PES.Models.AddressModel", b =>
+            modelBuilder.Entity("PES.Models.AssetDevices", b =>
                 {
                     b.Property<int>("PK")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("DeviceType");
+
+                    b.Property<string>("Device_Name");
+
+                    b.Property<int>("SiteId");
+
+                    b.Property<int>("VolumeKW");
+
+                    b.HasKey("PK");
+
+                    b.HasIndex("SiteId");
+
+                    b.ToTable("AssetDevices");
+                });
+
+            modelBuilder.Entity("PES.Models.AssetLocation", b =>
+                {
+                    b.Property<int>("SiteId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AccountId");
 
                     b.Property<string>("Address1");
 
                     b.Property<string>("Address2");
 
+                    b.Property<string>("AssetName");
+
+                    b.Property<string>("Comment");
+
+                    b.Property<bool>("ControlOwner");
+
+                    b.Property<int?>("DLNo");
+
+                    b.Property<DateTime>("InstallDate");
+
                     b.Property<double>("Latitude");
 
                     b.Property<string>("LawFirstCode");
 
-                    b.Property<string>("LawLasttCode");
+                    b.Property<string>("LawLastCode");
 
                     b.Property<string>("LawMiddleCode");
 
                     b.Property<double>("Longtidue");
 
-                    b.Property<short>("RCC");
-
-                    b.HasKey("PK");
-
-                    b.ToTable("Address");
-                });
-
-            modelBuilder.Entity("PES.Models.AssetDBModel", b =>
-                {
-                    b.Property<int>("PK")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AccountId");
-
-                    b.Property<int>("AddressId");
-
-                    b.Property<string>("AssetName");
-
-                    b.Property<short>("DLNo");
-
-                    b.Property<DateTime>("InstallDate");
+                    b.Property<int>("RCC");
 
                     b.Property<int>("ServiceCode");
-
-                    b.Property<short>("SiteId");
 
                     b.Property<float>("TotalAvaliableESSMountKW");
 
@@ -175,13 +185,9 @@ namespace PES.Service.WebApiService.Migrations
 
                     b.Property<float>("TotalAvaliablePVMountKW");
 
-                    b.HasKey("PK");
+                    b.HasKey("SiteId");
 
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("AddressId");
-
-                    b.ToTable("Assets");
+                    b.ToTable("AssetLocation");
                 });
 
             modelBuilder.Entity("Power21.PEIUEcosystem.Models.AccountModel", b =>
@@ -295,15 +301,11 @@ namespace PES.Service.WebApiService.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PES.Models.AssetDBModel", b =>
+            modelBuilder.Entity("PES.Models.AssetDevices", b =>
                 {
-                    b.HasOne("Power21.PEIUEcosystem.Models.AccountModel", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("PES.Models.AddressModel", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
+                    b.HasOne("PES.Models.AssetLocation", "AssetLocation")
+                        .WithMany("Devices")
+                        .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

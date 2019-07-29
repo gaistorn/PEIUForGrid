@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PEIU.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,10 @@ namespace PES.Service.DataService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-           //NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
-           // NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
-           // //errorLogger.Info("Looo");
-           // services.AddSingleton(errorLogger);
+            //NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
+            // NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
+            // //errorLogger.Info("Looo");
+            // services.AddSingleton(errorLogger);
             //Models.DaegunPcsPacket pcsPacket = new Models.DaegunPcsPacket();
             //pcsPacket.ActivePower = 100;
             //pcsPacket.Temp = new float[] { 1.1f, 1.2f, 5.1f, 3.4f };
@@ -44,23 +45,24 @@ namespace PES.Service.DataService
             //logEvent.Properties["SiteId"] = 100;
             //logger.Log(logEvent);
 
+            string mysql_connStr = Configuration.GetConnectionString("mysql");
+            MysqlDataAccess da = new MysqlDataAccess(mysql_connStr);
+            services.AddSingleton(da);
+
             var mqttOptions = Configuration.GetSection("MQTTSubscribeConfig").Get<MqttSubscribeConfig>();
             services.AddSingleton(mqttOptions);
 
-#if RASPIAN
-            //var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
-            //services.AddSingleton(redisConfiguration);
-            //services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
-            //IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
-            //services.AddSingleton(queue_service);
 
-            //services.AddHostedService<MongoBackgroundHostService>();
-            //MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
-#endif
-            //services.AddHostedService<MQTTDaegunSubscribe>();
-            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, mqttOptions);
+            var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
+            services.AddSingleton(redisConfiguration);
+            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
 
+            IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
+            services.AddSingleton(queue_service);
+
+            services.AddHostedService<MongoBackgroundHostService>();
+            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

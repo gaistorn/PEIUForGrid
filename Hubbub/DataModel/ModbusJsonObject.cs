@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DataModel
+namespace PEIU.Models
 {
     public class ModbusJsonGroupObject
     {

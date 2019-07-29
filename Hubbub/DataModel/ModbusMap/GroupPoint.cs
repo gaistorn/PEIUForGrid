@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace DataModel {
+namespace PEIU.Models {
     
     public class GroupPoint {
         public virtual int GroupId { get; set; }

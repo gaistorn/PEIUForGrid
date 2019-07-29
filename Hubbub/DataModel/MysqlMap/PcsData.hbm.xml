@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="PcsData" table="pcs_data" lazy="true" >
+    <id name="UniqueId" column="UniqueId" />
+    <property name="deviceId">
+      <column name="deviceId" sql-type="varchar(45)" not-null="false" />
+    </property>
+    <property name="groupName">
+      <column name="groupName" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="groupId">
+      <column name="groupId" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="freq">
+      <column name="freq" sql-type="float" not-null="false" />
+    </property>
+    <property name="acVlt">
+      <column name="acVlt" sql-type="float" not-null="false" />
+    </property>
+    <property name="acCrtLow">
+      <column name="acCrtLow" sql-type="float" not-null="false" />
+    </property>
+    <property name="acCrtHigh">
+      <column name="acCrtHigh" sql-type="float" not-null="false" />
+    </property>
+    <property name="acPwr">
+      <column name="acPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="actPwr">
+      <column name="actPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="rctPwr">
+      <column name="rctPwr" sql-type="float" not-null="false" />
+    </property>
+    <property name="pf">
+      <column name="pf" sql-type="float" not-null="false" />
+    </property>
+    <property name="acVltR">
+      <column name="acVltR" sql-type="float" not-null="false" />
+    </property>
+    <property name="acCrtR">
+      <column name="acCrtR" sql-type="float" not-null="false" />
+    </property>
+    <property name="acVltS">
+      <column name="acVltS" sql-type="float" not-null="false" />
+    </property>
+    <property name="acCrtS">
+      <column name="acCrtS" sql-type="float" not-null="false" />
+    </property>
+    <property name="acVltT">
+      <column name="acVltT" sql-type="float" not-null="false" />
+    </property>
+    <property name="acCrtT">
+      <column name="acCrtT" sql-type="float" not-null="false" />
+    </property>
+    <property name="actPwrCmdLmtLowDhg">
+      <column name="actPwrCmdLmtLowDhg" sql-type="float" not-null="false" />
+    </property>
+    <property name="actPwrCmdLmtHighDhg">
+      <column name="actPwrCmdLmtHighDhg" sql-type="float" not-null="false" />
+    </property>
+    <property name="actPwrCmdLmtLowChg">
+      <column name="actPwrCmdLmtLowChg" sql-type="float" not-null="false" />
+    </property>
+    <property name="actPwrCmdLmtHighChg">
+      <column name="actPwrCmdLmtHighChg" sql-type="float" not-null="false" />
+    </property>
+    <property name="timestamp">
+      <column name="timestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="siteId">
+      <column name="siteId" sql-type="smallint(6)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

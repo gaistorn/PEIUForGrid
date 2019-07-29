@@ -8,10 +8,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PEIU.MicroProcessor
+namespace PEIU.DataServices
 {
     public abstract class MqttEventHandler : MQTTnet.Client.Disconnecting.IMqttClientDisconnectedHandler, IMqttClientConnectedHandler
     {
+        
+
+       
+
         public Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             throw new NotImplementedException();
@@ -23,12 +27,39 @@ namespace PEIU.MicroProcessor
         }
     }
 
-    public abstract class MqttFactoryUtil
+    public abstract class MqttFactoryHost : IDisposable
     {
         public MqttAddress Address { get; private set; }
-        private IMqttClient client;
+        protected IMqttClient client;
 
-        public MqttFactoryUtil(MqttAddress mqttAddress)
+        protected virtual void OnDisposing()
+        { }
+
+        public void Dispose()
+        {
+            if (client != null)
+                client.Dispose();
+            OnDisposing();
+        }
+
+        public async Task PublishAsync(string payload)
+        {
+            MqttApplicationMessage msg = CreateMqttMessage(payload);
+            await this.client.PublishAsync(msg);
+        }
+
+        private MqttApplicationMessage CreateMqttMessage(string payload)
+        {
+            byte[] payload_buffer = System.Text.Encoding.UTF8.GetBytes(payload);
+            var applicationMessage = new MqttApplicationMessageBuilder()
+                       .WithTopic(Address.Topic)
+                       .WithPayload(payload_buffer)
+                       .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)Address.QosLevel)
+                       .Build();
+            return applicationMessage;
+        }
+
+        public MqttFactoryHost(MqttAddress mqttAddress)
         {
             Address = mqttAddress;
 
@@ -48,7 +79,8 @@ namespace PEIU.MicroProcessor
                 .UseDisconnectedHandler(HandleDisconnectedAsync)
                 .UseApplicationMessageReceivedHandler(HandleApplicationMessageReceivedEvent);
 
-            ConnectAsync();
+            Task<MqttClientAuthenticateResult> t = ConnectAsync();
+            t.Wait();
 
             //{
             //    var result = await client.ConnectAsync(ClientOptions);
@@ -59,16 +91,9 @@ namespace PEIU.MicroProcessor
             //}
         }
 
-        public async void ConnectAsync()
+        public async Task<MqttClientAuthenticateResult> ConnectAsync()
         {
-            try
-            {
-                var result = await client.ConnectAsync(GetMQttClientOptions());
-            }
-            catch (Exception exception)
-            {
-                //_logger.LogError(exception, "### CONNECTING FAILED ###" + Environment.NewLine + exception);
-            }
+            return await client.ConnectAsync(GetMQttClientOptions());
         }
 
         private MqttClientOptions GetMQttClientOptions()
@@ -85,17 +110,17 @@ namespace PEIU.MicroProcessor
             return ClientOptions;
         }
 
-        public abstract void OnInitialize();
+        public virtual void OnInitialize() { }
 
         private async Task HandleDisconnectedAsync(MqttClientDisconnectedEventArgs eventArgs)
         {
+            await ConnectAsync();
             await OnDisconnected();
         }
 
         private async Task HandleConnectedAsync(MqttClientConnectedEventArgs eventArgs)
         {
             await OnConnected();
-            throw new NotImplementedException();
         }
 
         private Task HandleApplicationMessageReceivedEvent(MqttApplicationMessageReceivedEventArgs eventArgs)

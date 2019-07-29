@@ -6,11 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MQTTnet" Version="3.0.4" />
+    <Compile Remove="MqttDataPacket.cs" />
+    <Compile Remove="MqttJsonModel.cs" />
+    <Compile Remove="PacketReader.cs" />
+    <Compile Remove="PacketWriter.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Hubbub\DataModel\DataModel.csproj" />
+    <PackageReference Include="MQTTnet" Version="3.0.4" />
   </ItemGroup>
 
   <ItemGroup>

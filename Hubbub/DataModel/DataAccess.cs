@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace DataModel
+namespace PEIU.Models
 {
     public interface IDataAccessManager
     {
@@ -29,42 +29,48 @@ namespace DataModel
         }
     }
 
-    public class MySqlAccessManager : IDataAccessManager
+    public class SqliteAccessManager : IDataAccessManager
     {
-        internal ISessionFactory SessionFactory { get; private set; }
-        public MySqlAccessManager(string connectionString)
+        public ISessionFactory CreateSessionFactory(string connectionString)
         {
-            SessionFactory = new Configuration()
+           return  new Configuration()
                         .AddProperties(new Dictionary<string, string> {
                     {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.SQLite20Driver).FullName},
                    // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
                     {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.SQLiteDialect).FullName},
                     {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
-                    {NHibernate.Cfg.Environment.ConnectionString, connectionString},
-                    })
+                    {NHibernate.Cfg.Environment.ConnectionString, connectionString}
+#if DEBUG
+                            ,{NHibernate.Cfg.Environment.ShowSql, "true" }
+#endif
+
+                        })
                     .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
+        }
+    }
 
+    public class MySqlAccessManager : IDataAccessManager
+    {
+        internal ISessionFactory SessionFactory { get; private set; }
 
+        public MySqlAccessManager(string connectionString)
+        {
+            CreateSessionFactory(connectionString);
         }
 
         public ISessionFactory CreateSessionFactory(string connectionString)
         {
             SessionFactory = new Configuration()
                         .AddProperties(new Dictionary<string, string> {
-                    {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.SQLite20Driver).FullName},
+                    {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.MySqlDataDriver).FullName},
                    // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
-                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.SQLiteDialect).FullName},
+                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MySQL55InnoDBDialect).FullName},
                     {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
                     {NHibernate.Cfg.Environment.ConnectionString, connectionString},
                     })
                     .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
             return SessionFactory;
         }
-
-
-
-
-
     }
 
     public class DataAccess : IDisposable

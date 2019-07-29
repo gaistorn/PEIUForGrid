@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 
-namespace DataModel {
+namespace PEIU.Models {
 
     public class ActiveEvent
     {
@@ -18,5 +18,19 @@ namespace DataModel {
         public virtual bool HasRecovered { get; set; }
         public virtual DateTime? RecoverTimestamp { get; set; }
         public virtual string Source { get; set; }
+        public virtual short? siteId { get; set; }
+    }
+
+    public class NotifyEvent
+    {
+        public int EventCode { get; set; }
+        public string DeviceName { get; set; }
+        public short SiteId { get; set; }
+        public string EventName { get; set; }
+        public string Description { get; set; }
+        public string Source { get; set; }
+        public EventTriggerType TriggerType { get; set; }
+        public DateTime Timestamp { get; set; }
+        public int EventLevel { get; set; }
     }
 }

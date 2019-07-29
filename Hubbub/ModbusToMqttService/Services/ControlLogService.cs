@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Hosting;
 using PEIU.Hubbub.Controllers;
 using System;

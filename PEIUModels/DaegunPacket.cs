@@ -7,6 +7,18 @@ using System.Threading.Tasks;
 
 namespace PES.Models
 {
+    public class DaegunPacketClass
+    {
+        public DaegunPacket Packet { get; private set; }
+        public DateTime Timestamp { get; private set; }
+
+        public DaegunPacketClass(DaegunPacket packet, DateTime timeStamp)
+        {
+            Packet = packet;
+            Timestamp = timeStamp;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DaegunPacket
     {

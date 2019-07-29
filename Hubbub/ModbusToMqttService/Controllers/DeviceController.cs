@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataModel;
+using PEIU.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -53,7 +53,7 @@ namespace PEIU.Hubbub.Controllers
                     .ListAsync<ActiveEvent>();
                 foreach(ActiveEvent ev in list)
                 {
-                    DateTime occurTime = ev.OccurTimestamp.AddMinutes(1).AddSeconds(30);
+                    DateTime occurTime = ev.OccurTimestamp.Add(Startup.NotifyEventInterval);
                     if (occurTime > DateTime.Now)
                         continue;
                     JObject obj = JObject.FromObject(ev);
@@ -194,7 +194,7 @@ namespace PEIU.Hubbub.Controllers
                 }
                 return Ok(row);
             }
-            catch(Exception ex)
+            catch
             {
                 return NoContent();
             }

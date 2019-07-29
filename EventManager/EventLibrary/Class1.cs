@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataCollectorLib
+namespace EventLibrary
 {
     public class Class1
     {

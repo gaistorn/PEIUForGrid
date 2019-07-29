@@ -1,4 +1,4 @@
-﻿using DataModel;
+﻿using PEIU.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using PEIU.DataServices;
 
 namespace PVMeasure
 {
@@ -24,9 +25,10 @@ namespace PVMeasure
         int SiteId;
         MqttClientProxyCollection mqtt_clients;
         ISessionFactory sessionFactory;
-        Dictionary<long, long> stamp_map = new Dictionary<long, long>();
+        Dictionary<long, string> stamp_map = new Dictionary<long, string>();
         TimeSpan PollInterval;
         string DeviceName = "";
+        string redisDeviceName = "";
         public PVBackgroundService(NLog.ILogger loggerFactory, 
             MqttClientProxyCollection mqttClientProxies, RedisConnectionFactory redisFactory, 
             IConfiguration configuration)
@@ -39,8 +41,8 @@ namespace PVMeasure
             string mssql_conn = configuration.GetConnectionString("mssql");
             PollInterval = configuration.GetSection("PollInterval").Get<TimeSpan>();
             redis = redisFactory.Connection().GetDatabase(1);
-            DeviceName = configuration.GetSection("Modbus:DeviceName").Get<string>();
-            DeviceName = DeviceName.Substring(0, DeviceName.Length - 1);
+            DeviceName = configuration.GetSection("DeviceName").Get<string>();
+            redisDeviceName = configuration.GetSection("RedisKeyName").Get<string>();
             sessionFactory = new MsSqlAccessManager().CreateSessionFactory(mssql_conn);
         }
 
@@ -57,27 +59,33 @@ namespace PVMeasure
                         continue;
                     }
                     nextMeasure = DateTime.Now.Add(PollInterval);
-                    using (var session = sessionFactory.OpenStatelessSession())
+
+                    using (var session = sessionFactory.OpenSession())
                     {
                         var invt_list = await session.CreateCriteria<INVERTER_DATA_RT>().ListAsync<INVERTER_DATA_RT>();
                         foreach (INVERTER_DATA_RT rt in invt_list)
                         {
-                            if (stamp_map.ContainsKey(rt.ID_CODE) && stamp_map[rt.ID_CODE] == rt.ID_DATE.Ticks)
+                            string date_key = rt.ID_DATE.ToString("yyyyMMddHHmmss");
+                            if (stamp_map.ContainsKey(rt.ID_CODE) && stamp_map[rt.ID_CODE] == date_key)
                                 continue;
                             if (stamp_map.ContainsKey(rt.ID_CODE) == false)
                             {
-                                stamp_map.Add(rt.ID_CODE, rt.ID_DATE.Ticks);
+                                stamp_map.Add(rt.ID_CODE, date_key);
                             }
                             else
-                                stamp_map[rt.ID_CODE] = rt.ID_DATE.Ticks;
-
-                            string redis_key = $"{DeviceName}{rt.ID_CODE + 1}";
-
+                                stamp_map[rt.ID_CODE] = date_key;
+                            int idCode = int.Parse(rt.ID_CODE.ToString()) + 1;
+                            string redis_key = $"{redisDeviceName}{idCode}";
+                            string mqtt_key = $"{DeviceName}{idCode}";
+                            logger.Trace($"READING INVERTER DB {rt.ID_DATE} deviceId: {redis_key}");
                             HashEntry[] hashEntries = null;
-                            var jRow = CreateJObject(rt, out hashEntries);
+                            var jRow = CreateJObject(rt, redis_key, out hashEntries);
+                            
                             await redis.HashSetAsync(redis_key, hashEntries);
 
-                            string topic = $"hubbub/{SiteId}/{redis_key}/AI";
+                            string topic = $"hubbub/{SiteId}/{mqtt_key}/AI";
+
+                            bool IsSuccess = false;
                             foreach (var mqtt_proxy in mqtt_clients)
                             {
                                 try
@@ -87,8 +95,13 @@ namespace PVMeasure
                                     var mqtt_client = mqtt_proxy.MqttClient;
 
                                     if (mqtt_client.IsConnected == false)
+                                    {
+                                        logger.Trace($"BROKER IS NOT CONNECTED {rt.ID_DATE} deviceId: {redis_key}");
                                         continue;
+                                    }
                                     await mqtt_client.PublishAsync(msg);
+                                    logger.Trace($"SENDING QUEUE {rt.ID_DATE} deviceId: {redis_key}");
+                                    IsSuccess = true;
 
                                     //if (mqtt_client.IsConnected)
                                     //{
@@ -100,13 +113,16 @@ namespace PVMeasure
 
                                     //}
                                     Thread.Sleep(10);
-                                    break;
+                                    //break;
                                 }
                                 catch (Exception ex)
                                 {
                                     logger.Error(ex, ex.Message);
                                 }
                             }
+
+                            if (IsSuccess)
+                                logger.Info("Sending Queue\n" + jRow.ToString());
 
                         }
                     }
@@ -134,7 +150,7 @@ namespace PVMeasure
             return applicationMessage;
         }
 
-        private JObject CreateJObject(INVERTER_DATA_RT invert, out HashEntry[] hashEntries)
+        private JObject CreateJObject(INVERTER_DATA_RT invert, string deviceName, out HashEntry[] hashEntries)
         {
             List<HashEntry> entries = new List<HashEntry>();
             PropertyInfo[] propertyInfos = typeof(INVERTER_DATA_RT).GetProperties();
@@ -149,7 +165,7 @@ namespace PVMeasure
             JObject datarow = JObject.FromObject(invert);
             datarow.Add("groupid", 4);
             datarow.Add("groupname", "PV_SYSTEM");
-            datarow.Add("deviceId", DeviceName + invert.ID_CODE + 1);
+            datarow.Add("deviceId", deviceName);
             datarow.Add("siteId", SiteId);
             entries.Add(new HashEntry("timestamp", timeStamp.ToString()));
             datarow.Add("timestamp", DateTime.Now.ToString("yyyyMMddHHmmss"));

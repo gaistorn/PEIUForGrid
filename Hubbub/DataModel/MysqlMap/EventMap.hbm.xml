@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="EventMap" table="EventMap" lazy="true" >
+    <id name="EventId" column="EventId" />
+    <property name="Level">
+      <column name="Level" sql-type="smallint(6)" not-null="true" />
+    </property>
+    <property name="Type">
+      <column name="Type" sql-type="smallint(6)" not-null="true" />
+    </property>
+    <property name="Source">
+      <column name="Source" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="Category">
+      <column name="Category" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="Name">
+      <column name="Name" sql-type="varchar(128)" not-null="true" />
+    </property>
+    <property name="Description">
+      <column name="Description" sql-type="varchar(128)" not-null="true" />
+    </property>
+  </class>
+</hibernate-mapping>

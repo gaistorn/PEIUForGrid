@@ -2,12 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>PEIU.Models</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Hibernate\**" />
     <EmbeddedResource Remove="Hibernate\**" />
     <None Remove="Hibernate\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ModbusJsonObject.cs" />
+    <Compile Remove="MqttJsonModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,7 +26,12 @@
     <None Remove="ModbusMap\IoTypeFlag.hbm.xml" />
     <None Remove="MssqlMap\InverterDataRt.hbm.xml" />
     <None Remove="MysqlMap\Activeevent.hbm.xml" />
+    <None Remove="MysqlMap\BmsData.hbm.xml" />
+    <None Remove="MysqlMap\DeviceEvent.hbm.xml" />
+    <None Remove="MysqlMap\EventMap.hbm.xml" />
     <None Remove="MysqlMap\LogEvent.hbm.xml" />
+    <None Remove="MysqlMap\PcsData.hbm.xml" />
+    <None Remove="MysqlMap\vw_ActiveEvent.hbm.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,8 +43,13 @@
     <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
     <EmbeddedResource Include="MssqlMap\InverterDataRt.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\vw_ActiveEvent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\BmsData.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\DeviceEvent.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\EventMap.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\LogEvent.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\PcsData.hbm.xml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,12 +16,15 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="MQTTnet" Version="2.8.5" />
+    <PackageReference Include="MySql.Data" Version="8.0.17" />
+    <PackageReference Include="NHibernate" Version="5.2.5" />
     <PackageReference Include="OrchardCore.Localization.Core" Version="1.0.0-beta2-69590" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.4" />
     <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="4.0.5" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Hubbub\DataModel\DataModel.csproj" />
     <ProjectReference Include="..\PEIUModels\PEIUModels.csproj" />
     <ProjectReference Include="..\PEIUToolkit.Core\PEIUToolkit.Core.csproj" />
   </ItemGroup>

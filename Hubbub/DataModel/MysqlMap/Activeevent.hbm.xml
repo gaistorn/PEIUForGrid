@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<hibernate-mapping assembly="DataModel" namespace="DataModel" xmlns="urn:nhibernate-mapping-2.2">
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
   <class name="ActiveEvent" table="activeevent" lazy="true" >
     <id name="EventId" column="EventId" />
     <property name="DeviceName">
@@ -10,7 +10,7 @@
       <column name="EventName" sql-type="varchar(50)" not-null="true" />
     </property>
     <property name="Description">
-      <column name="Description" sql-type="varchar(80)" not-null="true" />
+      <column name="Description" sql-type="text" not-null="true" />
     </property>
     <property name="OccurTimestamp">
       <column name="OccurTimestamp" sql-type="datetime" not-null="true" />
@@ -32,6 +32,9 @@
     </property>
     <property name="Source">
       <column name="Source" sql-type="VARCHAR " not-null="false" />
+    </property>
+    <property name="siteId">
+      <column name="siteId" sql-type="smallint(6)" not-null="false" />
     </property>
   </class>
 </hibernate-mapping>

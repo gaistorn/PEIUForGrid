@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Power21.PEIUEcosystem.Models;
 
 namespace WebApiService.Controllers
 {
@@ -10,6 +13,12 @@ namespace WebApiService.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        UserManager<AccountModel> _userManager;
+        public ValuesController(UserManager<AccountModel> userManager)
+        {
+            _userManager = userManager;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
@@ -18,10 +27,13 @@ namespace WebApiService.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        [Authorize(Policy = "SiteOwner")]
+        [HttpGet("getclaim")]        
+        public async Task<ActionResult> getclaim()
         {
-            return "value";
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var claims = await _userManager.GetClaimsAsync(user);
+            return Ok(claims);
         }
 
         // POST api/values
