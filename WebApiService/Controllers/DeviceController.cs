@@ -7,6 +7,8 @@ using Newtonsoft.Json.Linq;
 using NHibernate.Criterion;
 using PEIU.Models;
 using PES.Models;
+using PES.Toolkit;
+using StackExchange.Redis;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,11 +23,39 @@ namespace PES.Service.WebApiService.Controllers
     {
         readonly PeiuGridDataContext peiuGridDataContext;
         readonly AccountRecordContext peiuDataContext;
+        readonly IDatabase database;
 
-        public DeviceController(PeiuGridDataContext context, AccountRecordContext _accountContext)
+        public DeviceController(PeiuGridDataContext context, AccountRecordContext _accountContext, IRedisConnectionFactory redisConnectionFactory)
         {
             peiuGridDataContext = context;
             peiuDataContext = _accountContext;
+            database = redisConnectionFactory.Connection().GetDatabase(1);
+        }
+
+        [HttpGet("GetDeviceInfo")]
+        public async Task<IActionResult> GetDeviceInfo(int SiteId, string DeviceName, string PropertyName)
+        {
+            string redisKey = $"{SiteId}.{DeviceName}";
+            if( await database.KeyExistsAsync(redisKey) == false)
+            {
+                return BadRequest(string.Format("해당 사이트 아이디: {0} 또는 디바이스 아이디: {1}를 찾을 수 없습니다", SiteId, DeviceName));
+            }
+
+            RedisValue rv = await database.HashGetAsync(redisKey, PropertyName);
+            return Ok(rv);
+        }
+
+        [HttpGet("SetDeviceInfo")]
+        public async Task<IActionResult> SetDeviceInfo(int SiteId, string DeviceName, string PropertyName, string Value)
+        {
+            string redisKey = $"{SiteId}.{DeviceName}";
+            if (await database.KeyExistsAsync(redisKey) == false)
+            {
+                return BadRequest(string.Format("해당 사이트 아이디: {0} 또는 디바이스 아이디: {1}를 찾을 수 없습니다", SiteId, DeviceName));
+            }
+
+            await database.HashSetAsync(redisKey, PropertyName, Value);
+            return Ok();
         }
 
         [HttpGet("GetRequestActivePower")]

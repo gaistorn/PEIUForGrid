@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="CassandraCSharpDriver" Version="3.8.0" />
+    <PackageReference Include="FireworksFramework.Core.Mqtt" Version="1.0.0" />
   </ItemGroup>
 
 </Project>

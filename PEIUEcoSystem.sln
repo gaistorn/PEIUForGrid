@@ -47,13 +47,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MqttProxy", "Hubbub\MqttPro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebDataPusherService", "DataService\WebDataPusherService\WebDataPusherService.csproj", "{52D48C05-6DB6-4653-B9DA-57C686C08A93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPusher", "EventPusher\EventPusher.csproj", "{B1BEBFE1-A705-413A-B5BF-F7706732083C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventPusher", "EventPusher\EventPusher.csproj", "{B1BEBFE1-A705-413A-B5BF-F7706732083C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{18F28DF2-DEEB-4A9A-BC04-05B80CB1706F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPusherTest", "Test\EventPusherTest\EventPusherTest.csproj", "{4F639D92-D630-4FEF-8B59-8448D7FBBAFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventPusherTest", "Test\EventPusherTest\EventPusherTest.csproj", "{4F639D92-D630-4FEF-8B59-8448D7FBBAFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventTranslator", "DataService\EventTranslator\EventTranslator.csproj", "{FEE6F900-62EC-450B-9BDB-12A2E812AFB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventTranslator", "DataService\EventTranslator\EventTranslator.csproj", "{FEE6F900-62EC-450B-9BDB-12A2E812AFB4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mqtt", "Mqtt", "{7242A315-E225-4704-A7B8-27CDF223D0D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

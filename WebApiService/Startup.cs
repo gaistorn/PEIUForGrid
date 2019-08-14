@@ -60,7 +60,8 @@ namespace PES.Service.WebApiService
                 .AddEntityFrameworkStores<AccountRecordContext>()
                 .AddErrorDescriber<Localization.LocalizedIdentityErrorDescriber>()
                 .AddDefaultTokenProviders();
-
+            //ServiceDescriptor sd = services.FirstOrDefault(x => x.ServiceType == typeof(IdentityErrorDescriber) && x.ImplementationType == typeof(Localization.LocalizedIdentityErrorDescriber));
+            //sd.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

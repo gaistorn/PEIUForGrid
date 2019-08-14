@@ -243,10 +243,12 @@ namespace PES.Service.WebApiService.Localization
             return this.GetErrorByCode("PasswordDoesNotMatched");
         }
 
+        
+
         /// <summary>Returns a localized <see cref="IdentityError"/> for the provided code.</summary>
         /// <param name="code">The error's code.</param>
         /// <returns>A localized <see cref="IdentityError"/>.</returns>
-        private IdentityError GetErrorByCode(string code)
+        public IdentityError GetErrorByCode(string code)
         {
             return new IdentityError()
             {

@@ -96,7 +96,7 @@ namespace PEIU.Hubbub.Services
                         if (parentModel.ContainsKey("bms_soc"))
                             ModbusBackgroundService.Soc = parentModel["bms_soc"].Value<float>();
 
-                        string redis_key = $"{modbus.DeviceName}";
+                        string redis_key = $"{SiteId}.{modbus.DeviceName}";
                         await redis.HashSetAsync(redis_key, hashEntries);
                         
                         string topic = $"hubbub/{SiteId}/{modbus.DeviceName}/AI";
