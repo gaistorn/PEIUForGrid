@@ -57,7 +57,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>586CD3C118874815C9BBE1F1C6E7C2D2A3DEC05D</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>55B484582B1B812AB1E3B3A5257D3288732E241B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>AccountManager_TemporaryKey.pfx</ManifestKeyFile>
@@ -78,7 +78,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>AccountManager_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx">
@@ -86,7 +87,7 @@
     </Reference>
     <Reference Include="FireworksFramework.NetStandard.Mqtt, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Users\redwi\source\repos\FireworksFramework\Build\FireworksFramework.NetStandard.Mqtt\bin\Debug\netstandard2.0\FireworksFramework.NetStandard.Mqtt.dll</HintPath>
+      <HintPath>DLL\FireworksFramework.NetStandard.Mqtt.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -130,11 +131,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\..\Models\WebDataModel\ContractModel.cs">
-      <Link>Models\ContractModel.cs</Link>
-    </Compile>
     <Compile Include="..\..\PEIUModels\AccountModel.cs">
       <Link>Models\AccountModel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\PEIUModels\ContractModel.cs">
+      <Link>Models\ContractModel.cs</Link>
+    </Compile>
+    <Compile Include="Converters\AuthRolesConverters.cs" />
+    <Compile Include="CustomControls\CustomerTreeView.xaml.cs">
+      <DependentUpon>CustomerTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\HamburgerBedgeMenuItem.cs" />
     <Compile Include="Selector\MainHamburgerMenuItemTempleteSelector.cs" />
@@ -159,6 +164,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WebServices\ContractWebService.cs" />
+    <Page Include="CustomControls\CustomerTreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\HamburgerMenuResource.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

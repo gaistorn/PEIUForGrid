@@ -39,14 +39,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hubbub\DataModel\DataModel.csproj" />
-    <ProjectReference Include="..\Models\WebDataModel\WebDataModel.csproj" />
     <ProjectReference Include="..\PEIUModels\PEIUModels.csproj" />
     <ProjectReference Include="..\PEIUToolkit.Core\PEIUToolkit.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="FireworksFramework.Core.Mqtt">
-      <HintPath>..\..\..\Users\redwi\source\repos\FireworksFramework\Build\FireworksFramework.NetCore.Mqtt\bin\Release\netcoreapp2.1\FireworksFramework.Core.Mqtt.dll</HintPath>
+      <HintPath>..\DLL\FireworksFramework.Core.Mqtt.dll</HintPath>
     </Reference>
   </ItemGroup>
 

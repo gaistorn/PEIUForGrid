@@ -1,11 +1,11 @@
-﻿using PES.Models;
+﻿using PEIU.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace PES.Models
+namespace PEIU.Models
 {
     public class DaegunPacketClass
     {

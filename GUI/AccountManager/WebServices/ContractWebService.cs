@@ -12,16 +12,13 @@ namespace PEIU.GUI.WebServices
 {
     public static class ContractWebService
     {
-        static string _address = "";
-        public static void InitWebServerAddress(string address)
-        {
-            _address = address;
-        }
+        public static string WebAddress => Properties.Settings.Default.WebServiceUrl;
+
 
         public static async Task<T> RequestGetMethod<T>(string Path, object QueryParams = null)
         {
             // Flurl will use 1 HttpClient instance per host
-            var request = await _address
+            var request = await WebAddress
                 .AppendPathSegment(Path)
                 .SetQueryParams(QueryParams)
                 .GetJsonAsync<T>();
@@ -31,7 +28,7 @@ namespace PEIU.GUI.WebServices
         public static async Task<List<T>> RequestCollectionGetMethod<T>(string Path, object QueryParams = null)
         {
             // Flurl will use 1 HttpClient instance per host
-            List<T> request = await _address
+            List<T> request = await WebAddress
                 .AppendPathSegment(Path)
                 .SetQueryParams(QueryParams)
                 .GetJsonAsync<List<T>>();

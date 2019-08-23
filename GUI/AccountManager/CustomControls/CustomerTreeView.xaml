@@ -1,0 +1,52 @@
+﻿<TreeView x:Class="PEIU.GUI.CustomControls.CustomerTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Converter="clr-namespace:PEIU.GUI.Converters"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Model="clr-namespace:PEIU.Models"
+             xmlns:local="clr-namespace:PEIU.GUI.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <TreeView.Resources>
+        <Converter:AuthRolesIconConverters x:Key="AuthRoleIconConverter" />
+        <Converter:AuthRolesTitleConverters x:Key="AuthRoleTitleConverter"/>
+    </TreeView.Resources>
+    <TreeView.ItemTemplate>
+        <HierarchicalDataTemplate ItemsSource="{Binding}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                </Grid.ColumnDefinitions>
+                <iconPacks:PackIconMaterial Kind="{Binding Converter={StaticResource AuthRoleIconConverter}, Path=Key}">
+                    
+                </iconPacks:PackIconMaterial>
+                <TextBlock Text="{Binding Converter={StaticResource AuthRoleTitleConverter}}" Grid.Column="1"/>
+                <TextBlock Text="{Binding Path=Count}" />
+            </Grid>
+            <HierarchicalDataTemplate.ItemTemplate>
+                <DataTemplate>
+                    <!-- Content presenter for the list of objects in each grouping. Binding is done to the Name property on the custom class -->
+                    <ContentPresenter>
+                        <ContentPresenter.Content>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} {1} ({2})">
+                                        <Binding Path="FirstName"/>
+                                        <Binding Path="LastName"/>
+                                        <Binding Path="Email"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </ContentPresenter.Content>
+
+
+                    </ContentPresenter>
+                </DataTemplate>
+            </HierarchicalDataTemplate.ItemTemplate>
+        </HierarchicalDataTemplate>
+    </TreeView.ItemTemplate>
+</TreeView>

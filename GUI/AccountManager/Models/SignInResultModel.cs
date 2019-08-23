@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PEIU.GUI.Models
+namespace PEIU.Models
 {
     public class SignInResultModel
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PES.Models
+namespace PEIU.Models
 {
     public static class PacketParser
     {

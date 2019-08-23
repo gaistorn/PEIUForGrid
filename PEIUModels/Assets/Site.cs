@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PES.Models
+namespace PEIU.Models
 {
     public class Site
     {

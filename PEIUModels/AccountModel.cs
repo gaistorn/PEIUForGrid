@@ -10,6 +10,15 @@ using System.Text;
 
 namespace PEIU.Models
 {
+    public enum AuthRoles : int
+    {
+        Operator = 8,
+        Aggregator = 16,
+        Business = 32,
+        Candidator = 64,
+    }
+
+#if !WPF
     public class LoginViewModel
     {
         [Required]
@@ -23,7 +32,7 @@ namespace PEIU.Models
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
-#if !WPF
+
     public class AccountModel : IdentityUser
     {
         //data.Add("id", 3);
@@ -63,6 +72,25 @@ namespace PEIU.Models
         {
             
         }
+    }
+
+    
+    public class ResetPasswordModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "email")]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "password")]
+        public string NewPassword { get; set; }
+
+        [Required]
+        //[DataType(DataType.to)]
+        [Display(Name = "token")]
+        public string Token { get; set; }
     }
 
 #endif
@@ -132,24 +160,9 @@ namespace PEIU.Models
         [Display(Name = "authroles")]
         public ushort AuthRoles { get; set; }
 
+
+
 #endif
     }
 
-    public class ResetPasswordModel
-    {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "email")]
-        public string Email { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "password")]
-        public string NewPassword { get; set; }
-
-        [Required]
-        //[DataType(DataType.to)]
-        [Display(Name = "token")]
-        public string Token { get; set; }
-    }
 }

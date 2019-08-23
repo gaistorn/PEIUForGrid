@@ -53,7 +53,6 @@ namespace PEIU.GUI.View
             //HamburgerMenuIconItem item = new HamburgerMenuIconItem();
             //item.Label = "Hei";
             //HamburgerMenuControl.Items.Add(item);
-            ContractWebService.InitWebServerAddress(Properties.Settings.Default.WebServiceUrl);
 
             LoadNewUser();
             InitializeMqtt();
