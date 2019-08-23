@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,11 +11,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PEIU.Models;
+using PES.Models;
 using PES.Service.WebApiService;
 using PES.Service.WebApiService.Localization;
+using PES.Service.WebApiService.Publisher;
 using PES.Toolkit.Auth;
 using Power21.PEIUEcosystem.Models;
 
@@ -31,12 +36,12 @@ namespace WebApiService.Controllers
         private readonly IStringLocalizer<LocalizedIdentityErrorDescriber> _localizer;
         private readonly SignInManager<AccountModel> _signInManager;
         private readonly IEmailSender _emailSender;
-        
+        readonly ReservedRegisterNotifyPublisher Publisher;
 
         public AuthController(UserManager<AccountModel> userManager,
             SignInManager<AccountModel> signInManager,
             IEmailSender emailSender,
-            IStringLocalizer<LocalizedIdentityErrorDescriber> localizer,
+            IStringLocalizer<LocalizedIdentityErrorDescriber> localizer, ReservedRegisterNotifyPublisher _publisher,
             AccountRecordContext accountContext)
         {
             _userManager = userManager;
@@ -44,6 +49,7 @@ namespace WebApiService.Controllers
             _signInManager = signInManager;
             _localizer = localizer;
             _emailSender = emailSender;
+            Publisher = _publisher;
         }
 
         [HttpPost, Route("logout")]
@@ -234,10 +240,12 @@ namespace WebApiService.Controllers
                     Console.WriteLine("Invalid User");
                     return NoContent();
                 }
-                var signResult = await _signInManager.PasswordSignInAsync(user.email, user.password, user.RememberMe, false);
+                Microsoft.AspNetCore.Identity.SignInResult signResult = await _signInManager.PasswordSignInAsync(user.email, user.password, user.RememberMe, false);
                 if (signResult.Succeeded)
                 {
-                    string token = JasonWebTokenManager.GenerateToken(user.email);
+                    var accountUser = await _userManager.FindByEmailAsync(user.email);
+                    IList<Claim> claims = await _userManager.GetClaimsAsync(accountUser);
+                    string token = JasonWebTokenManager.GenerateToken(user.email, PEIU.Models.CommonClaimTypes.Issuer, claims);
 
                     //if (string.IsNullOrEmpty(returnUrl) == false)
                     //{
@@ -275,6 +283,8 @@ namespace WebApiService.Controllers
             }
         }
 
+       
+
         [HttpPost, Route("register")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
@@ -289,7 +299,6 @@ namespace WebApiService.Controllers
             {
                 var user = new AccountModel
                 {
-                    
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
@@ -297,20 +306,27 @@ namespace WebApiService.Controllers
                     NormalizedUserName = model.Email.ToUpper(),
                     PhoneNumber = model.PhoneNumber,
                     RegistrationNumber = model.RegistrationNumber,
-                    Address = model.Address
+                    Address = model.Address,
+                    AuthRoles = model.AuthRoles,
+                    Status = 0
 
                 };
+
+                JObject obj = JObject.FromObject(user);
+                CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                 var result = await _userManager.CreateAsync(user, model.Password);
                 //result.Errors
                 if (result.Succeeded)
                 {
+                    if (user.AuthRoles == (int)AuthRoles.Aggregator || user.AuthRoles == (int)AuthRoles.Business)
+                        await Publisher.PublishMessageAsync(obj.ToString(), cancellationTokenSource.Token);
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                     // Send an email with this link
                     //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                     //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                     //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
                     //_logger.LogInformation(3, "User created a new account with password.");
                 }
                 return Ok(new { Result = result });

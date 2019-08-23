@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿#if !WPF
+using Microsoft.AspNetCore.Identity;
+#endif
+using PEIU.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Power21.PEIUEcosystem.Models
+namespace PEIU.Models
 {
     public class LoginViewModel
     {
@@ -19,7 +23,7 @@ namespace Power21.PEIUEcosystem.Models
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
-
+#if !WPF
     public class AccountModel : IdentityUser
     {
         //data.Add("id", 3);
@@ -50,6 +54,9 @@ namespace Power21.PEIUEcosystem.Models
         [Display(Name = "address")]
         public string Address { get; set; }
 
+        [Display(Name = "status")]
+        public int Status { get; set; }
+
         //public override string UserName { get => base.UserName; set => base.UserName = value; }
 
         public AccountModel()
@@ -58,8 +65,31 @@ namespace Power21.PEIUEcosystem.Models
         }
     }
 
+#endif
     public class RegisterViewModel
     {
+#if WPF
+        public string Email { get; set; }
+
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string Password { get; set; }
+
+        public string ConfirmPassword { get; set; }
+
+        public string CompanyName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+
+        public string Address { get; set; }
+
+        public ushort AuthRoles { get; set; }
+
+        public ObservableCollection<IAssetLocation> Assets { get; } = new ObservableCollection<IAssetLocation>();
+#else
         [Required]
         [EmailAddress]
         [Display(Name = "email")]
@@ -97,6 +127,12 @@ namespace Power21.PEIUEcosystem.Models
 
         [Display(Name = "address")]
         public string Address { get; set; }
+
+        [Required]
+        [Display(Name = "authroles")]
+        public ushort AuthRoles { get; set; }
+
+#endif
     }
 
     public class ResetPasswordModel

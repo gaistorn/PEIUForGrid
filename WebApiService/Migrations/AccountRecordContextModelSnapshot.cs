@@ -14,7 +14,7 @@ namespace PES.Service.WebApiService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -179,15 +179,29 @@ namespace PES.Service.WebApiService.Migrations
 
                     b.Property<int>("ServiceCode");
 
-                    b.Property<float>("TotalAvaliableESSMountKW");
-
-                    b.Property<float>("TotalAvaliablePCSMountKW");
-
-                    b.Property<float>("TotalAvaliablePVMountKW");
-
                     b.HasKey("SiteId");
 
                     b.ToTable("AssetLocation");
+                });
+
+            modelBuilder.Entity("PES.Models.ReservedAssetLocation", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("AccountId");
+
+                    b.Property<string>("Address1");
+
+                    b.Property<string>("Address2");
+
+                    b.Property<bool>("ControlOwner");
+
+                    b.Property<string>("SiteInformation");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("ReservedAssetLocation");
                 });
 
             modelBuilder.Entity("Power21.PEIUEcosystem.Models.AccountModel", b =>
@@ -238,6 +252,8 @@ namespace PES.Service.WebApiService.Migrations
                     b.Property<string>("RegistrationNumber");
 
                     b.Property<string>("SecurityStamp");
+
+                    b.Property<int>("Status");
 
                     b.Property<bool>("TwoFactorEnabled");
 

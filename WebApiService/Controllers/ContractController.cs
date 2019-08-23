@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using PEIU.Models;
 using PES.Models;
 using PES.Service.WebApiService.Localization;
 using Power21.PEIUEcosystem.Models;
@@ -77,6 +78,48 @@ namespace PES.Service.WebApiService.Controllers
                 return_value.Add(obj);
             }
             return Ok(return_value);
+        }
+
+        [HttpPost, Route("siteregister")]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> SiteRegister([FromBody] ReservedSiteRegisterModel model)
+        {
+
+            //model.Email = value["Email"].ToString();
+            //model.Password = value["Password"].ToString();
+            //model.ConfirmPassword = value["ConfirmPassword"].ToString();
+            //model.Username
+            if (ModelState.IsValid)
+            {
+                var user = new ReservedAssetLocation
+                {
+                    AccountId = model.AccountId,
+                    Address1 = model.Address1,
+                    Address2 = model.Address2,
+                    ControlOwner = model.ControlOwner,
+                    SiteInformation = model.SiteInformation,
+                    RegisterTimestamp = DateTime.Now
+                };
+                accountContext.ReservedAssetLocations.Add(user);
+                await accountContext.SaveChangesAsync();
+                return Ok();
+            }
+
+            // If we got this far, something failed, redisplay form
+            return Ok(StatusCodes.Status400BadRequest);
+        }
+
+        [HttpGet("getreservedregisters")]
+        public async Task<IActionResult> GetReservedRegisters()
+        {
+            JArray array = new JArray();
+            foreach (var account in accountContext.ReservedAssetLocations)
+            {
+                JObject row = JObject.FromObject(account);
+                array.Add(row);
+            }
+            return Ok(array);
         }
 
         [HttpGet("getcontractorlist")]

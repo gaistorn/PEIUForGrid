@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Power21.PEIUEcosystem.Models;
+using Microsoft.Extensions.Primitives;
+using PEIU.Models;
 
 namespace WebApiService.Controllers
 {
@@ -27,9 +29,19 @@ namespace WebApiService.Controllers
         }
 
         // GET api/values/5
-        [Authorize(Policy = "SiteOwner")]
+        [Authorize(Policy = PEIU.Models.CommonClaimTypes.READ_CUSTOMER_INFO_CLAIM)]
         [HttpGet("getclaim")]        
         public async Task<ActionResult> getclaim()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var claims = await _userManager.GetClaimsAsync(user);
+            return Ok(claims);
+        }
+
+        // GET api/values/5
+        [Authorize(Policy = PEIU.Models.CommonClaimTypes.CREATE_CUSTOMER_INFO_CLAIM)]
+        [HttpGet("getclaim2")]
+        public async Task<ActionResult> getclaim2()
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var claims = await _userManager.GetClaimsAsync(user);

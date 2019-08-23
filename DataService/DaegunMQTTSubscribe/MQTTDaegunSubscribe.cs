@@ -112,7 +112,6 @@ namespace PES.Service.DataService
         private async void ManagedClient_Connected(object sender, MqttClientConnectedEventArgs e)
         {
             _logger.LogInformation($"### CONNECTED WITH SERVER (TOPIC FILTER:{mqttOptions.Topic}) ###");
-            client.SubscribeAsync
             await client.SubscribeAsync(new TopicFilterBuilder().WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)mqttOptions.QoSLevel).WithTopic(mqttOptions.Topic).Build());
             
         }

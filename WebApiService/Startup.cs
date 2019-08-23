@@ -26,6 +26,12 @@ using PES.Toolkit.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using PES.Service.WebApiService.Authroize;
+using PES.Service.WebApiService.Publisher;
+using System.Threading;
+using PEIU.Models;
 
 namespace PES.Service.WebApiService
 {
@@ -47,6 +53,7 @@ namespace PES.Service.WebApiService
         public IConfiguration Configuration { get; }
         public ILoggerFactory LoggerFactory { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -60,23 +67,34 @@ namespace PES.Service.WebApiService
                 .AddEntityFrameworkStores<AccountRecordContext>()
                 .AddErrorDescriber<Localization.LocalizedIdentityErrorDescriber>()
                 .AddDefaultTokenProviders();
+
+            //add the following line of code
+            services.AddScoped<IUserClaimsPrincipalFactory<AccountModel>, ClaimsPrincipalFactory>();
             //ServiceDescriptor sd = services.FirstOrDefault(x => x.ServiceType == typeof(IdentityErrorDescriber) && x.ImplementationType == typeof(Localization.LocalizedIdentityErrorDescriber));
             //sd.
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = "http://www.peiu.com",
-                        ValidAudience = "http://www.peiu.com",
+                        ValidIssuer = PEIU.Models.CommonClaimTypes.Issuer,
+                        ValidAudience = "https://www.peiu.co.kr",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JasonWebTokenManager.Secret))
+
                     };
-                })
-                .AddCookie();
+                    options.ClaimsIssuer = PEIU.Models.CommonClaimTypes.Issuer;
+
+
+                });
+            //options.Configuration.
+                //.AddCookie();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.AddSingleton<PeiuGridDataContext>();
@@ -92,6 +110,14 @@ namespace PES.Service.WebApiService
             services.AddSingleton(redisConfiguration);
             services.AddSingleton(email_config);
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "My API", Version = "v1" });
+            });
+
+            ReservedRegisterNotifyPublisher reservedRegisterNotifyPublisher = new ReservedRegisterNotifyPublisher();
+            reservedRegisterNotifyPublisher.Initialize();
+            services.AddSingleton(reservedRegisterNotifyPublisher);
             //services.AddSingleton(client);
 
 
@@ -157,17 +183,29 @@ namespace PES.Service.WebApiService
             //var options = new RewriteOptions().AddRedirectToHttps(StatusCodes.Status301MovedPermanently, 3012);
             app.UseRequestLocalization();
             app.UseAuthentication();
-            
+
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+           
+            // Console.WriteLine("Swagger: https://www.peiu.co.kr/")
             app.UseMvc();
         }
 
         private void ConfigureAuthrozation(IServiceCollection services)
         {
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("SiteOwner", policy =>
-                policy.RequireClaim("ManagerSiteId"));
-            });
+            services.AddAuthorization();
+
+            // register the scope authorization handler
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
         private void ConfigureIdentity(IServiceCollection services)
@@ -190,12 +228,13 @@ namespace PES.Service.WebApiService
                 //options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(720);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+               
                 //options.LoginPath = new PathString("/api/auth/logintoredirec");
                 //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
 
-                
+
             });
             var pass_options = Configuration.GetSection("PasswordPolicy").Get<PasswordOptions>();
             

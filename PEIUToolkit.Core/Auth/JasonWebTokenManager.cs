@@ -46,7 +46,7 @@ namespace PES.Toolkit.Auth
             }
         }
 
-        public static string ValidateToken(string token)
+        public static string ValidateToken(string token, string ClaimType)
         {
             string username = null;
             ClaimsPrincipal principal = GetPrincipal(token);
@@ -62,24 +62,43 @@ namespace PES.Toolkit.Auth
             {
                 return null;
             }
-            Claim usernameClaim = identity.FindFirst(ClaimTypes.Name);
+            Claim usernameClaim = identity.FindFirst(ClaimType);
             username = usernameClaim.Value;
             return username;
         }
 
-        public static string GenerateToken(string username)
+        public static ClaimsIdentity ValidateToken(string token)
         {
-            var claims = new[]
+            ClaimsPrincipal principal = GetPrincipal(token);
+
+            if (principal == null)
+                return null;
+            ClaimsIdentity identity = null;
+            try
+            {
+                identity = (ClaimsIdentity)principal.Identity;
+            }
+            catch /*(Exception ex)*/
+            {
+                return null;
+            }
+            return identity;
+        }
+
+        public static string GenerateToken(string username, string issuer, IList<Claim> claims)
         {
-            new Claim(ClaimTypes.Name, username)
-        };
+        //    var claims = new[]
+        //{
+        //    new Claim(ClaimTypes.Name, username),
+        //    new Claim(ClaimTypes.sc)
+        //};
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "http://www.peiu.com",
-                audience: "http://www.peiu.com",
+                issuer: issuer,
+                audience: "https://www.peiu.co.kr",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PES.Models;
+using PEIU.Models;
 using Power21.PEIUEcosystem.Models;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,8 @@ namespace PES.Service.WebApiService
         public DbSet<AssetDevices> DevicesInfos { get; set; }
         public DbSet<AssetLocation> AssetLocations { get; set; }
 
+        public DbSet<ReservedAssetLocation> ReservedAssetLocations { get; set; }
+
         public AccountRecordContext(DbContextOptions<AccountRecordContext> options) : base(options)
         {
             
@@ -25,7 +27,7 @@ namespace PES.Service.WebApiService
             base.OnModelCreating(builder);
             builder.Entity<AssetDevices>().HasKey(x => x.PK);
             builder.Entity<AssetLocation>().HasKey(m => m.SiteId);
-
+            builder.Entity<ReservedAssetLocation>().HasKey(x => x.ID);
             //// shadow properties
             //builder.Entity<EventLogData>().Property<DateTime>("UpdatedTimestamp");
             //builder.Entity<SourceInfo>().Property<DateTime>("UpdatedTimestamp");
