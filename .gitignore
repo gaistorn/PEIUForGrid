@@ -1,4 +1,5 @@
 .dockerignore
+.pfx
 .env
 .git
 .gitignore
