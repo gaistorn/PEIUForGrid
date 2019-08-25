@@ -5,7 +5,10 @@
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       xmlns:ViewModel="clr-namespace:PEIU.GUI.ViewModel"
                       xmlns:View="clr-namespace:PEIU.GUI.View"
+                      xmlns:Model="clr-namespace:PEIU.Models"
                       xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                      xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                       xmlns:materialDesignConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
@@ -30,83 +33,45 @@
                       WindowStartupLocation="CenterScreen"
                       mc:Ignorable="d">
     <Controls:MetroWindow.Resources>
-        <Selector:MainHamburgerMenuItemTempleteSelector x:Key="HamburgerSelector" />
-        <DataTemplate x:Key="BedgeMenuItemTemplate" DataType="{x:Type CustomControl:HamburgerBedgeMenuItem}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="33"/>
-                    <RowDefinition Height="20"/>
-                </Grid.RowDefinitions>
-                <Controls:Badged Width="20" Height="20" VerticalAlignment="Bottom" 
-                             Margin="0 5 0 0"
-                             Badge="{Binding Path=Bedge}">
-                    <ContentControl Grid.Column="0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Bottom"
-                                    Content="{Binding Icon}"
-                                    Focusable="False"
-                                    IsTabStop="False" />
-                </Controls:Badged>
-                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"
-                               VerticalAlignment="Top"
-                               FontSize="10"
-                               Text="{Binding Label}" />
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type Controls:HamburgerMenuIconItem}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="33"/>
-                    <RowDefinition Height="20"/>
-                </Grid.RowDefinitions>
-                    <ContentControl Grid.Column="0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Bottom"
-                                    Content="{Binding Icon}"
-                                    Focusable="False"
-                                    IsTabStop="False" />
-                <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"
-                               VerticalAlignment="Top"
-                               FontSize="10"
-                               Text="{Binding Label}" />
-            </Grid>
-        </DataTemplate>
-        <DataTemplate x:Key="HamburgerOptionsMenuItem" DataType="{x:Type Controls:HamburgerMenuIconItem}">
-            <DockPanel Height="48" LastChildFill="True">
-                <ContentControl x:Name="IconPart"
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AccountManagerRunner;component/Styles/HamburgerMenuResource.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="HamburgerOptionsMenuItem" DataType="{x:Type Controls:HamburgerMenuIconItem}">
+                <DockPanel Height="48" LastChildFill="True">
+                    <ContentControl x:Name="IconPart"
                                     Width="48"
                                     Content="{Binding Icon}"
                                     DockPanel.Dock="Left"
                                     Focusable="False"
                                     IsTabStop="False" />
-                <TextBlock x:Name="TextPart"
+                    <TextBlock x:Name="TextPart"
                                VerticalAlignment="Center"
                                FontSize="16"
                                Text="{Binding Label}" />
-            </DockPanel>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:HamburgerMenu}}, Path=PanePlacement}" Value="Right">
-                    <Setter TargetName="IconPart" Property="DockPanel.Dock" Value="Right" />
-                    <Setter TargetName="TextPart" Property="Margin" Value="8 0 0 0" />
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
+                </DockPanel>
+                <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:HamburgerMenu}}, Path=PanePlacement}" Value="Right">
+                        <Setter TargetName="IconPart" Property="DockPanel.Dock" Value="Right" />
+                        <Setter TargetName="TextPart" Property="Margin" Value="8 0 0 0" />
+                    </DataTrigger>
+                </DataTemplate.Triggers>
+            </DataTemplate>
+        </ResourceDictionary>
     </Controls:MetroWindow.Resources>
     <Controls:MetroWindow.RightWindowCommands>
         <Controls:WindowCommands ShowLastSeparator="False" >
+            <Button Command="{Binding UpdateViewModelCommand}"
+                    ToolTip="새로고침">
+                <iconPacks:PackIconUnicons Kind="Sync" />
+            </Button>
             <Button Command="{Binding GoToGitHubCommand}"
                     ToolTip="IconPacks.Browser on GitHub">
                 <iconPacks:PackIconMaterial Kind="Account" />
             </Button>
         </Controls:WindowCommands>
+        
     </Controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.RowDefinitions>
@@ -118,14 +83,20 @@
                                     HamburgerWidth="48"
                                     IsPaneOpen="{Binding IsHamburgerMenuPaneOpen}"
                                     ItemInvoked="HamburgerMenuControl_OnItemInvoked"
-                                   
-                                    ItemTemplateSelector="{StaticResource HamburgerSelector}"
+                                    ItemsSource="{Binding Path=Menus}"
+                                    
                                     OptionsItemTemplate="{StaticResource HamburgerOptionsMenuItem}"
-                                    SelectedIndex="1" 
+                                    SelectedIndex="0" 
                                     VerticalScrollBarOnLeftSide="False">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="ItemClick">
+                    <cmd:EventToCommand PassEventArgsToCommand="True"
+                        Command="{Binding SelectedMenuItemCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <!--  Header  -->
             <Controls:HamburgerMenu.HamburgerMenuHeaderTemplate>
-                <DataTemplate>
+                <DataTemplate >
                     <TextBlock HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
                                    FontSize="16"
@@ -134,7 +105,7 @@
                 </DataTemplate>
             </Controls:HamburgerMenu.HamburgerMenuHeaderTemplate>
               <!--Items-->  
-            <Controls:HamburgerMenu.ItemsSource>
+            <!--<Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
                     
                     <Controls:HamburgerMenuIconItem Label="현황">
@@ -152,9 +123,9 @@
                         <CustomControl:HamburgerBedgeMenuItem.Tag>
                             <View:CustomerManagerView />
                         </CustomControl:HamburgerBedgeMenuItem.Tag>
-                        <!--<CustomControl:HamburgerBedgeMenuIte.Icon>
+                        --><!--<CustomControl:HamburgerBedgeMenuIte.Icon>
                             <iconPacks:PackIconMaterial Kind="AccountGroup" />
-                        </CustomControl:HamburgerBedgeMenuIte.Icon>-->
+                        </CustomControl:HamburgerBedgeMenuIte.Icon>--><!--
                     </CustomControl:HamburgerBedgeMenuItem>
                     <Controls:HamburgerMenuIconItem Label="고객분석">
                         <Controls:HamburgerMenuIconItem.Icon>
@@ -172,7 +143,7 @@
                         </Controls:HamburgerMenuIconItem.Icon>
                     </Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
-            </Controls:HamburgerMenu.ItemsSource>
+            </Controls:HamburgerMenu.ItemsSource>-->
 
             <!--  Options  -->
             <Controls:HamburgerMenu.OptionsItemsSource>
@@ -201,18 +172,16 @@
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.OptionsItemsSource>
 
-            <Controls:HamburgerMenu.ContentTemplate>
-                <DataTemplate DataType="{x:Type Controls:HamburgerMenuIconItem}">
-                    <ContentControl Content="{Binding Tag}" Focusable="False" Margin="20 0 10 0" />
+            <!--<Controls:HamburgerMenu.ContentTemplate>
+                <DataTemplate DataType="{x:Type CustomControl:MenuItemBase}">
+                    <ContentControl DataContext="{Binding Path=ViewModel}" Content="{Binding Path=OwnerControl}" Focusable="False" Margin="20 0 10 0" />
                 </DataTemplate>
-            </Controls:HamburgerMenu.ContentTemplate>
+            </Controls:HamburgerMenu.ContentTemplate>-->
         </Controls:HamburgerMenu>
         <StatusBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <StatusBarItem Content="{Binding Path=Version}" />
             <StatusBarItem Content="{Binding Path=BuildDate}" />
-            <StatusBarItem HorizontalAlignment="Right" Content="통신상태"/>
-            <StatusBarItem HorizontalAlignment="Right" Content="{Binding Path=CommStatus}"/>
-            <StatusBarItem Content="재접속시도" MouseDown="StatusBarItem_MouseDown"/>
+            <StatusBarItem HorizontalAlignment="Right" Content="{Binding Path=Status}"/>
         </StatusBar>
     </Grid>
 

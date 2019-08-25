@@ -44,7 +44,7 @@ namespace PEIU.GUI.View
 
         private void HamburgerMenuControl_OnItemInvoked(object sender, HamburgerMenuItemInvokedEventArgs e)
         {
-            HamburgerMenuControl.Content = e.InvokedItem;
+            HamburgerMenuControl.Content = ((MenuItemBase)e.InvokedItem).MenuModel.OwnerControl;
         }
 
         private void MetroWindow_Loaded(object sender, RoutedEventArgs e)
@@ -53,8 +53,6 @@ namespace PEIU.GUI.View
             //HamburgerMenuIconItem item = new HamburgerMenuIconItem();
             //item.Label = "Hei";
             //HamburgerMenuControl.Items.Add(item);
-
-            LoadNewUser();
             InitializeMqtt();
 
             //GalaSoft.MvvmLight.Messaging.Messenger.Default.Register<DialogMessage>(this, HandleDialogMessage);
@@ -92,10 +90,10 @@ namespace PEIU.GUI.View
         {
             if(HamburgerMenuControl.Dispatcher.Thread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
             {
-                HamburgerMenuControl.Dispatcher.Invoke(() => { (HamburgerMenuControl.Items[1] as HamburgerBedgeMenuItem).Bedge++; });
+                HamburgerMenuControl.Dispatcher.Invoke(() => { (HamburgerMenuControl.Items[1] as BedgeMenuItem).Bedge++; });
             }
             else
-                (HamburgerMenuControl.Items[1] as HamburgerBedgeMenuItem).Bedge++;
+                (HamburgerMenuControl.Items[1] as BedgeMenuItem).Bedge++;
         }
 
         private void OnReceiveNotifyRegister(string Email, int AuthRole)
@@ -103,36 +101,6 @@ namespace PEIU.GUI.View
 
         }
 
-        private async void LoadNewUser()
-        {
-            try
-            {
-                var result = await ContractWebService.RequestCollectionGetMethod<ReservedAssetLocation>("api/contract/getreservedregisters");
-                (HamburgerMenuControl.Items[1] as HamburgerBedgeMenuItem).Bedge = result.Count(x => x.RegisterTimestamp.Date == DateTime.Now.Date);
-                ViewModel.WaitJoinCustomerCount = 150;
-            }
-            catch(Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message, "오류", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void Badged_BadgeChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-
-        }
-
-        private void Badged_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Badged baged = (Badged)sender;
-            baged.Badge = 1;
-        }
-
-        private void StatusBarItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-           
-            //connection.Start();
-        }
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {

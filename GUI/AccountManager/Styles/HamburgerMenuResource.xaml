@@ -2,29 +2,60 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-                    
+                    xmlns:Models="clr-namespace:PEIU.Models"
+                    xmlns:CustomControls="clr-namespace:PEIU.GUI.CustomControls"
                     xmlns:materialDesignConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
                     >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Themes/HamburgerMenuTemplate.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <materialDesignConverters:BrushRoundConverter x:Key="BrushRoundConverter" />
-    <DataTemplate x:Key="MenuItemTemplate" DataType="{x:Type Controls:HamburgerMenuIconItem}">
-        <Grid Height="48">
+    <DataTemplate DataType="{x:Type CustomControls:BedgeMenuItem}">
+        <Grid DataContext="{Binding Path=ViewModel}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="48" />
-                <ColumnDefinition />
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ContentControl Grid.Column="0"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="33"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Controls:Badged Width="20" Height="20" VerticalAlignment="Bottom" 
+                             Margin="0 5 0 0"
+                             Badge="{Binding Path=BedgeCount}">
+                <ContentControl Grid.Column="0"
                                     HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Content="{Binding Icon}"
+                                    VerticalAlignment="Bottom"
+                                    Content="{Binding Path=Icon}"
                                     Focusable="False"
                                     IsTabStop="False" />
-            <TextBlock Grid.Column="1"
-                               VerticalAlignment="Center"
-                               FontSize="16"
-                               Text="{Binding Label}" />
+            </Controls:Badged>
+            <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               FontSize="10"
+                               Text="{Binding Path=Title}" />
+        </Grid>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type CustomControls:MenuItemBase}">
+        <Grid DataContext="{Binding Path=ViewModel}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="33"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <ContentControl Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Bottom"
+                                    Content="{Binding Path=Icon}"
+                                    Focusable="False"
+                                    IsTabStop="False" />
+            <TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               FontSize="10"
+                               Text="{Binding Path=Title}" />
         </Grid>
     </DataTemplate>
     <Style x:Key="HamburgerMenuCreatorsItemStyle"

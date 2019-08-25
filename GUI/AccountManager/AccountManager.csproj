@@ -57,7 +57,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>55B484582B1B812AB1E3B3A5257D3288732E241B</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>88D9BA5235CB8C76A070B2B667848CC09F2E0780</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>AccountManager_TemporaryKey.pfx</ManifestKeyFile>
@@ -82,12 +82,27 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\CommonServiceLocator.dll</HintPath>
+    </Reference>
     <Reference Include="ControlzEx">
       <HintPath>DLL\ControlzEx.dll</HintPath>
     </Reference>
     <Reference Include="FireworksFramework.NetStandard.Mqtt, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\FireworksFramework.NetStandard.Mqtt.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform">
+      <HintPath>DLL\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -113,6 +128,10 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -142,6 +161,8 @@
       <DependentUpon>CustomerTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\HamburgerBedgeMenuItem.cs" />
+    <Compile Include="Models\IMenuModel.cs" />
+    <Compile Include="Models\StatusMessageBase.cs" />
     <Compile Include="Selector\MainHamburgerMenuItemTempleteSelector.cs" />
     <Compile Include="Subscriber\ReservedRegisterSubscriberWorker.cs" />
     <Compile Include="ViewModel\CustomerManagerViewModel.cs" />
@@ -150,6 +171,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModel\StatusDashboardViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\CustomerManagerView.xaml.cs">
       <DependentUpon>CustomerManagerView.xaml</DependentUpon>
@@ -164,6 +186,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="WebServices\ContractWebService.cs" />
+    <Compile Include="WebServices\IUpdateWebData.cs" />
     <Page Include="CustomControls\CustomerTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -418,9 +441,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Expression.Blend.Sdk">
-      <Version>1.0.2</Version>
-    </PackageReference>
     <PackageReference Include="Flurl.Http">
       <Version>2.4.2</Version>
     </PackageReference>
@@ -429,9 +449,6 @@
     </PackageReference>
     <PackageReference Include="MQTTnet">
       <Version>3.0.8</Version>
-    </PackageReference>
-    <PackageReference Include="MvvmLight">
-      <Version>5.4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>

@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace PEIU.GUI.ViewModel
 {
-    public class CustomerManagerViewModel : ViewModelBase
+    public class CustomerManagerViewModel : ViewModelBase, IUpdateWebData, IBedgeMenuModel
     {
         private IEnumerable<RegisterViewModel> _accountSource;
 
@@ -27,11 +29,39 @@ namespace PEIU.GUI.ViewModel
                 RaisePropertyChanged("Accounts");
             }
         }
+        public int BedgeCount {  get => _bedgeCount; set => base.Set("BedgeCount", ref _bedgeCount, value); }
+        private int _bedgeCount = 0;
+
+        private bool canUpdate = true;
+        public bool CanUpdate
+        {
+            get
+            {
+                return canUpdate;
+            }
+            set
+            {
+                this.Set("CanUpdate", ref canUpdate);
+            }
+        }
+
+        public string Title => "고객관리";
+
+        public string Tooltip => "고객관리 페이지";
+
+        private View.CustomerManagerView view;
+        public object OwnerControl
+        {
+            get
+            {
+                if (view == null)
+                    view = new View.CustomerManagerView();
+                return view ?? (view = new View.CustomerManagerView());
+            }
+        }
 
         public CustomerManagerViewModel()
         {
-            RequestCustomerDataCommand = new RelayCommand(RequestCustomerData);
-            RequestCustomerData();
         }
 
         public void RaiseChangedAccountProperty()
@@ -39,22 +69,28 @@ namespace PEIU.GUI.ViewModel
             RaisePropertyChanged("Accounts");
         }
 
-        public RelayCommand RequestCustomerDataCommand
-        {
-            get;
-            private set;
-        }
-
-        public async void RequestCustomerData()
+       
+        public async Task StartUpdateAsync(CancellationToken cancellationToken)
         {
             try
             {
                 var result = await ContractWebService.RequestCollectionGetMethod<RegisterViewModel>("/api/contract/getcontractorlist");
-                AccountSource = result; 
+                AccountSource = result;
+                BedgeCount = result.Count(x => (AuthRoles)x.AuthRoles == AuthRoles.Candidator);
             }
             catch (Exception ex)
             {
-               // System.Windows.MessageBox.Show(ex.Message, "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+                // System.Windows.MessageBox.Show(ex.Message, "오류", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public object Icon
+        {
+            get
+            {
+                MahApps.Metro.IconPacks.PackIconUnicons icon = new MahApps.Metro.IconPacks.PackIconUnicons();
+                icon.Kind = MahApps.Metro.IconPacks.PackIconUniconsKind.Adjust;
+                return icon;
             }
         }
 
@@ -70,5 +106,7 @@ namespace PEIU.GUI.ViewModel
 
 
         public string Test { get; set; } = "HELLO";
+
+
     }
 }

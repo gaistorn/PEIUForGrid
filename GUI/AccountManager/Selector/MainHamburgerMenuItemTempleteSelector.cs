@@ -16,7 +16,7 @@ namespace PEIU.GUI.Selector
         {
             FrameworkElement elemnt = container as FrameworkElement;
             HamburgerMenuIconItem user = item as HamburgerMenuIconItem;
-            if (user is HamburgerBedgeMenuItem)
+            if (user is BedgeMenuItem)
             {
                 return elemnt.FindResource("BedgeMenuItemTemplate") as DataTemplate;
             }
