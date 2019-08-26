@@ -57,7 +57,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>88D9BA5235CB8C76A070B2B667848CC09F2E0780</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>79076DC8FD8E1B0B8248CCA60B06B9354B80063B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>AccountManager_TemporaryKey.pfx</ManifestKeyFile>
@@ -157,6 +157,9 @@
       <Link>Models\ContractModel.cs</Link>
     </Compile>
     <Compile Include="Converters\AuthRolesConverters.cs" />
+    <Compile Include="CustomControls\CustomerSelectItemBox.xaml.cs">
+      <DependentUpon>CustomerSelectItemBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\CustomerTreeView.xaml.cs">
       <DependentUpon>CustomerTreeView.xaml</DependentUpon>
     </Compile>
@@ -187,6 +190,10 @@
     </Compile>
     <Compile Include="WebServices\ContractWebService.cs" />
     <Compile Include="WebServices\IUpdateWebData.cs" />
+    <Page Include="CustomControls\CustomerSelectItemBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomControls\CustomerTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -3,16 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Model="clr-namespace:PEIU.Models"
              xmlns:Converter="clr-namespace:PEIU.GUI.Converters"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:Model="clr-namespace:PEIU.Models"
              xmlns:local="clr-namespace:PEIU.GUI.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <TreeView.Resources>
         <Converter:AuthRolesIconConverters x:Key="AuthRoleIconConverter" />
         <Converter:AuthRolesTitleConverters x:Key="AuthRoleTitleConverter"/>
+        
     </TreeView.Resources>
+    <TreeView.ItemsPanel>
+        <ItemsPanelTemplate>
+            <StackPanel         IsItemsHost="True"         Orientation="Vertical" />
+        </ItemsPanelTemplate>
+    </TreeView.ItemsPanel>
     <TreeView.ItemTemplate>
         <HierarchicalDataTemplate ItemsSource="{Binding}">
             <Grid>
@@ -29,8 +35,8 @@
             </Grid>
             <HierarchicalDataTemplate.ItemTemplate>
                 <DataTemplate>
-                    <!-- Content presenter for the list of objects in each grouping. Binding is done to the Name property on the custom class -->
-                    <ContentPresenter>
+                     <!--Content presenter for the list of objects in each grouping. Binding is done to the Name property on the custom class--> 
+                    <ContentPresenter Visibility="{Binding Path=Visibility}">
                         <ContentPresenter.Content>
                             <TextBlock>
                                 <TextBlock.Text>
@@ -42,8 +48,6 @@
                                 </TextBlock.Text>
                             </TextBlock>
                         </ContentPresenter.Content>
-
-
                     </ContentPresenter>
                 </DataTemplate>
             </HierarchicalDataTemplate.ItemTemplate>

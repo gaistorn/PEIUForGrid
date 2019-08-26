@@ -29,6 +29,27 @@ namespace PEIU.GUI.ViewModel
                 RaisePropertyChanged("Accounts");
             }
         }
+
+        private string _customerFilterText;
+        public string CustomerFilterText
+        {
+            get { return _customerFilterText; }
+            set
+            {
+             this.Set("CustomerFilterText", ref _customerFilterText, value); Filter = value;
+            }
+        }
+
+        private string _filter;
+        public string Filter
+        {
+            get { return _filter; }
+            set
+            {
+                this.Set("Filter", ref _filter, value);
+            }
+        }
+
         public int BedgeCount {  get => _bedgeCount; set => base.Set("BedgeCount", ref _bedgeCount, value); }
         private int _bedgeCount = 0;
 
@@ -50,6 +71,8 @@ namespace PEIU.GUI.ViewModel
         public string Tooltip => "고객관리 페이지";
 
         private View.CustomerManagerView view;
+
+        
         public object OwnerControl
         {
             get

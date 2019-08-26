@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PEIU.GUI.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,20 @@ namespace PEIU.GUI.View
     /// </summary>
     public partial class CustomerManagerView : UserControl
     {
+        public CustomerManagerViewModel ViewModel => (CustomerManagerViewModel)this.DataContext;
         public CustomerManagerView()
         {
             InitializeComponent();
+            ViewModel.PropertyChanged += ViewMode_PropertyChanged;
         }
+
+        private void ViewMode_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "CustomerFilterText")
+            {
+                PART_treeView.Filter = ViewModel.CustomerFilterText;
+            }
+        }
+
     }
 }

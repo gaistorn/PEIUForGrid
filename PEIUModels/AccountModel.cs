@@ -5,8 +5,10 @@ using PEIU.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+
 
 namespace PEIU.Models
 {
@@ -94,9 +96,27 @@ namespace PEIU.Models
     }
 
 #endif
-    public class RegisterViewModel
+    public class RegisterViewModel : System.ComponentModel.INotifyPropertyChanged
     {
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 #if WPF
+        System.Windows.Visibility visibility = System.Windows.Visibility.Visible;
+        public System.Windows.Visibility Visibility
+        {
+            get { return visibility; }
+            set
+            {
+                visibility = value;
+                OnPropertyChanged("Visibility");
+            }
+        }
+
+
         public string Email { get; set; }
 
         public string FirstName { get; set; }
@@ -117,6 +137,8 @@ namespace PEIU.Models
         public ushort AuthRoles { get; set; }
 
         public ObservableCollection<IAssetLocation> Assets { get; } = new ObservableCollection<IAssetLocation>();
+
+        
 #else
         [Required]
         [EmailAddress]
