@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace PES.Service.WebApiService.Migrations
+namespace PEIU.Service.WebApiService.Migrations
 {
     public partial class Init : Migration
     {

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService.Authroize
+namespace PEIU.Service.WebApiService.Authroize
 {
     public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider
     {

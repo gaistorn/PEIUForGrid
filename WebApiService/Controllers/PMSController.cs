@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 using PES.Toolkit;
 using StackExchange.Redis;
 
-namespace PES.Service.WebApiService.Controllers
+namespace PEIU.Service.WebApiService.Controllers
 {
     [Route("api/pms")]
     [Produces("application/json")]

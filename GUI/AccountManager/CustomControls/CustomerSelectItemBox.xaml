@@ -3,22 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:Model="clr-namespace:PEIU.Models"
          xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PEIU.GUI.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ListBox.Resources>
         <HierarchicalDataTemplate DataType="{x:Type Model:AssetLocation}">
-            <Grid DataContext="{Binding}">
+            <Grid DataContext="{Binding}" Height="50" ToolTip="{Binding Comment}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <iconPacks:PackIconFontAwesome Kind="ImageSolid" />
+                <Image Source="/AccountManagerRunner;component/Images/empty-image.png" Margin="2"/>
                 <StackPanel Orientation="Vertical" Grid.Column="1">
-                    <TextBlock Text=""
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} ({1}))">
+                                <Binding Path="AssetName"/>
+                                <Binding Path="Address1"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} ({1}))">
+                                <Binding Path="AssetName"/>
+                                <Binding Path="Address1"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
                 </StackPanel>
             </Grid>
         </HierarchicalDataTemplate>

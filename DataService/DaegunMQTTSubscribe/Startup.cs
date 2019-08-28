@@ -52,12 +52,6 @@ namespace PES.Service.DataService
             var mqttOptions = Configuration.GetSection("MQTTSubscribeConfig").Get<MqttSubscribeConfig>();
             services.AddSingleton(mqttOptions);
 
-
-
-            var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
-            services.AddSingleton(redisConfiguration);
-            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
-
             IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
             services.AddSingleton(queue_service);
 

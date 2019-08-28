@@ -1,7 +1,6 @@
 ﻿#if !WPF
 using Microsoft.AspNetCore.Identity;
 #endif
-using PEIU.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +17,22 @@ namespace PEIU.Models
         Aggregator = 16,
         Business = 32,
         Candidator = 64,
+    }
+
+    public enum ServiceCodes : int
+    {
+        DR = 1,
+        Schedule = 2,
+    }
+
+    public enum CandidateCodes : int
+    {
+        Cancellations,
+        Signing,
+        Cantacting,
+
+
+
     }
 
 #if !WPF
@@ -98,13 +113,14 @@ namespace PEIU.Models
 #endif
     public class RegisterViewModel : System.ComponentModel.INotifyPropertyChanged
     {
-
+        [field:NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 #if WPF
+        [field:NonSerialized]
         System.Windows.Visibility visibility = System.Windows.Visibility.Visible;
         public System.Windows.Visibility Visibility
         {
@@ -136,6 +152,7 @@ namespace PEIU.Models
 
         public ushort AuthRoles { get; set; }
 
+        [field:NonSerialized]
         public ObservableCollection<IAssetLocation> Assets { get; } = new ObservableCollection<IAssetLocation>();
 
         

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="PvData" table="pv_data" lazy="true" >
+    <id name="UniqueId" column="UniqueId" />
+    <property name="deviceId">
+      <column name="deviceId" sql-type="varchar(45)" not-null="false" />
+    </property>
+    <property name="groupName">
+      <column name="groupName" sql-type="varchar(45)" not-null="true" />
+    </property>
+    <property name="groupId">
+      <column name="groupId" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="TotalActivePower">
+      <column name="TotalActivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="TotalReactivePower">
+      <column name="TotalReactivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="ReverseActivePower">
+      <column name="ReverseActivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="ReverseReactivePower">
+      <column name="ReverseReactivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="vltR">
+      <column name="vltR" sql-type="float" not-null="false" />
+    </property>
+    <property name="vltS">
+      <column name="vltS" sql-type="float" not-null="false" />
+    </property>
+    <property name="vltT">
+      <column name="vltT" sql-type="float" not-null="false" />
+    </property>
+    <property name="crtR">
+      <column name="crtR" sql-type="float" not-null="false" />
+    </property>
+    <property name="crtS">
+      <column name="crtS" sql-type="float" not-null="false" />
+    </property>
+    <property name="crtT">
+      <column name="crtT" sql-type="float" not-null="false" />
+    </property>
+    <property name="Frequency">
+      <column name="Frequency" sql-type="float" not-null="false" />
+    </property>
+    <property name="EnergyTotalActivePower">
+      <column name="EnergyTotalActivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="EnergyTotalReactivePower">
+      <column name="EnergyTotalReactivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="EnergyTotalReverseActivePower">
+      <column name="EnergyTotalReverseActivePower" sql-type="float" not-null="false" />
+    </property>
+    <property name="timestamp">
+      <column name="timestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="siteId">
+      <column name="siteId" sql-type="smallint(6)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

@@ -29,6 +29,7 @@ namespace WebApiService.Controllers
         }
 
         // GET api/values/5
+       
         [Authorize(Policy = PEIU.Models.CommonClaimTypes.READ_CUSTOMER_INFO_CLAIM)]
         [HttpGet("getclaim")]        
         public async Task<ActionResult> getclaim()

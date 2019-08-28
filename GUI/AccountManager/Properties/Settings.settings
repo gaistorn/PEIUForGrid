@@ -5,5 +5,12 @@
     <Setting Name="WebServiceUrl" Type="System.String" Scope="Application">
       <Value Profile="(Default)">https://www.peiu.co.kr:3021</Value>
     </Setting>
+    <Setting Name="testjson" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{
+	"Email" : "redwinelove@hotmail.com",
+	"Password" : "Kkr753951!",
+	"RememberMe" : "False"
+}</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

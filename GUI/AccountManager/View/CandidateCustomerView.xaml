@@ -1,19 +1,14 @@
-﻿<UserControl x:Class="PEIU.GUI.View.CustomerManagerView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:CustomControl="clr-namespace:PEIU.GUI.CustomControls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:PEIU.GUI.View"
-             DataContext="{Binding Customers, Source={StaticResource Locator}}"
+             xmlns:c1="http://schemas.componentone.com/winfx/2006/xaml" x:Class="PEIU.GUI.View.CandidateCustomerView"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -24,12 +19,13 @@
                          controls:TextBoxHelper.ClearTextButton="False"
                          controls:TextBoxHelper.UseFloatingWatermark="True"
                          controls:TextBoxHelper.Watermark="찾는 사용자명..."
-                         Margin="10 0 10 5"
+                         Margin="5 0 10 5"
                          Width="250"
-                         BorderThickness="0 0 0 1"
+                         BorderThickness="3 0 0 1"
                          SnapsToDevicePixels="True"
-                         Text="{Binding CustomerFilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=300}" />
-        <CustomControl:CustomerTreeView x:Name="PART_treeView" ItemsSource="{Binding Accounts}" Grid.Row="1" />
-        <CustomControl:CustomerSelectItemBox Grid.Column="1" Grid.Row="1" ItemsSource="{Binding ElementName=PART_treeView, Path=SelectedItem.Assets}" />
+                         Text="{Binding CustomerFilterText, Delay=300, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <c1:C1FlexGrid  Margin="3" Grid.Row="1" />
+
     </Grid>
 </UserControl>

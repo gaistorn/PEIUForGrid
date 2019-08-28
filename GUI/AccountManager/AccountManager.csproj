@@ -82,6 +82,7 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="C1.WPF.FlexGrid.4, Version=4.0.20181.587, Culture=neutral, PublicKeyToken=2aa4ec5576d6c3ce, processorArchitecture=MSIL" />
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\CommonServiceLocator.dll</HintPath>
@@ -122,12 +123,11 @@
       <HintPath>DLL\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\ref\netcoreapp2.1\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLL\System.Windows.Interactivity.dll</HintPath>
@@ -157,6 +157,7 @@
       <Link>Models\ContractModel.cs</Link>
     </Compile>
     <Compile Include="Converters\AuthRolesConverters.cs" />
+    <Compile Include="Converters\CandidatePhaseConverter.cs" />
     <Compile Include="CustomControls\CustomerSelectItemBox.xaml.cs">
       <DependentUpon>CustomerSelectItemBox.xaml</DependentUpon>
     </Compile>
@@ -168,6 +169,8 @@
     <Compile Include="Models\StatusMessageBase.cs" />
     <Compile Include="Selector\MainHamburgerMenuItemTempleteSelector.cs" />
     <Compile Include="Subscriber\ReservedRegisterSubscriberWorker.cs" />
+    <Compile Include="Models\ListViewModel.cs" />
+    <Compile Include="ViewModel\CandidateCustomerViewModel.cs" />
     <Compile Include="ViewModel\CustomerManagerViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="App.xaml.cs">
@@ -176,6 +179,9 @@
     </Compile>
     <Compile Include="ViewModel\StatusDashboardViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="View\CandidateCustomerView.xaml.cs">
+      <DependentUpon>CandidateCustomerView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CustomerManagerView.xaml.cs">
       <DependentUpon>CustomerManagerView.xaml</DependentUpon>
     </Compile>
@@ -394,6 +400,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\CandidateCustomerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\CustomerManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -426,6 +436,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Properties\Licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -475,6 +486,15 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\empty-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Models\CommonModel\CommonModel.csproj">
+      <Project>{b5789bab-fb47-4f2b-aa1b-11ee86c99f52}</Project>
+      <Name>CommonModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PES.Service.WebApiService;
+using PEIU.Service.WebApiService;
 
-namespace PES.Service.WebApiService.Migrations
+namespace PEIU.Service.WebApiService.Migrations
 {
     [DbContext(typeof(AccountRecordContext))]
     [Migration("20190822060423_AddStatusPropertyOnAccountModel")]

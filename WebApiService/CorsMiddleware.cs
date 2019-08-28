@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService
+namespace PEIU.Service.WebApiService
 {
     public class CorsMiddleware
     {

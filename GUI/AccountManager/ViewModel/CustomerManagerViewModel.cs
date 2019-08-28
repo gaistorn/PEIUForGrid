@@ -99,6 +99,15 @@ namespace PEIU.GUI.ViewModel
             {
                 var result = await ContractWebService.RequestCollectionGetMethod<RegisterViewModel>("/api/contract/getcontractorlist");
                 AccountSource = result;
+                foreach(var register in result)
+                {
+                    for(int i=0;i<3;i++)
+                    {
+                        AssetLocation loc = new AssetLocation();
+                        loc.AssetName = $"Test {i}";
+                        register.Assets.Add(loc);
+                    }
+                }
                 BedgeCount = result.Count(x => (AuthRoles)x.AuthRoles == AuthRoles.Candidator);
             }
             catch (Exception ex)

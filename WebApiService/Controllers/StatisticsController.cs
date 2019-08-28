@@ -42,12 +42,12 @@ namespace WebApiService.Controllers
         public async Task<IActionResult> downloadhistorybyrcc(int rcc, DateTime startdate, DateTime enddate)
         {
 
-            var rcc_map = PES.Service.WebApiService.Controllers.PMSController.rcc_list;
+            var rcc_map = PEIU.Service.WebApiService.Controllers.PMSController.rcc_list;
             if (rcc_map.ContainsKey(rcc) == false)
                 return BadRequest();
             string areaName = rcc_map[rcc];
 
-            var rcc_by_site_map = PES.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
+            var rcc_by_site_map = PEIU.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
             //converting Pdf file into bytes array  
             //adding bytes to memory stream   
             //var dataStream = new MemoryStream(dataBytes);
@@ -106,7 +106,7 @@ namespace WebApiService.Controllers
         [HttpGet("gehistorybyrcc")]
         public async Task<IActionResult> gehistorybyrcc(int rcc, DateTime startdate, DateTime enddate, int PageNo, int ShowRowCount, int SortNum = -1)
         {
-            var rcc_map = PES.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
+            var rcc_map = PEIU.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
             if (rcc_map.ContainsKey(rcc) == false)
                 return BadRequest();
             MongoDB.Driver.IMongoDatabase main_db = mongoClient.GetDatabase("PEIU");
@@ -179,7 +179,7 @@ namespace WebApiService.Controllers
         [HttpGet("gettrenddatabyrcc")]
         public async Task<IActionResult> gettrenddatabyrcc(int rccCode, DateTime date)
         {
-            var rcc_map = PES.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
+            var rcc_map = PEIU.Service.WebApiService.Controllers.PMSController.RccBySiteMap;
             if (rcc_map.ContainsKey(rccCode) == false)
                 return BadRequest();
 

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>PES.Service.WebApiService</RootNamespace>
+    <RootNamespace>PEIU.Service.WebApiService</RootNamespace>
     <Platforms>AnyCPU;x64</Platforms>
 	<UserSecretsId>PEIU-WEB-API-4db75f0c-2f7e-42e2-a5fc-997b4e76b389</UserSecretsId>
   </PropertyGroup>
@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.1.3" />
@@ -39,6 +40,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hubbub\DataModel\DataModel.csproj" />
+    <ProjectReference Include="..\Models\CommonModel\CommonModel.csproj" />
     <ProjectReference Include="..\PEIUModels\PEIUModels.csproj" />
     <ProjectReference Include="..\PEIUToolkit.Core\PEIUToolkit.Core.csproj" />
   </ItemGroup>

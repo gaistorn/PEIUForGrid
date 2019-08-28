@@ -8,7 +8,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService.Authroize
+namespace PEIU.Service.WebApiService.Authroize
 {
     public class ClaimsPrincipalFactory : UserClaimsPrincipalFactory<AccountModel, IdentityRole>
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService.Localization
+namespace PEIU.Service.WebApiService.Localization
 {
     public class LocalizedIdentityErrorDescriber : IdentityErrorDescriber
     {

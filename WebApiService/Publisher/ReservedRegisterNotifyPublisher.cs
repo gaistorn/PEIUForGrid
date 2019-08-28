@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService.Publisher
+namespace PEIU.Service.WebApiService.Publisher
 {
     public class ReservedRegisterNotifyPublisher : AbsMqttPublisher
     {

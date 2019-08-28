@@ -31,5 +31,18 @@ namespace PEIU.GUI.Properties {
                 return ((string)(this["WebServiceUrl"]));
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{\n\t\"Email\" : \"redwinelove@hotmail.com\",\n\t\"Password\" : \"Kkr753951!\",\n\t\"RememberMe\"" +
+            " : \"False\"\n}")]
+        public string testjson {
+            get {
+                return ((string)(this["testjson"]));
+            }
+            set {
+                this["testjson"] = value;
+            }
+        }
     }
 }

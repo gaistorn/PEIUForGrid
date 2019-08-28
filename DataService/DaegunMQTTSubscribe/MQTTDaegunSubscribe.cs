@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using MQTTnet.Client;
-using PES.Models;
 using PES.Toolkit.Config;
 using System;
 using System.Collections.Generic;

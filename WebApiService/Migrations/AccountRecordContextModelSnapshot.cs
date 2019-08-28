@@ -3,9 +3,9 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PES.Service.WebApiService;
+using PEIU.Service.WebApiService;
 
-namespace PES.Service.WebApiService.Migrations
+namespace PEIU.Service.WebApiService.Migrations
 {
     [DbContext(typeof(AccountRecordContext))]
     partial class AccountRecordContextModelSnapshot : ModelSnapshot

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
-namespace PES.Service.WebApiService
+namespace PEIU.Service.WebApiService
 {
     public class Program
     {

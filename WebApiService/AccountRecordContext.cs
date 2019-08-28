@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PEIU.Models;
 using Power21.PEIUEcosystem.Models;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PES.Service.WebApiService
+namespace PEIU.Service.WebApiService
 {
     public class AccountRecordContext : IdentityDbContext<AccountModel>
     {
@@ -28,6 +29,13 @@ namespace PES.Service.WebApiService
             builder.Entity<AssetDevices>().HasKey(x => x.PK);
             builder.Entity<AssetLocation>().HasKey(m => m.SiteId);
             builder.Entity<ReservedAssetLocation>().HasKey(x => x.ID);
+
+            //builder.Entity<IdentityUser>().ToTable("MyUsers").Property(p => p.Id).HasColumnName("UserId");
+            //builder.Entity<AccountModel>().ToTable("MyUsers").Property(p => p.Id).HasColumnName("UserId");
+            //builder.Entity<IdentityUserRole<string>>().ToTable("MyUserRoles");
+            //builder.Entity<IdentityUserLogin<string>>().ToTable("MyUserLogins");
+            //builder.Entity<IdentityUserClaim<int>>().ToTable("MyUserClaims");
+            //builder.Entity<IdentityRole>().ToTable("MyRoles");
             //// shadow properties
             //builder.Entity<EventLogData>().Property<DateTime>("UpdatedTimestamp");
             //builder.Entity<SourceInfo>().Property<DateTime>("UpdatedTimestamp");

@@ -11,10 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PEIU.Models;
-using PES.Service.WebApiService.Localization;
+using PEIU.Service.WebApiService.Localization;
 using Power21.PEIUEcosystem.Models;
 
-namespace PES.Service.WebApiService.Controllers
+namespace PEIU.Service.WebApiService.Controllers
 {
     [Route("api/contract")]
     [Produces("application/json")]
@@ -79,10 +79,10 @@ namespace PES.Service.WebApiService.Controllers
             return Ok(return_value);
         }
 
-        [HttpPost, Route("siteregister")]
+        [HttpPost, Route("setreservedsite")]
         [AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> SiteRegister([FromBody] ReservedSiteRegisterModel model)
+        public async Task<IActionResult> SetReservedSite([FromBody] ReservedSiteRegisterModel model)
         {
 
             //model.Email = value["Email"].ToString();
@@ -97,8 +97,14 @@ namespace PES.Service.WebApiService.Controllers
                     Address1 = model.Address1,
                     Address2 = model.Address2,
                     ControlOwner = model.ControlOwner,
-                    SiteInformation = model.SiteInformation,
-                    RegisterTimestamp = DateTime.Now
+                    //SiteInformation = model.SiteInformation,
+                    RegisterTimestamp = DateTime.Now,
+                    LawFirstCode = model.LawFirstCode,
+                    LawMiddleCode = model.LawMiddleCode,
+                    LawLastCode = model.LawLastCode,
+                    ServiceCode = model.ServiceCode,
+                    Latitude = model.Latitude,
+                    Longtidue = model.Longtidue
                 };
                 accountContext.ReservedAssetLocations.Add(user);
                 await accountContext.SaveChangesAsync();

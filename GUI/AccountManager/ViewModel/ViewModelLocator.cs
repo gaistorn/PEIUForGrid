@@ -1,8 +1,10 @@
 ﻿using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
 using PEIU.Models;
+using PEIU.Models.ExchangeModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +27,7 @@ namespace PEIU.GUI.ViewModel
 
         public StatusDashboardViewModel StatusDashboard => SimpleIoc.Default.GetInstance<StatusDashboardViewModel>();
 
-       
+       public CandidateCustomerViewModel CandidateCustomer => SimpleIoc.Default.GetInstance<CandidateCustomerViewModel>();
 
         public ViewModelLocator()
         {
@@ -36,6 +38,14 @@ namespace PEIU.GUI.ViewModel
             SimpleIoc.Default.Register< CustomerManagerViewModel>();
             //SimpleIoc.Default.Register<StatusDashboardViewModel>();
             SimpleIoc.Default.Register<StatusDashboardViewModel>();
+            SimpleIoc.Default.Register<CandidateCustomerViewModel>();
+
+            Models.ExchangeModel.LoginModel model = new Models.ExchangeModel.LoginModel();
+            //string str = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+            model = Newtonsoft.Json.JsonConvert.DeserializeObject<LoginModel>(Properties.Settings.Default.testjson);
+
+
+
         }
 
         public static void Dispose()

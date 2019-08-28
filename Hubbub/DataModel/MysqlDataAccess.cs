@@ -26,7 +26,7 @@ namespace PEIU.Models
                     {NHibernate.Cfg.Environment.ConnectionString, connectionString},
 
 #if DEBUG
-                            {NHibernate.Cfg.Environment.ShowSql, "true" }
+                            {NHibernate.Cfg.Environment.ShowSql, "false" }
 #endif
 
                         })

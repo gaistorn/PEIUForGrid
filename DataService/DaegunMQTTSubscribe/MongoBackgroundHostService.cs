@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using PES.Models;
 using PES.Toolkit;
 using PES.Toolkit.Config;
 using StackExchange.Redis;
@@ -21,9 +20,7 @@ namespace PES.Service.DataService
         private readonly ILogger _logger;
         public IBackgroundMongoTaskQueue TaskQueue { get; }
         private readonly MqttSubscribeConfig _mqttConfig;
-        readonly IDatabase _redisDb;
         readonly MysqlDataAccess _da;
-        readonly IRedisConnectionFactory _redisFactory;
         readonly TimeSpan BatchInterval;
         readonly ManualResetEvent mre = new ManualResetEvent(true);
         private ConcurrentBag<DaegunPacketClass> insertBatchList;
@@ -32,7 +29,6 @@ namespace PES.Service.DataService
         public MongoBackgroundHostService(
             IBackgroundMongoTaskQueue taskQueue,
             IConfiguration configuration, 
-            IRedisConnectionFactory redis_factory,
             MqttSubscribeConfig mqttConfig,
             ILoggerFactory loggerFactory,
             MysqlDataAccess da
@@ -40,10 +36,8 @@ namespace PES.Service.DataService
         {
 
             TaskQueue = taskQueue;
-            _redisFactory = redis_factory;
             _mqttConfig = mqttConfig;
             insertBatchList = new ConcurrentBag<DaegunPacketClass>();
-            _redisDb = _redisFactory.Connection().GetDatabase();
             _da = da;
             BatchInterval = configuration.GetSection("BatchInterval").Get<TimeSpan>();
             _logger = loggerFactory.CreateLogger<MongoBackgroundHostService>();
@@ -54,7 +48,7 @@ namespace PES.Service.DataService
         {
             DaegunPacket packet = _packet.Packet;
             BmsData bmsData = new BmsData();
-            bmsData.deviceId = $"DaegunSite{packet.sSiteId}Pcs{packet.Pcs.PcsNumber}";
+            bmsData.deviceId = $"DS{packet.sSiteId}_BMS{packet.Bsc.PcsIndex}";
             bmsData.groupId = 2;
             bmsData.siteId = packet.sSiteId;
             bmsData.timestamp = _packet.Timestamp;
@@ -72,11 +66,38 @@ namespace PES.Service.DataService
             
         }
 
+        private PvData CreatePvData(DaegunPacketClass _packet)
+        {
+            DaegunMeterPacket pv_pack = _packet.Packet.Pv;
+            PvData pv = new PvData();
+            pv.deviceId = $"DS{_packet.Packet.sSiteId}_PV{pv_pack.PmsIndex}";
+            pv.groupId = 3;
+            pv.siteId = _packet.Packet.sSiteId;
+            pv.groupName = "PV_SYSTEM";
+            pv.TotalActivePower = pv_pack.TotalActivePower;
+            pv.TotalReactivePower = pv_pack.TotalReactivePower;
+            pv.ReverseActivePower = pv_pack.ReverseActivePower;
+            pv.ReverseReactivePower = pv_pack.ReverseReactivePower;
+            pv.vltR = pv_pack.Voltage.R;
+            pv.vltS = pv_pack.Voltage.S;
+            pv.vltT = pv_pack.Voltage.T;
+            pv.crtR = pv_pack.Current.R;
+            pv.crtS = pv_pack.Current.S;
+            pv.crtT = pv_pack.Current.T;
+            pv.Frequency = pv_pack.Frequency;
+            pv.EnergyTotalActivePower = pv_pack.EnergyTotalActivePower;
+            pv.EnergyTotalReactivePower = pv_pack.EnergyTotalReactivePower;
+            pv.EnergyTotalReverseActivePower = pv_pack.EnergyTotalReverseActivePower;
+            pv.timestamp = _packet.Timestamp;
+            return pv;
+
+        }
+
         private PcsData CreatePcsData(DaegunPacketClass _packet)
         {
             DaegunPacket packet = _packet.Packet;
             PcsData pcs = new PcsData();
-            pcs.deviceId = $"Daegun{packet.sSiteId}Pcs{packet.Pcs.PcsNumber}";
+            pcs.deviceId = $"DS{packet.sSiteId}_PCS{packet.Pcs.PcsNumber}";
             pcs.groupId = 1;
             pcs.siteId = packet.sSiteId;
             pcs.groupName = "PCS_SYSTEM";
@@ -109,12 +130,14 @@ namespace PES.Service.DataService
 
                 List<PcsData> pcsDatas = new List<PcsData>();
                 List<BmsData> bmsDatas = new List<BmsData>();
+                List<PvData> pvDatas = new List<PvData>();
                 foreach(var packet in insertBatchList)
                 {
                     PcsData pcs = CreatePcsData(packet);
                     pcsDatas.Add(pcs);
 
                     bmsDatas.Add(CreateBmsData(packet));
+                    pvDatas.Add(CreatePvData(packet));
                 }
 
                 using (var session = _da.SessionFactory.OpenStatelessSession())
@@ -126,7 +149,9 @@ namespace PES.Service.DataService
 
                         foreach (var bms in bmsDatas)
                             await session.InsertAsync(bms, token);
-                        
+
+                        foreach (var pv in pvDatas)
+                            await session.InsertAsync(pv, token);
                         await transact.CommitAsync(token);
                     }
                 }

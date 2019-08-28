@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -31,6 +31,7 @@
     <None Remove="MysqlMap\EventMap.hbm.xml" />
     <None Remove="MysqlMap\LogEvent.hbm.xml" />
     <None Remove="MysqlMap\PcsData.hbm.xml" />
+    <None Remove="MysqlMap\PvData.hbm.xml" />
     <None Remove="MysqlMap\vw_ActiveEvent.hbm.xml" />
   </ItemGroup>
 
@@ -43,6 +44,7 @@
     <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
     <EmbeddedResource Include="MssqlMap\InverterDataRt.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\PvData.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\vw_ActiveEvent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\BmsData.hbm.xml" />

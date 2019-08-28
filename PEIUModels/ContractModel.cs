@@ -36,7 +36,7 @@ namespace PEIU.Models
         public virtual string LawLastCode { get; set; }
         public virtual string Address1 { get; set; }
         public virtual string Address2 { get; set; }
-        public virtual string AssetName { get; set; }
+        public virtual string AssetName { get; set; } = "미설정";
         public virtual int? DLNo { get; set; }
      
         public virtual DateTime InstallDate { get; set; }
@@ -67,7 +67,37 @@ namespace PEIU.Models
         public virtual bool ControlOwner { get; set; }
         public virtual string SiteInformation { get; set; }
 
+        public virtual short Phase { get; set; }
+
+        //public string Devices
+        //{
+        //    get
+        //    {
+        //        if (string.IsNullOrEmpty(SiteInformation))
+        //            return null;
+        //        try
+        //        {
+        //            string[] splits = SiteInformation.Split('')
+        //        }
+        //        finally
+        //        {
+        //        }
+        //    }
+        //}
+
         public virtual DateTime RegisterTimestamp { get; set; }
+
+        public virtual double Latitude { get; set; }
+
+        public virtual double Longtidue { get; set; }
+
+        public virtual int ServiceCode { get; set; }
+
+        public virtual string LawFirstCode { get; set; }
+
+        public virtual string LawMiddleCode { get; set; }
+
+        public virtual string LawLastCode { get; set; }
     }
 
 #if !WPF

@@ -28,12 +28,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authorization;
-using PES.Service.WebApiService.Authroize;
-using PES.Service.WebApiService.Publisher;
+using PEIU.Service.WebApiService.Authroize;
+using PEIU.Service.WebApiService.Publisher;
 using System.Threading;
 using PEIU.Models;
 
-namespace PES.Service.WebApiService
+namespace PEIU.Service.WebApiService
 {
     public class Startup
     {
@@ -62,7 +62,9 @@ namespace PES.Service.WebApiService
             services.AddDbContext<AccountRecordContext>(
                 options => options.UseMySql(Configuration.GetConnectionString("mysqldb"))
                 );
-
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            services.AddSingleton<IEmailSender, EmailSender>();
+            
             services.AddIdentity<AccountModel, IdentityRole>()
                 .AddEntityFrameworkStores<AccountRecordContext>()
                 .AddErrorDescriber<Localization.LocalizedIdentityErrorDescriber>()
@@ -147,7 +149,7 @@ namespace PES.Service.WebApiService
             //{
             //    options.Filters.Add(new RequireHttpsAttribute());
             //});
-            services.AddTransient<IEmailSender, EmailSender>();
+            //services.AddTransient<IEmailSender, EmailSender>();
             services.AddPortableObjectLocalization();
             services.AddMvc()
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
