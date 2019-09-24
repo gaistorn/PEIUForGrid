@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PEIU.DataServices;
+using NHibernate.Criterion;
 
 namespace PEIU.Hubbub.Services
 {
@@ -100,6 +101,16 @@ namespace PEIU.Hubbub.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(100, stoppingToken);
+
+                bool isConnected = modbusFactory.ReconnectWhenDisconnected(stoppingToken, 3);
+                if (isConnected == false)
+                {
+                    logger.LogWarning("모드버스 접속에 실패했습니다. 5초후 재개");
+                    await Task.Delay(5000, stoppingToken);
+                    continue;
+                }
+
+
                 string normalizeDeviceName = $"PCS{DeviceIndex}";
                 string peiu_event_topic = $"hubbub/{SiteId}/{normalizeDeviceName}/EVENT";
                 stoppingToken.ThrowIfCancellationRequested();
@@ -121,6 +132,10 @@ namespace PEIU.Hubbub.Services
                    
                     foreach (DiMap map in results)
                     {
+                        if(map.DocumentAddress == 40182)
+                        {
+
+                        }
                         if (map.Disable == true)
                             continue;
                         //cache.Get()
@@ -173,9 +188,12 @@ namespace PEIU.Hubbub.Services
                                     string mysql_key_str = $"{modbus.DeviceName}{map.DocumentAddress}{evt.No}";
 
 
-                                    ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_str);
+                                    //ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_str);
 
-                                    switch(EventStatus(existEvent, IsActive, session))
+                                    ActiveEvent existEvent = await GetLatestActiveEventAsync(session, mysql_key_str, stoppingToken);
+                                    if (existEvent == null)
+                                        continue;
+                                    switch (EventStatus(existEvent, IsActive, session))
                                     {
                                         case Hubbub.EventStatus.Already:
                                             mysql_key_str = GetNextEventId(mysql_key_str, session);
@@ -230,6 +248,15 @@ namespace PEIU.Hubbub.Services
             }
         }
 
+        private async Task<ActiveEvent> GetLatestActiveEventAsync(ISession session, string eventId, CancellationToken token)
+        {
+            IList<ActiveEvent> ev = await session.CreateCriteria<ActiveEvent>().Add(Restrictions.Like("EventId", eventId + "%"))
+                .AddOrder(NHibernate.Criterion.Order.Desc("EventId")).SetMaxResults(1).ListAsync<ActiveEvent>(token);
+
+            return ev.FirstOrDefault();
+                
+            //SELECT* FROM grid.activeevent where EventId like 'JeJuGridPcs14018243%' order by EventId desc limit 1;
+        }
         private async void RecoversEvent(string evtId, ISession session)
         {
             int num = 0;

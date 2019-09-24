@@ -19,6 +19,7 @@
     },
     "ModbusToMqttService": {
       "commandName": "Project",
+      "commandLineArgs": "http://*:21212",
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {
