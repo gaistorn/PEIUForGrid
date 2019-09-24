@@ -31,9 +31,15 @@ namespace PEIU.Models
 
     public class SqliteAccessManager : IDataAccessManager
     {
+        public ISessionFactory SessionFactory { get; private set; }
+
+        public SqliteAccessManager(string connectionString)
+        {
+            CreateSessionFactory(connectionString);
+        }
         public ISessionFactory CreateSessionFactory(string connectionString)
         {
-           return  new Configuration()
+            SessionFactory = new Configuration()
                         .AddProperties(new Dictionary<string, string> {
                     {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.SQLite20Driver).FullName},
                    // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
@@ -46,6 +52,7 @@ namespace PEIU.Models
 
                         })
                     .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
+            return SessionFactory;
         }
     }
 
@@ -82,9 +89,9 @@ namespace PEIU.Models
                 _session.Dispose();
         }
 
-        public DataAccess(MySqlAccessManager manager)
+        public DataAccess(ISessionFactory sessionFactory)
         {
-            _session = manager.SessionFactory.OpenSession();
+            _session = sessionFactory.OpenSession();
         }
 
         public TEntity Load<TEntity>(object id) where TEntity : class

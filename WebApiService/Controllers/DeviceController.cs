@@ -21,10 +21,10 @@ namespace PEIU.Service.WebApiService.Controllers
     public class DeviceController : ControllerBase
     {
         readonly PeiuGridDataContext peiuGridDataContext;
-        readonly AccountRecordContext peiuDataContext;
+        readonly AccountDataContext peiuDataContext;
         readonly IDatabase database;
 
-        public DeviceController(PeiuGridDataContext context, AccountRecordContext _accountContext, IRedisConnectionFactory redisConnectionFactory)
+        public DeviceController(PeiuGridDataContext context, AccountDataContext _accountContext, IRedisConnectionFactory redisConnectionFactory)
         {
             peiuGridDataContext = context;
             peiuDataContext = _accountContext;
@@ -64,20 +64,20 @@ namespace PEIU.Service.WebApiService.Controllers
             using (var session = peiuGridDataContext.SessionFactory.OpenStatelessSession())
             using (var trans = session.BeginTransaction())
             {
-                var assets = peiuDataContext.AssetLocations.Where(x => x.RCC == Rcc);
-                foreach (AssetLocation assetLocation in assets)
-                {
-                    var list = await session.CreateCriteria<vw_ActiveEvent>().Add(
-                   // Restrictions.Ge("OccurTimestamp", DateTime.Now.AddMinutes(5))).Add(
-                   Restrictions.Eq("SiteId", assetLocation.SiteId)
+                //var assets = peiuDataContext.AssetLocations.Where(x => x.RCC == Rcc);
+                //foreach (AssetLocation assetLocation in assets)
+                //{
+                //    var list = await session.CreateCriteria<vw_ActiveEvent>().Add(
+                //   // Restrictions.Ge("OccurTimestamp", DateTime.Now.AddMinutes(5))).Add(
+                //   Restrictions.Eq("SiteId", assetLocation.SiteId)
 
-                   )
+                //   )
                   
-                   .ListAsync<vw_ActiveEvent>();
+                //   .ListAsync<vw_ActiveEvent>();
 
-                    foreach (vw_ActiveEvent ev in list)
-                        eventList.Add(JObject.FromObject(ev));
-                }
+                //    foreach (vw_ActiveEvent ev in list)
+                //        eventList.Add(JObject.FromObject(ev));
+                //}
             }
 
             return Ok(eventList);

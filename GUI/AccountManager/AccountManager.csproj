@@ -123,7 +123,9 @@
       <HintPath>DLL\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\ref\netcoreapp2.1\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -150,14 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\..\PEIUModels\AccountModel.cs">
-      <Link>Models\AccountModel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\PEIUModels\ContractModel.cs">
-      <Link>Models\ContractModel.cs</Link>
-    </Compile>
     <Compile Include="Converters\AuthRolesConverters.cs" />
     <Compile Include="Converters\CandidatePhaseConverter.cs" />
+    <Compile Include="Converters\ContractStatusCodesConverter.cs" />
+    <Compile Include="Converters\ServiceCodesConverter.cs" />
     <Compile Include="CustomControls\CustomerSelectItemBox.xaml.cs">
       <DependentUpon>CustomerSelectItemBox.xaml</DependentUpon>
     </Compile>
@@ -165,22 +163,31 @@
       <DependentUpon>CustomerTreeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\HamburgerBedgeMenuItem.cs" />
+    <Compile Include="Models\CommonServiceModel.cs" />
     <Compile Include="Models\IMenuModel.cs" />
     <Compile Include="Models\StatusMessageBase.cs" />
     <Compile Include="Selector\MainHamburgerMenuItemTempleteSelector.cs" />
     <Compile Include="Subscriber\ReservedRegisterSubscriberWorker.cs" />
     <Compile Include="Models\ListViewModel.cs" />
-    <Compile Include="ViewModel\CandidateCustomerViewModel.cs" />
+    <Compile Include="ViewModel\ContractorCustomerViewModel.cs" />
+    <Compile Include="ViewModel\ContractorViewModel.cs" />
     <Compile Include="ViewModel\CustomerManagerViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModel\SigninViewModel.cs" />
     <Compile Include="ViewModel\StatusDashboardViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="View\CandidateCustomerView.xaml.cs">
-      <DependentUpon>CandidateCustomerView.xaml</DependentUpon>
+    <Compile Include="View\ContractorApprovalView.xaml.cs">
+      <DependentUpon>ContractorApprovalView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\AggregatorView.xaml.cs">
+      <DependentUpon>AggregatorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ContractorCustomerView.xaml.cs">
+      <DependentUpon>ContractorCustomerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\CustomerManagerView.xaml.cs">
       <DependentUpon>CustomerManagerView.xaml</DependentUpon>
@@ -193,6 +200,9 @@
     </Compile>
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SigninView.xaml.cs">
+      <DependentUpon>SigninView.xaml</DependentUpon>
     </Compile>
     <Compile Include="WebServices\ContractWebService.cs" />
     <Compile Include="WebServices\IUpdateWebData.cs" />
@@ -400,7 +410,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\CandidateCustomerView.xaml">
+    <Page Include="View\ContractorApprovalView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AggregatorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ContractorCustomerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -417,6 +435,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SigninView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -495,6 +517,21 @@
       <Project>{b5789bab-fb47-4f2b-aa1b-11ee86c99f52}</Project>
       <Name>CommonModel</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Shortcut-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\conversation-icon.png" />
+    <Resource Include="Images\fieldwork-icon.png" />
+    <Resource Include="Images\user-add-icon.png" />
+    <Resource Include="Images\Users-Conference-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Arrow-Next-2-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Thumb-up-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,7 +14,7 @@ msgid "DuplicateEmail"
 msgstr "입력하신 이메일 주소는 이미 사용중입니다."
 
 msgid "DuplicateUserName"
-msgstr "입력하신 사용자 이름은 이미 사용중입니다."
+msgstr "입력하신 이메일 주소는 이미 사용중입니다."
 
 msgid "UserAlreadyHasPassword"
 msgstr "사용자가 이미 사용중인 비밀번호입니다"
@@ -39,3 +39,15 @@ msgstr "이미 삭제되거나 존재하지 않는 게시글입니다"
 
 msgid "DeviceNotFound"
 msgstr "해당 사이트 아이디: {0} 또는 디바이스 아이디: {1}를 찾을 수 없습니다"
+
+msgid "ContractorNotFounded"
+msgstr "해당 발전사업자 아이디: {0}는 존재하지 않습니다"
+
+msgid "AggregatorNotFounded"
+msgstr "대상 어그리게이터 그룹 아이디: {0}를 찾을 수 없습니다"
+
+msgid "SignInNotConfirm"
+msgstr "대상 계정({0})은 아직 아직 로그인할 수 없습니다. 자세한 사항은 관리자에게 문의하시기 바랍니다"
+
+msgid "TargetAggGroupHasAlready"
+msgstr "대상 중계거래사업자({0}) 는(은) 이미 존재하는 중계거래 사업자입니다. "

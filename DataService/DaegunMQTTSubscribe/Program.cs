@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FireworksFramework.Mqtt;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ namespace PES.Service.DataService
         public static void Main(string[] args)
         {
             // NLog: setup the logger first to catch all errors
+            AbsMqttBase.SetDefaultLoggerName("nlog.config", true);
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {

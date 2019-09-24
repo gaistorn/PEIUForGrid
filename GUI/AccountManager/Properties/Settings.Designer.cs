@@ -34,14 +34,50 @@ namespace PEIU.GUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{\n\t\"Email\" : \"redwinelove@hotmail.com\",\n\t\"Password\" : \"Kkr753951!\",\n\t\"RememberMe\"" +
-            " : \"False\"\n}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("{\r\n\t\"Email\" : \"redwinelove@hotmail.com\",\r\n\t\"Password\" : \"Kkr753951!\",\r\n\t\"Remember" +
+            "Me\" : \"False\"\r\n}")]
         public string testjson {
             get {
                 return ((string)(this["testjson"]));
             }
             set {
                 this["testjson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSignInEmail {
+            get {
+                return ((string)(this["LastSignInEmail"]));
+            }
+            set {
+                this["LastSignInEmail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastSignInPassword {
+            get {
+                return ((string)(this["LastSignInPassword"]));
+            }
+            set {
+                this["LastSignInPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LastSignRemember {
+            get {
+                return ((bool)(this["LastSignRemember"]));
+            }
+            set {
+                this["LastSignRemember"] = value;
             }
         }
     }

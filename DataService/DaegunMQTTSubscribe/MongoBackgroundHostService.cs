@@ -70,7 +70,7 @@ namespace PES.Service.DataService
         {
             DaegunMeterPacket pv_pack = _packet.Packet.Pv;
             PvData pv = new PvData();
-            pv.deviceId = $"DS{_packet.Packet.sSiteId}_PV{pv_pack.PmsIndex}";
+            pv.deviceId = $"DS{_packet.Packet.sSiteId}_PV{pv_pack.DeviceIndex}";
             pv.groupId = 3;
             pv.siteId = _packet.Packet.sSiteId;
             pv.groupName = "PV_SYSTEM";

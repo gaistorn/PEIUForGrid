@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 using PES.Toolkit;
 using PES.Toolkit.Config;
 using StackExchange.Redis.Extensions.Core.Configuration;
-using Power21.PEIUEcosystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +31,10 @@ using PEIU.Service.WebApiService.Authroize;
 using PEIU.Service.WebApiService.Publisher;
 using System.Threading;
 using PEIU.Models;
+using PEIU.Models.Database;
+using PEIU.Models.IdentityModel;
+using PEIU.DataServices;
+using PEIU.Models.OWM;
 
 namespace PEIU.Service.WebApiService
 {
@@ -59,19 +62,25 @@ namespace PEIU.Service.WebApiService
         {
             //MongoDB.Driver.MongoClient client = new MongoDB.Driver.MongoClient(Configuration.GetConnectionString("mongodb"));
 
-            services.AddDbContext<AccountRecordContext>(
-                options => options.UseMySql(Configuration.GetConnectionString("mysqldb"))
-                );
+            //services.AddDbContext<AccountRecordContext>(
+            //    options => options.UseMySql(Configuration.GetConnectionString("mysqldb"))
+            //    );
+            
+            services.AddDbContext<AccountDataContext>(
+                options => options.UseMySql(Configuration.GetConnectionString("peiu_account_connnectionstring")));
+            var EmailSettings = Configuration.GetSection("EmailSettings:SenderName");
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
             services.AddSingleton<IEmailSender, EmailSender>();
-            
-            services.AddIdentity<AccountModel, IdentityRole>()
-                .AddEntityFrameworkStores<AccountRecordContext>()
+            services.AddSingleton<IHTMLGenerator, HTMLGenerator>();
+            //services.AddIdentity<UserAccount>()
+            services.AddIdentity<UserAccount, Role>(options =>
+            options.ClaimsIdentity.UserIdClaimType = "Id")
+                .AddEntityFrameworkStores<AccountDataContext>()
                 .AddErrorDescriber<Localization.LocalizedIdentityErrorDescriber>()
                 .AddDefaultTokenProviders();
-
+            
             //add the following line of code
-            services.AddScoped<IUserClaimsPrincipalFactory<AccountModel>, ClaimsPrincipalFactory>();
+            services.AddScoped<IUserClaimsPrincipalFactory<UserAccount>, ClaimsPrincipalFactory>();
             //ServiceDescriptor sd = services.FirstOrDefault(x => x.ServiceType == typeof(IdentityErrorDescriber) && x.ImplementationType == typeof(Localization.LocalizedIdentityErrorDescriber));
             //sd.
             services.AddAuthentication(x =>
@@ -86,12 +95,12 @@ namespace PEIU.Service.WebApiService
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = PEIU.Models.CommonClaimTypes.Issuer,
+                        ValidIssuer = UserClaimTypes.Issuer,
                         ValidAudience = "https://www.peiu.co.kr",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JasonWebTokenManager.Secret))
 
                     };
-                    options.ClaimsIssuer = PEIU.Models.CommonClaimTypes.Issuer;
+                    options.ClaimsIssuer = UserClaimTypes.Issuer;
 
 
                 });
@@ -100,26 +109,30 @@ namespace PEIU.Service.WebApiService
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.AddSingleton<PeiuGridDataContext>();
+            
 
             ConfigureIdentity(services);
             ConfigureAuthrozation(services);
             services.AddCors();
 
             var map_reduces = Configuration.GetSection("MongoMapReduces").Get<IEnumerable<MongoMapReduceConfig>>();
-            var email_config = Configuration.GetSection("EmailSender").Get<EmailConfigOption>();
 
             var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
             services.AddSingleton(redisConfiguration);
-            services.AddSingleton(email_config);
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info { Title = "My API", Version = "v1" });
             });
 
+            MqttAddress data_mqtt_address = Configuration.GetSection("MQTTBrokers:DataBrokerAddress").Get<MqttAddress>();
+            services.AddSingleton(data_mqtt_address);
+            services.AddHostedService<MqttSubscribeWorker>();
+
             ReservedRegisterNotifyPublisher reservedRegisterNotifyPublisher = new ReservedRegisterNotifyPublisher();
             reservedRegisterNotifyPublisher.Initialize();
             services.AddSingleton(reservedRegisterNotifyPublisher);
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, CollectingCurrentWeatherService>();
             //services.AddSingleton(client);
 
 
@@ -151,6 +164,7 @@ namespace PEIU.Service.WebApiService
             //});
             //services.AddTransient<IEmailSender, EmailSender>();
             services.AddPortableObjectLocalization();
+            services.AddSingleton<IClaimServiceFactory, ClaimServiceFactory>();
             services.AddMvc()
                 .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -203,7 +217,13 @@ namespace PEIU.Service.WebApiService
 
         private void ConfigureAuthrozation(IServiceCollection services)
         {
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(UserPolicyTypes.AllUserPolicy,
+                     policy => policy.RequireRole(UserRoleTypes.Aggregator, UserRoleTypes.Contractor, UserRoleTypes.Supervisor));
+                options.AddPolicy(UserPolicyTypes.RequiredManager,
+                    policy => policy.RequireRole(UserRoleTypes.Aggregator, UserRoleTypes.Supervisor));
+            });
 
             // register the scope authorization handler
             services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
@@ -230,7 +250,7 @@ namespace PEIU.Service.WebApiService
                 //options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                //options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                
                 //options.LoginPath = new PathString("/api/auth/logintoredirec");
                 //options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;

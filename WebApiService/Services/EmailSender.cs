@@ -11,7 +11,7 @@ namespace PEIU.Service.WebApiService
 {
     public interface IEmailSender
     {
-        Task SendEmailAsync(string email, string subject, string message);
+        Task SendEmailAsync(string email_sender, string subject, string message, params string[] address);
     }
 
     public class EmailSender : IEmailSender
@@ -27,43 +27,34 @@ namespace PEIU.Service.WebApiService
             _env = env;
         }
 
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email_sender, string subject, string message, params string[] emails)
         {
             try
             {
+                //await Task.CompletedTask;
                 var mimeMessage = new MimeMessage();
 
-                mimeMessage.From.Add(new MailboxAddress(_emailSettings.SenderName, _emailSettings.Sender));
-
-                mimeMessage.To.Add(new MailboxAddress(email));
+                mimeMessage.From.Add(new MailboxAddress(email_sender, _emailSettings.Sender));
+                IEnumerable<MailboxAddress> address = emails.Select(x => new MailboxAddress(x));
+                mimeMessage.To.AddRange(address);
 
                 mimeMessage.Subject = subject;
-
-                mimeMessage.Body = new TextPart("html")
-                {
-                    Text = message
-                };
+                var bodyBuilder = new BodyBuilder();
+                bodyBuilder.HtmlBody = message;
+                mimeMessage.Body = bodyBuilder.ToMessageBody();
 
                 using (var client = new SmtpClient())
                 {
                     // For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                    if (_env.IsDevelopment())
-                    {
-                        // The third parameter is useSSL (true if the client should make an SSL-wrapped
-                        // connection to the server; otherwise, false).
-                        await client.ConnectAsync(_emailSettings.MailServer, _emailSettings.MailPort, true);
-                    }
-                    else
-                    {
-                        await client.ConnectAsync(_emailSettings.MailServer);
-                    }
+                    await client.ConnectAsync(_emailSettings.MailServer, _emailSettings.MailPort, true);
 
                     // Note: only needed if the SMTP server requires authentication
                     await client.AuthenticateAsync(_emailSettings.Sender, _emailSettings.Password);
 
                     await client.SendAsync(mimeMessage);
+                    Console.WriteLine($"이메일 전송: {string.Join(',', emails)}");
 
                     await client.DisconnectAsync(true);
                 }
@@ -81,7 +72,6 @@ namespace PEIU.Service.WebApiService
     {
         public string MailServer { get; set; }
         public int MailPort { get; set; }
-        public string SenderName { get; set; }
         public string Sender { get; set; }
         public string Password { get; set; }
     }

@@ -17,7 +17,7 @@ using PEIU.DataServices;
 
 namespace PEIU.Hubbub.Services
 {
-    public class ModbusDigitalProcessingService : BackgroundService
+    public class ModbusDigitalProcessingService : BackgroundHostService
     {
         ILogger<ModbusBackgroundService> logger;
         IModbusFactory modbusFactory;
@@ -26,6 +26,7 @@ namespace PEIU.Hubbub.Services
         IDatabaseAsync redis;
         MqttClientProxyCollection mqtt_clients;
         short SiteId = -1;
+        int DeviceIndex = 1;
         readonly TimeSpan UpdatePeriod = TimeSpan.FromSeconds(1);
 
         private readonly object locker = new object();
@@ -43,7 +44,7 @@ namespace PEIU.Hubbub.Services
             mqtt_clients = mqttClientProxies;
             SiteId = configuration.GetSection("SiteId").Get<short>();
             redis = redisFactory.Connection().GetDatabase();
-            
+            DeviceIndex = configuration.GetSection("DeviceIndex").Get<int>();
             dbAccess = mysql_dataAccess;
         }
 
@@ -65,9 +66,14 @@ namespace PEIU.Hubbub.Services
             return applicationMessage;
         }
 
-        private async Task SendQueue(JObject msg_oridinary, CancellationToken token)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            string topic = $"hubbub/{SiteId}/{modbus.DeviceName}/AI";
+            Console.WriteLine("Completed");
+            await Task.Delay(10);
+        }
+
+        private async Task SendQueue(string topic, JObject msg_oridinary, CancellationToken token)
+        {
             foreach (var mqtt_proxy in mqtt_clients)
             {
                 try
@@ -93,13 +99,15 @@ namespace PEIU.Hubbub.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                string peiu_event_topic = $"hubbub/{SiteId}/Event";
-
+                await Task.Delay(100, stoppingToken);
+                string normalizeDeviceName = $"PCS{DeviceIndex}";
+                string peiu_event_topic = $"hubbub/{SiteId}/{normalizeDeviceName}/EVENT";
                 stoppingToken.ThrowIfCancellationRequested();
                 JObject datarow = new JObject();
                 DateTime timeStamp = DateTime.Now;
                 datarow.Add("groupid", 5);
                 datarow.Add("groupname", "EVENT");
+                datarow.Add("normalizedeviceid", normalizeDeviceName);
                 datarow.Add("deviceId", modbus.DeviceName);
                 datarow.Add("siteId", SiteId);
                 datarow.Add("timestamp", timeStamp.ToString("yyyyMMddHHmmss"));
@@ -216,7 +224,7 @@ namespace PEIU.Hubbub.Services
 
                 }
                 
-                await SendQueue(datarow, stoppingToken);
+                await SendQueue(peiu_event_topic, datarow, stoppingToken);
                 await Task.Delay(UpdatePeriod.Milliseconds);
                 //Thread.Sleep(UpdatePeriod);
             }

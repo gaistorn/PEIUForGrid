@@ -6,14 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Hibernate\**" />
-    <EmbeddedResource Remove="Hibernate\**" />
-    <None Remove="Hibernate\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="ModbusJsonObject.cs" />
     <Compile Remove="MqttJsonModel.cs" />
+    <Compile Remove="MysqlMap\PeiuAccountModel.VwAggregatoruser.cs" />
+    <Compile Remove="MysqlMap\PeiuAccountModel.VwContractorsite.cs" />
+    <Compile Remove="MysqlMap\PeiuAccountModel.VwContractoruser.cs" />
+    <Compile Remove="MysqlMap\PeiuAccountModel.VwTemporarycontractoruser.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,11 +25,26 @@
     <None Remove="MssqlMap\InverterDataRt.hbm.xml" />
     <None Remove="MysqlMap\Activeevent.hbm.xml" />
     <None Remove="MysqlMap\BmsData.hbm.xml" />
+    <None Remove="MysqlMap\CurrentWeather.hbm.xml" />
     <None Remove="MysqlMap\DeviceEvent.hbm.xml" />
     <None Remove="MysqlMap\EventMap.hbm.xml" />
     <None Remove="MysqlMap\LogEvent.hbm.xml" />
+    <None Remove="MysqlMap\monthly_accumchgdhg.hbm.xml" />
+    <None Remove="MysqlMap\monthly_accumpv.hbm.xml" />
     <None Remove="MysqlMap\PcsData.hbm.xml" />
+    <None Remove="MysqlMap\PeiuAccountModel.Diagram1.view" />
+    <None Remove="MysqlMap\PeiuAccountModel.edps" />
+    <None Remove="MysqlMap\PeiuAccountModel.hbml" />
+    <None Remove="MysqlMap\PeiuAccountModel.VwAggregatoruser.hbm.xml" />
+    <None Remove="MysqlMap\PeiuAccountModel.VwContractorsite.hbm.xml" />
+    <None Remove="MysqlMap\PeiuAccountModel.VwContractoruser.hbm.xml" />
+    <None Remove="MysqlMap\PeiuAccountModel.VwTemporarycontractoruser.hbm.xml" />
     <None Remove="MysqlMap\PvData.hbm.xml" />
+    <None Remove="MysqlMap\statistics_daily.hbm.xml" />
+    <None Remove="MysqlMap\statistics_hourly.hbm.xml" />
+    <None Remove="MysqlMap\statistics_minute.hbm.xml" />
+    <None Remove="MysqlMap\today_accumchgdhg.hbm.xml" />
+    <None Remove="MysqlMap\today_accumpv.hbm.xml" />
     <None Remove="MysqlMap\vw_ActiveEvent.hbm.xml" />
   </ItemGroup>
 
@@ -44,7 +57,15 @@
     <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
     <EmbeddedResource Include="MssqlMap\InverterDataRt.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\CurrentWeather.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\statistics_daily.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\statistics_hourly.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\statistics_minute.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\PvData.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\monthly_accumchgdhg.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\monthly_accumpv.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\today_accumpv.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\today_accumchgdhg.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\vw_ActiveEvent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\BmsData.hbm.xml" />

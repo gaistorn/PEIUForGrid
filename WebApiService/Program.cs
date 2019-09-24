@@ -15,8 +15,10 @@ namespace PEIU.Service.WebApiService
     {
         public static void Main(string[] args)
         {
-            // NLog: setup the logger first to catch all errors
-            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            //Services.HTMLGenerator gen = new Services.HTMLGenerator();
+            //gen.GenerateHtml("NotifyEmail.html", new { Company = "대건소프트", Name = "김기룡" });
+             // NLog: setup the logger first to catch all errors
+             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             AbsMqttBase.SetDefaultLoggerName("nlog.config", true);
             try
             {

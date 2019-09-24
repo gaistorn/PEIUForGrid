@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="TodayAccumPv" table="today_accumpv" schema="grid" schema-action="none"  >
+    <id name="UniqueId" column="ID" />
+    <property name="Timestamp">
+      <column name="timestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="SiteId">
+      <column name="siteId" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="Accumpvpower">
+      <column name="accumpvpower" sql-type="float" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

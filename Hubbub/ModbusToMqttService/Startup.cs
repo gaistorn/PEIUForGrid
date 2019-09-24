@@ -22,13 +22,13 @@ using MQTTnet.Client.Disconnecting;
 using MQTTnet.Client.Receiving;
 using NHibernate;
 using StackExchange.Redis.Extensions.Core.Configuration;
-using PEIU.Models;
 using PEIU.DataServices;
 
 namespace PEIU.Hubbub
 {
     public class Startup
     {
+        public static int SiteId { get; set; }
         static readonly ISessionFactory factory =
 new NHibernate.Cfg.Configuration().Configure().AddAssembly(
    Assembly.Load("DataModel, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")).AddAssembly(
@@ -53,9 +53,8 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
             var redisConfiguration = Configuration.GetSection("redis").Get<RedisConfiguration>();
             services.AddSingleton(redisConfiguration);
             var mysql_conn = Configuration.GetConnectionString("mysql");
-
             NotifyEventInterval = Configuration.GetSection("NotifyEventInterval").Get<TimeSpan>();
-               
+            SiteId = Configuration.GetSection("SiteId").Get<int>();
 
             var mqtt_informations = Configuration.GetSection("MQTTBrokers").Get<MqttConfig>();
             //services.AddSingleton(mqtt_informations);
@@ -65,7 +64,7 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
 
            
 #if CONTROL_TEST
-            services.AddHostedService<ControlLogService>();
+            //services.AddHostedService<ControlLogService>();
 #endif
             IDataAccess mysql_access = new MysqlDataAccess(mysql_conn);
             services.AddSingleton(mysql_access);
@@ -111,17 +110,18 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
         private void LoadConfigModbusMapper(IServiceCollection services)
         {
             string sqlite_conn_str = Configuration.GetConnectionString("sqlite");
-            MySqlAccessManager dam = new MySqlAccessManager(sqlite_conn_str);
+            SqliteAccessManager dam = new SqliteAccessManager(sqlite_conn_str);
             ModbusSystem modbusList = Configuration.GetSection("Modbus").Get<ModbusSystem>();
-            using (DataAccess da = new DataAccess(dam))
+            using (DataAccess da = new DataAccess(dam.SessionFactory))
             {
 
                 modbusList.GroupPoints = da.Select<GroupPoint>();
                 modbusList.GroupDigitalPoints = da.Select<EventGroupPoint>();
                 services.AddSingleton(modbusList);
                 services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
-                //services.AddHostedService<ModbusBackgroundService>();
-                //services.AddHostedService<ModbusDigitalProcessingService>();
+                services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusBackgroundService>();
+                services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
+                //services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
             }
         }
 

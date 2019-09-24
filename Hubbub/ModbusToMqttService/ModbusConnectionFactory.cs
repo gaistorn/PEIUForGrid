@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace PEIU.Hubbub
 {
@@ -16,16 +17,16 @@ namespace PEIU.Hubbub
         TcpClient GetTcpClient();
         IModbusMaster GetModbusMaster();
         bool TryConnectModbus(ModbusSystem config);
-        bool ReconnectWhenDisconnected();
+        bool ReconnectWhenDisconnected(CancellationToken cancellationToken, int TryCount);
         ModbusSystem GetModbusSystem();
         // Task<MqttRegister[]> ReadModbus(SlaveInfoYaml slaves);
-        JObject ReadModbusToJson(int siteId, GroupPoint slaves, out HashEntry[] hashEntry);
+        JObject ReadModbusToJson(int siteId, int DeviceIndex, GroupPoint slaves, out HashEntry[] hashEntry);
         Task<List<DiMap>> ReadModbusEvent(EventGroupPoint map);
         //Task<IEnumerable<MqttInlineRegisterJsonModel>> ReadModbusToArray(SlaveInfoYaml slaves);
 
-        Task<bool> WriteMultipleRegistersAsync(ushort startAddress, params ushort[] values);
-        Task<ushort[]> ReadHoldingRegistersAsync(ushort startAddress, ushort count);
-        Task<bool> WriteMultipleCoilsAsync(ushort startAddress, params bool[] values);
+        Task<bool> WriteMultipleRegistersAsync(CancellationToken cancellationToken, ushort startAddress, params ushort[] values);
+        Task<ushort[]> ReadHoldingRegistersAsync(CancellationToken cancellationToken, ushort startAddress, ushort count);
+        Task<bool> WriteMultipleCoilsAsync(CancellationToken cancellationToken, ushort startAddress, params bool[] values);
     }
 
     public class ModbusConnectionFactory : IModbusFactory
@@ -135,32 +136,32 @@ namespace PEIU.Hubbub
             return result;
         }
 
-        public async Task<bool> WriteMultipleRegistersAsync(ushort startAddress, params ushort[] values)
+        public async Task<bool> WriteMultipleRegistersAsync(CancellationToken cancellationToken, ushort startAddress, params ushort[] values)
         {
-            if (ReconnectWhenDisconnected() == false)
+            if (ReconnectWhenDisconnected(cancellationToken) == false)
                 return false;
             await master.WriteMultipleRegistersAsync(_config.SlaveId, startAddress, values);
             return true;
 
         }
 
-        public async Task<ushort[]> ReadHoldingRegistersAsync(ushort startAddress, ushort count)
+        public async Task<ushort[]> ReadHoldingRegistersAsync(CancellationToken cancellationToken, ushort startAddress, ushort count)
         {
-            if (ReconnectWhenDisconnected() == false)
+            if (ReconnectWhenDisconnected(cancellationToken) == false)
                 return null;
             ushort[] values = await master.ReadHoldingRegistersAsync(_config.SlaveId, startAddress, count);
             return values;
         }
 
-        public async Task<bool> WriteMultipleCoilsAsync(ushort startAddress, params bool[] values)
+        public async Task<bool> WriteMultipleCoilsAsync(CancellationToken cancellationToken, ushort startAddress, params bool[] values)
         {
-            if (ReconnectWhenDisconnected() == false)
+            if (ReconnectWhenDisconnected(cancellationToken) == false)
                 return false;
             await master.WriteMultipleCoilsAsync(_config.SlaveId, startAddress, values);
             return true;
         }
 
-        public JObject ReadModbusToJson(int siteId, GroupPoint slaves, out HashEntry[] hashEntries)
+        public JObject ReadModbusToJson(int siteId, int DeviceIndex, GroupPoint slaves, out HashEntry[] hashEntries)
         {
             JObject datarow = new JObject();
             List<HashEntry> entries = new List<HashEntry>();
@@ -192,6 +193,9 @@ namespace PEIU.Hubbub
                 datarow.Add("groupname", slaves.GroupName);
                 datarow.Add("deviceId", _config.DeviceName);
                 datarow.Add("siteId", siteId);
+                string normalizedeviceid = slaves.GroupId == 1 ? "PCS" : "BMS";
+
+                datarow.Add("normalizedeviceid", normalizedeviceid + DeviceIndex.ToString());
                 entries.Add(new HashEntry("timestamp", timeStamp.ToString()));
                 datarow.Add("timestamp", DateTime.Now.ToString("yyyyMMddHHmmss"));
                 int bitIdx = 0;
@@ -353,20 +357,46 @@ namespace PEIU.Hubbub
 
         }
 
-        public bool ReconnectWhenDisconnected()
+        public bool ReconnectWhenDisconnected(CancellationToken cancellationToken, int TryCount = 5)
         {
-            try
+            bool IsThrownErrors = false;
+            int _retryCount = 0;
+            DateTime tryNextTime = DateTime.MinValue;
+            while (true)
             {
-                if (_config == null)
+                
+                cancellationToken.ThrowIfCancellationRequested();
+                if (DateTime.Now < tryNextTime)
+                    continue;
+                tryNextTime = DateTime.Now.AddSeconds(10);
+                try
+                {
+                    if (_config == null)
+                        return false;
+                    bool Result = false;
+                    if (tcpClient == null || tcpClient.Connected == false)
+                    {
+                        Result = TryConnectModbus(_config);
+                    }
+                    else if (tcpClient != null && tcpClient.Connected)
+                        return true;
+                    if (Result)
+                        return true;
+                }
+                catch (Exception ex)
+                {
+                    if (IsThrownErrors == false)
+                    {
+                        logger.LogError(ex, ex.Message);
+                        IsThrownErrors = true;
+                    }
+                   
                     return false;
-                if (tcpClient == null || tcpClient.Connected == false)
-                    TryConnectModbus(_config);
-                return tcpClient != null && tcpClient.Connected;
-            }
-            catch(Exception ex)
-            {
-                logger.LogError(ex, ex.Message);
-                return false;
+                }
+                if (_retryCount > TryCount)
+                    return false;
+                _retryCount++;
+                Thread.Yield();
             }
         }
 

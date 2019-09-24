@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using NHibernate.Criterion;
 using NModbus;
 using StackExchange.Redis;
+using System.Threading;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -102,7 +103,7 @@ namespace PEIU.Hubbub.Controllers
         [HttpGet("GetLocalRemoteStatus")]
         public async Task<IActionResult> GetLocalRemoteStatus()
         {
-            string deviceName = modbus.GetModbusSystem().DeviceName;
+            string deviceName = $"{Startup.SiteId}.{modbus.GetModbusSystem().DeviceName}";
             var status = await redis_ai.HashGetAsync(deviceName, "LocalRemote");
             return Ok(status);
         }
@@ -110,7 +111,7 @@ namespace PEIU.Hubbub.Controllers
         [HttpGet("SetLocalRemoteStatus")]
         public async Task<IActionResult> SetLocalRemoteStatus(int IsRemote)
         {
-            string deviceName = modbus.GetModbusSystem().DeviceName;
+            string deviceName = $"{Startup.SiteId}.{modbus.GetModbusSystem().DeviceName}";
 
             await redis_ai.HashSetAsync(deviceName, "LocalRemote", IsRemote);
             //await modbus.WriteMultipleRegistersAsync(189, new ushort[] { IsRemote == 1 ? (ushort)16 : (ushort)0 });
@@ -124,8 +125,10 @@ namespace PEIU.Hubbub.Controllers
         [HttpGet("manualcontrol")]
         public async Task<IActionResult> ManualControl(byte deviceId, ushort DocumentAddress, short Value)
         {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
             ushort uvalue = (ushort)Value;
-            if (modbus.ReconnectWhenDisconnected() == false)
+            if (modbus.ReconnectWhenDisconnected(cancellationTokenSource.Token, 1) == false)
             {
                 return NoContent();
             }
@@ -138,19 +141,20 @@ namespace PEIU.Hubbub.Controllers
 #endif
 
 
-            await modbus.WriteMultipleRegistersAsync(DocumentAddress, new ushort[] { uvalue });
+            await modbus.WriteMultipleRegistersAsync(cancellationTokenSource.Token, DocumentAddress, new ushort[] { uvalue });
             return Ok();
         }
 
         [HttpPost("ReadHoldingRegister")]
         public async Task<IActionResult> ReadHoldingRegister([FromBody] ManualQueryParameter parameter)
         {
-            if (modbus.ReconnectWhenDisconnected() == false)
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            if (modbus.ReconnectWhenDisconnected(cancellationTokenSource.Token, 1) == false)
             {
-                return NoContent();
+                return BadRequest();
             }
 
-            ushort[] datas = await modbus.ReadHoldingRegistersAsync(parameter.StartAddress, parameter.Length);
+            ushort[] datas = await modbus.ReadHoldingRegistersAsync(cancellationTokenSource.Token, parameter.StartAddress, parameter.Length);
             ushort newAddr = parameter.StartAddress;
 
             JObject data = new JObject();
@@ -174,7 +178,7 @@ namespace PEIU.Hubbub.Controllers
             string lastReadField = "";
             try
             {
-                string deviceName = modbus.GetModbusSystem().DeviceName;
+                string deviceName = $"{Startup.SiteId}.{modbus.GetModbusSystem().DeviceName}";
                 JObject row = new JObject();
                 row.Add("deviceId", deviceName);
                 string timeStamp = await redis_ai.HashGetAsync(deviceName, "timestamp");

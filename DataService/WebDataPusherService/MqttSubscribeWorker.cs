@@ -39,7 +39,8 @@ namespace WebDataPusherService
                 string groupName = jObj["groupname"].Value<string>();
                 int siteId = jObj["siteId"].Value<int>();
                 string deviceId = jObj["deviceId"].Value<string>();
-                if(groupName.Equals(PCS_SYSTEM))
+                
+                if (groupName.Equals(PCS_SYSTEM))
                 {
                     await hubContext.Clients.All.ReceivePcsStock(siteId, deviceId, jObj);
                    // await hubContext.Clients.All.

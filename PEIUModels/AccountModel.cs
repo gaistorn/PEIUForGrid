@@ -74,9 +74,6 @@ namespace PEIU.Models
         [Display(Name = "registrationnumber")]
         public string RegistrationNumber { get; set; }
 
-        [Display(Name = "authlevel")]
-        public ushort AuthRoles { get; set; } = 0;
-
         [Display(Name = "address")]
         public string Address { get; set; }
 
@@ -119,44 +116,7 @@ namespace PEIU.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-#if WPF
-        [field:NonSerialized]
-        System.Windows.Visibility visibility = System.Windows.Visibility.Visible;
-        public System.Windows.Visibility Visibility
-        {
-            get { return visibility; }
-            set
-            {
-                visibility = value;
-                OnPropertyChanged("Visibility");
-            }
-        }
 
-
-        public string Email { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string Password { get; set; }
-
-        public string ConfirmPassword { get; set; }
-
-        public string CompanyName { get; set; }
-
-        public string PhoneNumber { get; set; }
-
-
-        public string Address { get; set; }
-
-        public ushort AuthRoles { get; set; }
-
-        [field:NonSerialized]
-        public ObservableCollection<IAssetLocation> Assets { get; } = new ObservableCollection<IAssetLocation>();
-
-        
-#else
         [Required]
         [EmailAddress]
         [Display(Name = "email")]
@@ -195,13 +155,6 @@ namespace PEIU.Models
         [Display(Name = "address")]
         public string Address { get; set; }
 
-        [Required]
-        [Display(Name = "authroles")]
-        public ushort AuthRoles { get; set; }
-
-
-
-#endif
     }
 
 }

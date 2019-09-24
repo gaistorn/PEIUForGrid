@@ -11,8 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using PEIU.Models;
+using PEIU.Models.Database;
+using PEIU.Models.ExchangeModel;
 using PEIU.Service.WebApiService.Localization;
-using Power21.PEIUEcosystem.Models;
 
 namespace PEIU.Service.WebApiService.Controllers
 {
@@ -23,11 +24,11 @@ namespace PEIU.Service.WebApiService.Controllers
     [ApiController]
     public class ContractController : ControllerBase
     {
-        private readonly UserManager<AccountModel> userManager;
+        private readonly UserManager<UserAccount> userManager;
         ILogger<ContractController> logger;
-        AccountRecordContext accountContext;
+        AccountDataContext accountContext;
         private readonly LocalizedIdentityErrorDescriber describer;
-        public ContractController(IConfiguration configuration, ILoggerFactory loggerFactory, AccountRecordContext _accountContext, UserManager<AccountModel> _userManager)
+        public ContractController(IConfiguration configuration, ILoggerFactory loggerFactory, AccountDataContext _accountContext, UserManager<UserAccount> _userManager)
         {
             logger = loggerFactory.CreateLogger<ContractController>();
             accountContext = _accountContext;
@@ -35,109 +36,46 @@ namespace PEIU.Service.WebApiService.Controllers
             describer = userManager.ErrorDescriber as LocalizedIdentityErrorDescriber;
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> RegisterContract([FromBody] ContractModel param)
-        //{
-        //    var cols = monogodb.GetCollection<ContractModel>("ContractInfo");
-        //    await cols.InsertOneAsync(param);
+       
 
-        //    return Ok();
+        [HttpGet("getassetbysiteid")]
+        public async Task<IActionResult> GetAssetBySiteId(int siteId)
+        {
+            IEnumerable<ContractorAsset> result = accountContext.ContractorAssets.Where(x => x.SiteId == siteId);
+            JArray return_value = new JArray(result);
+            //foreach (AssetLocation loc in result)
+            //{
+            //    JObject obj = JObject.FromObject(loc);
+            //    return_value.Add(obj);
+            //}
+            return Ok(return_value);
+        }
+
+        
+
+        //[HttpGet("getreservedregisters")]
+        //public async Task<IActionResult> GetReservedRegisters()
+        //{
+        //    JArray array = new JArray();
+        //    foreach (var account in accountContext.ReservedAssetLocations)
+        //    {
+        //        JObject row = JObject.FromObject(account);
+        //        array.Add(row);
+        //    }
+        //    return Ok(array);
         //}
 
-        [HttpGet("getAssetByCustomer")]
-        public async Task<IActionResult> getAssetByCustomer(string email = null)
-        {
-            IEnumerable<AssetLocation> result = null;
-            JArray return_value = new JArray();
-            result = accountContext.AssetLocations.Where(x => x.AccountId == email);
-
-            foreach (AssetLocation loc in result)
-            {
-                JObject obj = JObject.FromObject(loc);
-                return_value.Add(obj);
-            }
-            return Ok(return_value);
-        }
-
-        [HttpGet("getAsset")]
-        public async Task<IActionResult> GetAllAsset(int? siteId = null)
-        {
-            IEnumerable<AssetLocation> result = null;
-            JArray return_value = new JArray();
-            if (siteId != null)
-            {
-                result = accountContext.AssetLocations.Where(x => x.SiteId == siteId.Value);
-            }
-            else
-                result = accountContext.AssetLocations;
-
-            foreach(AssetLocation loc in result)
-            {
-                JObject obj = JObject.FromObject(loc);
-                return_value.Add(obj);
-            }
-            return Ok(return_value);
-        }
-
-        [HttpPost, Route("setreservedsite")]
-        [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> SetReservedSite([FromBody] ReservedSiteRegisterModel model)
-        {
-
-            //model.Email = value["Email"].ToString();
-            //model.Password = value["Password"].ToString();
-            //model.ConfirmPassword = value["ConfirmPassword"].ToString();
-            //model.Username
-            if (ModelState.IsValid)
-            {
-                var user = new ReservedAssetLocation
-                {
-                    AccountId = model.AccountId,
-                    Address1 = model.Address1,
-                    Address2 = model.Address2,
-                    ControlOwner = model.ControlOwner,
-                    //SiteInformation = model.SiteInformation,
-                    RegisterTimestamp = DateTime.Now,
-                    LawFirstCode = model.LawFirstCode,
-                    LawMiddleCode = model.LawMiddleCode,
-                    LawLastCode = model.LawLastCode,
-                    ServiceCode = model.ServiceCode,
-                    Latitude = model.Latitude,
-                    Longtidue = model.Longtidue
-                };
-                accountContext.ReservedAssetLocations.Add(user);
-                await accountContext.SaveChangesAsync();
-                return Ok();
-            }
-
-            // If we got this far, something failed, redisplay form
-            return Ok(StatusCodes.Status400BadRequest);
-        }
-
-        [HttpGet("getreservedregisters")]
-        public async Task<IActionResult> GetReservedRegisters()
-        {
-            JArray array = new JArray();
-            foreach (var account in accountContext.ReservedAssetLocations)
-            {
-                JObject row = JObject.FromObject(account);
-                array.Add(row);
-            }
-            return Ok(array);
-        }
-
-        [HttpGet("getcontractorlist")]
-        public async Task<IActionResult> GetContractorList()
-        {
-            JArray array = new JArray();
-            foreach(AccountModel account in accountContext.Users)
-            {
-                JObject row = JObject.FromObject(account);
-                array.Add(row);
-            }
-            return Ok(array);
-        }
+        //[HttpGet("getcontractorlist")]
+        //public async Task<IActionResult> GetContractorList()
+        //{
+        //    JArray array = new JArray();
+        //    foreach(AccountModel account in accountContext.Users)
+        //    {
+        //        JObject row = JObject.FromObject(account);
+        //        array.Add(row);
+        //    }
+        //    return Ok(array);
+        //}
 
         //// GET: api/Contract
         //[HttpGet]

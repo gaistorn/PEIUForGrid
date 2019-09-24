@@ -32,6 +32,8 @@ namespace WebDataPusherService.DataHub
             logger = _logger;
         }
 
+        
+
         public override Task OnConnectedAsync()
         {
             logger.LogInformation("Connected Measurement Hub");

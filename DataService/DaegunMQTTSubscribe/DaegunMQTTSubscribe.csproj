@@ -17,6 +17,12 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Remove="LogEventMaker.cs" />
+    <Compile Remove="MongoBackgroundHostService.cs" />
+    <Compile Remove="MQTTDaegunSubscribe.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Content Remove="NLog.config" />
   </ItemGroup>
 
@@ -33,8 +39,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="MQTTnet" Version="2.8.5" />
-    <PackageReference Include="MySql.Data" Version="8.0.16" />
+    <PackageReference Include="MQTTnet" Version="3.0.8" />
     <PackageReference Include="NLog" Version="4.6.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.8.3" />
   </ItemGroup>
@@ -43,6 +48,21 @@
     <ProjectReference Include="..\..\Hubbub\DataModel\DataModel.csproj" />
     <ProjectReference Include="..\..\PEIUModels\PEIUModels.csproj" />
     <ProjectReference Include="..\..\PEIUToolkit.Core\PEIUToolkit.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FireworksFramework.Core.Mqtt">
+      <HintPath>..\..\DLL\FireworksFramework.Core.Mqtt.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DaegunSubscriberWorker.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="PeiuPublishWorker.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

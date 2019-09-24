@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PEIU.Models.IdentityModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace PEIU.Service.WebApiService.Authroize
             if (policy == null)
             {
                 policy = new AuthorizationPolicyBuilder()
-                    .AddRequirements(new HasScopeRequirement(policyName, PEIU.Models.CommonClaimTypes.Issuer))
+                    .AddRequirements(new HasScopeRequirement(policyName, UserClaimTypes.Issuer))
                     .Build();
 
                 // Add policy to the AuthorizationOptions, so we don't have to re-create it each time

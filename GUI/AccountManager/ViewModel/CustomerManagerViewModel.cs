@@ -15,20 +15,20 @@ namespace PEIU.GUI.ViewModel
 {
     public class CustomerManagerViewModel : ViewModelBase, IUpdateWebData, IBedgeMenuModel
     {
-        private IEnumerable<RegisterViewModel> _accountSource;
+//        private IEnumerable<RegisterViewModel> _accountSource;
 
-        public IEnumerable<RegisterViewModel> AccountSource { get {
-                return _accountSource ?? (_accountSource = new List<RegisterViewModel>()
-);
-            }
-            set
-            {
-                _accountSource = value;
-                var group_source = _accountSource.GroupBy(key => (AuthRoles)key.AuthRoles, v => v);
-                _accounts = new ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>>(group_source);
-                RaisePropertyChanged("Accounts");
-            }
-        }
+//        public IEnumerable<RegisterViewModel> AccountSource { get {
+//                return _accountSource ?? (_accountSource = new List<RegisterViewModel>()
+//);
+//            }
+//            set
+//            {
+//                //_accountSource = value;
+//                //var group_source = _accountSource.GroupBy(key => (AuthRoles)key.AuthRoles, v => v);
+//                //_accounts = new ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>>(group_source);
+//                //RaisePropertyChanged("Accounts");
+//            }
+//        }
 
         private string _customerFilterText;
         public string CustomerFilterText
@@ -97,18 +97,18 @@ namespace PEIU.GUI.ViewModel
         {
             try
             {
-                var result = await ContractWebService.RequestCollectionGetMethod<RegisterViewModel>("/api/contract/getcontractorlist");
-                AccountSource = result;
-                foreach(var register in result)
-                {
-                    for(int i=0;i<3;i++)
-                    {
-                        AssetLocation loc = new AssetLocation();
-                        loc.AssetName = $"Test {i}";
-                        register.Assets.Add(loc);
-                    }
-                }
-                BedgeCount = result.Count(x => (AuthRoles)x.AuthRoles == AuthRoles.Candidator);
+                //var result = await ContractWebService.RequestCollectionGetMethod<RegisterViewModel>("/api/contract/getcontractorlist");
+                //AccountSource = result;
+                //foreach(var register in result)
+                //{
+                //    for(int i=0;i<3;i++)
+                //    {
+                //        AssetLocation loc = new AssetLocation();
+                //        loc.AssetName = $"Test {i}";
+                //        //register.Assets.Add(loc);
+                //    }
+                //}
+                //BedgeCount = result.Count(x => (AuthRoles)x.AuthRoles == AuthRoles.Candidator);
             }
             catch (Exception ex)
             {
@@ -129,9 +129,9 @@ namespace PEIU.GUI.ViewModel
 
         //public ObservableCollection<RegisterViewModel> Accounts { get => _accounts; set => this.Set(ref _accounts, value); }
 
-        ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>> _accounts;
-        public ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>> Accounts
-        { get { return _accounts ?? (_accounts = new ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>>()); } }
+        //ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>> _accounts;
+        //public ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>> Accounts
+        //{ get { return _accounts ?? (_accounts = new ObservableCollection<IGrouping<AuthRoles, RegisterViewModel>>()); } }
 
 
 

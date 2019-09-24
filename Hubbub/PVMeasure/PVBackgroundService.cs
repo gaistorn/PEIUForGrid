@@ -75,11 +75,11 @@ namespace PVMeasure
                             else
                                 stamp_map[rt.ID_CODE] = date_key;
                             int idCode = int.Parse(rt.ID_CODE.ToString()) + 1;
-                            string redis_key = $"{redisDeviceName}{idCode}";
-                            string mqtt_key = $"{DeviceName}{idCode}";
+                            string redis_key = $"{SiteId}.{redisDeviceName}{idCode}";
+                            string mqtt_key = $"PV{idCode}";
                             logger.Trace($"READING INVERTER DB {rt.ID_DATE} deviceId: {redis_key}");
                             HashEntry[] hashEntries = null;
-                            var jRow = CreateJObject(rt, redis_key, out hashEntries);
+                            var jRow = CreateJObject(rt, $"PV{idCode}", out hashEntries);
                             
                             await redis.HashSetAsync(redis_key, hashEntries);
 
@@ -154,7 +154,7 @@ namespace PVMeasure
         {
             List<HashEntry> entries = new List<HashEntry>();
             PropertyInfo[] propertyInfos = typeof(INVERTER_DATA_RT).GetProperties();
-            foreach(PropertyInfo pi in propertyInfos)
+            foreach (PropertyInfo pi in propertyInfos)
             {
                 string name = pi.Name;
                 object value = pi.GetValue(invert);
@@ -162,13 +162,29 @@ namespace PVMeasure
                 entries.Add(new HashEntry(name, str_Value));
             }
             DateTime timeStamp = DateTime.Now;
-            JObject datarow = JObject.FromObject(invert);
+            JObject datarow = new JObject();//JObject.FromObject(invert);
             datarow.Add("groupid", 4);
             datarow.Add("groupname", "PV_SYSTEM");
             datarow.Add("deviceId", deviceName);
             datarow.Add("siteId", SiteId);
+            datarow.Add("normalizedeviceid", deviceName);
             entries.Add(new HashEntry("timestamp", timeStamp.ToString()));
-            datarow.Add("timestamp", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            datarow.Add("timestamp", invert.ID_DATE.ToString("yyyyMMddHHmmss"));
+            datarow.Add("TotalActivePower", invert.ID_POWER);
+            datarow.Add("TotalReactivePower", 0);
+            datarow.Add("ReverseActivePower", 0);
+            datarow.Add("ReverseReactivePower", 0);
+            datarow.Add("vltR", invert.A_VOLTAGE);
+            datarow.Add("vltS", invert.B_VOLTAGE);
+            datarow.Add("vltT", invert.C_VOLTAGE);
+            datarow.Add("crtR", invert.A_CURRENT);
+            datarow.Add("crtS", invert.B_CURRENT);
+            datarow.Add("crtT", invert.C_CURRENT);
+            datarow.Add("Frequency", invert.FREQUENCY);
+            datarow.Add("EnergyTotalActivePower", invert.TOTAL_POWER);
+            datarow.Add("EnergyTodayActivePower", invert.TODAY_POWER);
+            datarow.Add("EnergyTotalReactivePower", 0);
+            datarow.Add("EnergyTotalReverseActivePower", 0);
             hashEntries = entries.ToArray();
             return datarow;
         }

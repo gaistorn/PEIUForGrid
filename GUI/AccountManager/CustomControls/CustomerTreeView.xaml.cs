@@ -43,23 +43,23 @@ namespace PEIU.GUI.CustomControls
 
         private void DoFilter()
         {
-            int cnt = 0;
-            foreach(IGrouping<AuthRoles,RegisterViewModel> item in this.Items)
-            {
-                foreach(RegisterViewModel viewmodel in item)
-                {
-                    cnt++;
-                    if (cnt % 3 == 0)
-                    {
-                        viewmodel.Visibility = Visibility.Collapsed;
-                    }
-                }
+            //int cnt = 0;
+            //foreach(IGrouping<AuthRoles,RegisterViewModel> item in this.Items)
+            //{
+            //    foreach(RegisterViewModel viewmodel in item)
+            //    {
+            //        cnt++;
+            //        if (cnt % 3 == 0)
+            //        {
+            //          //  viewmodel.Visibility = Visibility.Collapsed;
+            //        }
+            //    }
                 
-                //foreach (var child_item in item.)
-                //{
-                //    //child_item.Visibility = child_item.Header
-                //}
-            }
+            //    //foreach (var child_item in item.)
+            //    //{
+            //    //    //child_item.Visibility = child_item.Header
+            //    //}
+            //}
         }
         
     }

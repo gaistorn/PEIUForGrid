@@ -15,7 +15,7 @@ namespace PEIU.Models.ExchangeModel
         [DataType(DataType.Password)]
         public string password { get; set; }
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
+        //[Display(Name = "Remember me?")]
+        //public bool RememberMe { get; set; }
     }
 }

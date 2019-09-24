@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PEIU.Models;
+using PEIU.Models.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace PEIU.Service.WebApiService.Authroize
 {
-    public class ClaimsPrincipalFactory : UserClaimsPrincipalFactory<AccountModel, IdentityRole>
+    public class ClaimsPrincipalFactory : UserClaimsPrincipalFactory<UserAccount, Role>
     {
         readonly ILogger<AuthorizationPolicyProvider> _logger;
         public ClaimsPrincipalFactory(
-            UserManager<AccountModel> userManager,
-            RoleManager<IdentityRole> roleManager,
+            UserManager<UserAccount> userManager,
+            RoleManager<Role> roleManager,
             IOptions<IdentityOptions> optionsAccessor,
             ILogger<AuthorizationPolicyProvider> logger
             )
@@ -24,7 +25,7 @@ namespace PEIU.Service.WebApiService.Authroize
             _logger = logger;
         }
 
-        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(AccountModel user)
+        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(UserAccount user)
         {
             var identity = await base.GenerateClaimsAsync(user);
             try

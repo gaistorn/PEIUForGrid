@@ -1,0 +1,94 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:Convert="clr-namespace:PEIU.GUI.Converters"
+            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                      xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
+             xmlns:local="clr-namespace:PEIU.GUI.View"
+             xmlns:c1="http://schemas.componentone.com/winfx/2006/xaml" x:Class="PEIU.GUI.View.ContractorCustomerView"
+             mc:Ignorable="d" 
+            x:Name="MainContext"
+            DataContext="{Binding Contractor, Source={StaticResource Locator}}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Convert:ContractStatusCodesConverter x:Key="ContractStatusConverter" />
+        <Convert:ServiceCodesConverter x:Key="ServiceCodesConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10">
+            <TextBlock Text="대상 중개거래 사업자" VerticalAlignment="Center" Margin="5"/>
+            <ComboBox x:Name="cbAggregators" ItemsSource="{Binding Path=Aggregators}" DisplayMemberPath="AggName" Height="15" Width="Auto"
+                      >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <cmd:EventToCommand PassEventArgsToCommand="True"
+                        Command="{Binding SelectedAggregroupCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+            <TextBox x:Name="FilterTextBox"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Left"
+                         controls:TextBoxHelper.ClearTextButton="False"
+                         controls:TextBoxHelper.UseFloatingWatermark="True"
+                         controls:TextBoxHelper.Watermark="찾는 사용자명..."
+                         Margin="5 0 0 0"
+                         Width="250"
+                         BorderThickness="3 0 0 1"
+                         SnapsToDevicePixels="True"
+                         Text="{Binding CustomerFilterText, Delay=300, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+        <DataGrid x:Name="AzureDataGrid"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Margin="5"
+                  AutoGenerateColumns="False" CanUserAddRows="False"
+                  RowHeaderWidth="0"
+                  Style="{DynamicResource MahApps.Styles.DataGrid.Azure}" ItemsSource="{Binding Path=Contractors}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="고객명">
+                    <DataGridTextColumn.Binding>
+                        <MultiBinding StringFormat="{}{0}{1} ({2})">
+                            <Binding Path="FirstName"/>
+                            <Binding Path="LastName"/>
+                            <Binding Path="Email"/>
+                        </MultiBinding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                
+                <DataGridTextColumn Header="주소" Binding="{Binding Path=Address}"/>
+                <DataGridTextColumn Header="회사명" Binding="{Binding Path=CompanyName}"/>
+                <DataGridTextColumn Header="가입날짜" Binding="{Binding Path=RegistDate, StringFormat=d}"/>
+                <DataGridTextColumn Header="만료날짜" Binding="{Binding Path=Expire, StringFormat=d}"/>
+                <DataGridCheckBoxColumn Header="로그인가능" Binding="{Binding Path=SignInConfirm}" />
+                <DataGridTemplateColumn Header="진행상태">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Path=ContractStatus, Converter={StaticResource ContractStatusConverter}}"
+                                    Command="{Binding ElementName=MainContext, Path=DataContext.ShowApprovalWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=DataContext}">
+                                <!--<Button.Template>
+                                    <ControlTemplate>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Path=ContractStatus, Converter={StaticResource ContractStatusConverter}}" VerticalAlignment="Center">
+
+                                            </TextBlock>
+                                            <Image Source="/AccountManagerRunner;component/Images/Shortcut-icon.png" Margin="2" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Button.Template>-->
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</UserControl>

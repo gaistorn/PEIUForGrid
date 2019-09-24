@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
-  <class name="vw_ActiveEvent" table="vw_activeevent" entity-name="View" schema="grid" schema-action="none" >
+  <class name="vw_ActiveEvent" table="vw_activeevent" schema="grid" schema-action="none" >
     <id name="EventId" column="EventId" />
     <property name="DeviceName">
       <column name="DeviceName" sql-type="varchar(45)" not-null="true" />

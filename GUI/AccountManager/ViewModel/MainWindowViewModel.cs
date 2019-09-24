@@ -79,7 +79,7 @@ namespace PEIU.GUI.ViewModel
 
         private IEnumerable<HamburgerMenuItem> CreateMenuItems()
         {
-            var menus = new IMenuModel[] { SimpleIoc.Default.GetInstance<CandidateCustomerViewModel>(), SimpleIoc.Default.GetInstance<CustomerManagerViewModel>(), SimpleIoc.Default.GetInstance<StatusDashboardViewModel>() };
+            var menus = new IMenuModel[] { SimpleIoc.Default.GetInstance<ContractorCustomerViewModel>(), SimpleIoc.Default.GetInstance<CustomerManagerViewModel>(), SimpleIoc.Default.GetInstance<StatusDashboardViewModel>() };
             foreach(ViewModelBase baseModel in menus)
             {
                 MenuItemBase item = null;

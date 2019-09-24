@@ -24,6 +24,10 @@ namespace PEIU.Models
                     {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MySQLDialect).FullName},
                     {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
                     {NHibernate.Cfg.Environment.ConnectionString, connectionString},
+                    //{NHibernate.Cfg.Environment., connectionString},
+                            {"hibernate.connection.CharSet", "utf-8"},
+                            {"hibernate.connection.characterEncoding", "utf-8" },
+                            {"hibernate.connection.useUnicode", "true" },
 
 #if DEBUG
                             {NHibernate.Cfg.Environment.ShowSql, "false" }

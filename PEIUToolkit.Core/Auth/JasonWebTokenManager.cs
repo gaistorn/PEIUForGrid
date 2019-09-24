@@ -19,7 +19,7 @@ namespace PES.Toolkit.Auth
             Secret = secret;
         }
 
-        public static ClaimsPrincipal GetPrincipal(string token)
+        public static ClaimsPrincipal GetPrincipal(string userid, string token)
         {
             try
             {
@@ -30,6 +30,7 @@ namespace PES.Toolkit.Auth
                 byte[] key = Convert.FromBase64String(Secret);
                 TokenValidationParameters parameters = new TokenValidationParameters()
                 {
+                    NameClaimType = userid,
                     RequireExpirationTime = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
@@ -46,10 +47,10 @@ namespace PES.Toolkit.Auth
             }
         }
 
-        public static string ValidateToken(string token, string ClaimType)
+        public static string ValidateToken(string userid, string token, string ClaimType)
         {
             string username = null;
-            ClaimsPrincipal principal = GetPrincipal(token);
+            ClaimsPrincipal principal = GetPrincipal(userid, token);
 
             if (principal == null)
                 return null;
@@ -67,9 +68,9 @@ namespace PES.Toolkit.Auth
             return username;
         }
 
-        public static ClaimsIdentity ValidateToken(string token)
+        public static ClaimsIdentity ValidateToken(string userid, string token)
         {
-            ClaimsPrincipal principal = GetPrincipal(token);
+            ClaimsPrincipal principal = GetPrincipal(userid, token);
 
             if (principal == null)
                 return null;
@@ -85,7 +86,7 @@ namespace PES.Toolkit.Auth
             return identity;
         }
 
-        public static string GenerateToken(string username, string issuer, IList<Claim> claims)
+        public static string GenerateToken(string userid, string issuer, IList<Claim> claims)
         {
         //    var claims = new[]
         //{
@@ -97,10 +98,11 @@ namespace PES.Toolkit.Auth
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                
                 issuer: issuer,
                 audience: "https://www.peiu.co.kr",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddYears(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

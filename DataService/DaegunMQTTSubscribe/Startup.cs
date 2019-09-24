@@ -33,30 +33,14 @@ namespace PES.Service.DataService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //NLog.LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration("nlog.config");
-            // NLog.ILogger errorLogger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
-            // //errorLogger.Info("Looo");
-            // services.AddSingleton(errorLogger);
-            //Models.DaegunPcsPacket pcsPacket = new Models.DaegunPcsPacket();
-            //pcsPacket.ActivePower = 100;
-            //pcsPacket.Temp = new float[] { 1.1f, 1.2f, 5.1f, 3.4f };
-            //NLog.Logger logger =  NLog.LogManager.Configuration.LogFactory.GetLogger("record.pcs");
-            //NLog.LogEventInfo logEvent = LogEventMaker.CreateLogEvent("record.pcs", pcsPacket);
-            //logEvent.Properties["SiteId"] = 100;
-            //logger.Log(logEvent);
+            services.AddSingleton<IPacketQueue, PacketQueue>();
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ConsumeDataService>();
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, MqttHostService>();
+            //IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
+            //services.AddSingleton(queue_service);
 
-            string mysql_connStr = Configuration.GetConnectionString("mysql");
-            MysqlDataAccess da = new MysqlDataAccess(mysql_connStr);
-            services.AddSingleton(da);
-
-            var mqttOptions = Configuration.GetSection("MQTTSubscribeConfig").Get<MqttSubscribeConfig>();
-            services.AddSingleton(mqttOptions);
-
-            IBackgroundMongoTaskQueue queue_service = new MongoBackgroundTaskQueue();
-            services.AddSingleton(queue_service);
-
-            services.AddHostedService<MongoBackgroundHostService>();
-            MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
+            //services.AddHostedService<MongoBackgroundHostService>();
+            //MQTTDaegunSubscribe describe = new MQTTDaegunSubscribe(loggerFactory, queue_service, mqttOptions);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

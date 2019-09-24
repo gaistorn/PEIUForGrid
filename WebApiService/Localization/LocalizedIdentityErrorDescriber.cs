@@ -243,7 +243,27 @@ namespace PEIU.Service.WebApiService.Localization
             return this.GetErrorByCode("PasswordDoesNotMatched");
         }
 
-        
+        public IdentityError AggregatorNotFounded(string aggname)
+        {
+            return this.FormatErrorByCode("AggregatorNotFounded", aggname);
+        }
+
+        public IdentityError SignInNotConfirm(string email)
+        {
+            return this.FormatErrorByCode("SignInNotConfirm", email);
+        }
+
+        public IdentityError ContractorNotFounded(string contractormail)
+        {
+            return this.FormatErrorByCode("ContractorNotFounded", contractormail);
+        }
+
+        public IdentityError TargetAggGroupHasAlready(string agggroupname)
+        {
+            return this.FormatErrorByCode("TargetAggGroupHasAlready", agggroupname);
+        }
+
+
 
         /// <summary>Returns a localized <see cref="IdentityError"/> for the provided code.</summary>
         /// <param name="code">The error's code.</param>
@@ -271,5 +291,6 @@ namespace PEIU.Service.WebApiService.Localization
                 Description = string.Format(this.localizer.GetString(code, parameters))
             };
         }
+
     }
 }

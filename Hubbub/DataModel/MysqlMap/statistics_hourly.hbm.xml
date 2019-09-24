@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="HourlyStatistics_pv" table="hourlystatistics_pv" schema="grid" schema-action="none"  >
+    <id name="ID" column="ID" />
+    <property name="Timestamp">
+      <column name="timestamp" sql-type="datetime" not-null="false" />
+    </property>
+    <property name="SiteId">
+      <column name="siteId" sql-type="int(11)" not-null="true" />
+    </property>
+    <property name="AccumPvPower">
+      <column name="accumpvpower" sql-type="float" not-null="false" />
+    </property>
+    <property name="DeviceId">
+      <column name="diviceid" sql-type="varchar(45)" not-null="false" />
+    </property>
+  </class>
+</hibernate-mapping>

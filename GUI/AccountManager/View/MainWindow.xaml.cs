@@ -7,6 +7,7 @@ using PEIU.GUI.Subscriber;
 using PEIU.GUI.ViewModel;
 using PEIU.GUI.WebServices;
 using PEIU.Models;
+using PEIU.Models.ExchangeModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,6 +33,7 @@ namespace PEIU.GUI.View
     public partial class MainWindow : MetroWindow
     {
         MainWindowViewModel ViewModel => ViewModelLocator.MainStatic;
+        Task mqttSubscribeTask = null;
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         ReservedRegisterSubscriberWorker subscriberWorker = null;
          BackgroundWorker mqttBacgkroundWorker; 
@@ -53,7 +55,7 @@ namespace PEIU.GUI.View
             //HamburgerMenuIconItem item = new HamburgerMenuIconItem();
             //item.Label = "Hei";
             //HamburgerMenuControl.Items.Add(item);
-            InitializeMqtt();
+            //InitializeMqtt();
 
             //GalaSoft.MvvmLight.Messaging.Messenger.Default.Register<DialogMessage>(this, HandleDialogMessage);
 
@@ -78,15 +80,15 @@ namespace PEIU.GUI.View
 
         private void MqttBacgkroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            subscriberWorker = new ReservedRegisterSubscriberWorker();
-            subscriberWorker.MessageReceivedEvent += SubscriberWorker_MessageReceivedEvent;
-            subscriberWorker.Initialize();
+            //subscriberWorker = new ReservedRegisterSubscriberWorker();
+            //subscriberWorker.MessageReceivedEvent += SubscriberWorker_MessageReceivedEvent;
+            //subscriberWorker.Initialize();
 
-            Task t = subscriberWorker.MqttSubscribeAsync(cancellationTokenSource.Token);
-            t.Wait();
+            //mqttSubscribeTask = subscriberWorker.MqttSubscribeAsync(cancellationTokenSource.Token);
+            //mqttSubscribeTask.Wait();
         }
 
-        private void SubscriberWorker_MessageReceivedEvent(object sender, MqttMessageReceivedEventArgs<RegisterViewModel> e)
+        private void SubscriberWorker_MessageReceivedEvent(object sender, MqttMessageReceivedEventArgs<ContractorRegistModel> e)
         {
             if(HamburgerMenuControl.Dispatcher.Thread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
             {
@@ -104,7 +106,7 @@ namespace PEIU.GUI.View
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
-            cancellationTokenSource.Cancel();
+            //cancellationTokenSource.Cancel();
             ViewModelLocator.Dispose();
         }
     }
