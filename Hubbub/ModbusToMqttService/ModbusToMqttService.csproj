@@ -43,13 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FireworksFramework.Core.Mqtt" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.1.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
-    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.2" />
+    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.8" />
     <PackageReference Include="MySql.Data" Version="8.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NHibernate" Version="5.2.5" />
@@ -60,11 +59,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\EventPusher\EventPusher.csproj" />
+    <ProjectReference Include="..\..\DataService\DataCollectorLib\DataCollectorLib.csproj" />
+    <ProjectReference Include="..\..\Event\EventPublisherLib\EventPublisherLib.csproj" />
     <ProjectReference Include="..\DataModel\DataModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="eventmap.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="EventPublisherWorker.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="modbusmap.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

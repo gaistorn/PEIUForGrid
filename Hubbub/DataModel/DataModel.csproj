@@ -24,6 +24,8 @@
     <None Remove="ModbusMap\IoTypeFlag.hbm.xml" />
     <None Remove="MssqlMap\InverterDataRt.hbm.xml" />
     <None Remove="MysqlMap\Activeevent.hbm.xml" />
+    <None Remove="MysqlMap\AlarmNHibernateModel.EventRecord.hbm.xml" />
+    <None Remove="MysqlMap\AlarmNHibernateModel.VwEventRecord.hbm.xml" />
     <None Remove="MysqlMap\BmsData.hbm.xml" />
     <None Remove="MysqlMap\CurrentWeather.hbm.xml" />
     <None Remove="MysqlMap\DeviceEvent.hbm.xml" />
@@ -57,6 +59,8 @@
     <EmbeddedResource Include="ModbusMap\GroupPoint.hbm.xml" />
     <EmbeddedResource Include="ModbusMap\IoTypeFlag.hbm.xml" />
     <EmbeddedResource Include="MssqlMap\InverterDataRt.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\AlarmNHibernateModel.EventRecord.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\AlarmNHibernateModel.VwEventRecord.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\CurrentWeather.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\statistics_daily.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\statistics_hourly.hbm.xml" />

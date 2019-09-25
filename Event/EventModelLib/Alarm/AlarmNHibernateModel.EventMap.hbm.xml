@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping schema="grid" assembly="EventModelLib" namespace="PEIU.Events.Alarm" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="EventMap" table="EventMap">
+    <id name="EventId" type="Int32">
+      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+      <generator class="assigned" />
+    </id>
+    <property name="Level" type="Int16">
+      <column name="Level" not-null="true" precision="6" scale="0" sql-type="SMALLINT(6)" />
+    </property>
+    <property name="Type" type="Int16">
+      <column name="Type" not-null="true" precision="6" scale="0" sql-type="SMALLINT(6)" />
+    </property>
+    <property name="Source" type="String">
+      <column name="Source" not-null="true" length="45" sql-type="VARCHAR(45)" />
+    </property>
+    <property name="Category" type="String">
+      <column name="Category" not-null="true" length="45" sql-type="VARCHAR(45)" />
+    </property>
+    <property name="Name" type="String">
+      <column name="Name" not-null="true" length="128" sql-type="VARCHAR(128)" />
+    </property>
+    <property name="Description" type="String">
+      <column name="Description" not-null="true" length="128" sql-type="VARCHAR(128)" />
+    </property>
+    <set name="EventRecords" inverse="true" generic="true">
+      <key>
+        <column name="EventId" />
+      </key>
+      <one-to-many class="EventRecord" />
+    </set>
+  </class>
+</hibernate-mapping>

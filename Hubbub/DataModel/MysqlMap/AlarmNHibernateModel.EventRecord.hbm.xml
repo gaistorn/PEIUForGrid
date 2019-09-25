@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping schema="grid" assembly="DataModel" namespace="PEIU.Models" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="EventRecord" table="EventRecord">
+    <id name="EventRecordId" type="Int32">
+      <column name="EventRecordId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+      <generator class="identity" />
+    </id>
+    <property name="CreateDT" type="DateTime">
+      <column name="CreateDT" not-null="true" sql-type="DATETIME" />
+    </property>
+    <property name="RecoveryDT" type="DateTime">
+      <column name="RecoveryDT" not-null="false" sql-type="DATETIME" />
+    </property>
+    <property name="AckDT" type="DateTime">
+      <column name="AckDT" not-null="false" sql-type="DATETIME" />
+    </property>
+    <property name="AckUserId" type="String">
+      <column name="AckUserId" not-null="false" length="255" sql-type="VARCHAR(255)" />
+    </property>
+    <property name="SiteId" type="Int32">
+      <column name="SiteId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+    </property>
+    <property name="DeviceId" type="String">
+      <column name="DeviceId" not-null="true" length="45" sql-type="VARCHAR(45)" />
+    </property>
+    <property name="EventId" type="Int32">
+      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+    </property>
+    <!--<many-to-one name="EventMap" class="EventMap">
+      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+    </many-to-one>-->
+  </class>
+</hibernate-mapping>

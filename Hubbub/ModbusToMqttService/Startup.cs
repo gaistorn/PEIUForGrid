@@ -23,6 +23,8 @@ using MQTTnet.Client.Receiving;
 using NHibernate;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using PEIU.DataServices;
+using FireworksFramework.Mqtt;
+using PEIU.Events;
 
 namespace PEIU.Hubbub
 {
@@ -119,7 +121,18 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
                 modbusList.GroupDigitalPoints = da.Select<EventGroupPoint>();
                 services.AddSingleton(modbusList);
                 services.AddSingleton<IModbusFactory, ModbusConnectionFactory>();
-                services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusBackgroundService>();
+
+                EventMap map = new EventMap();
+                map.Load();
+
+                services.AddSingleton(map);
+
+                AbsMqttBase.SetDefaultLoggerName("nlog.config", true);
+                EventPublisherWorker worker = new EventPublisherWorker();
+                worker.Initialize();
+
+                services.AddSingleton(worker);
+                //services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusBackgroundService>();
                 services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
                 //services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
             }

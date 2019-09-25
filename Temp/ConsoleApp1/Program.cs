@@ -16,6 +16,7 @@ namespace ConsoleApp1
         static ManualResetEvent mre = new ManualResetEvent(true);
         static void Main(string[] args)
         {
+            
             //string d = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
             //StreamWriter sw = new StreamWriter(".\\log.log", true);
 

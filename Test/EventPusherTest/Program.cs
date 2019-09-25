@@ -10,6 +10,10 @@ namespace EventPusherTest
     {
         static void Main(string[] args)
         {
+            long unix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            DateTime dt = new DateTime(1970, 1, 1).AddSeconds(unix);
+
+            DateTime newdt = dt.ToLocalTime();
             Console.WriteLine("Hello World!");
 
             MqttAddress address = new MqttAddress();

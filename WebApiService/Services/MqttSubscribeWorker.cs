@@ -39,7 +39,7 @@ namespace PEIU.Service.WebApiService
                 JObject jObj = JObject.Parse(data);
                 int groupId = jObj["groupid"].Value<int>();
                 int siteId = jObj["siteId"].Value<int>();
-                string deviceId = jObj["deviceId"].Value<string>();
+                string deviceId = jObj["normalizedeviceid"].Value<string>();
                 string redisKey = CommonFactory.CreateRedisKey(siteId, groupId, deviceId);
                 HashEntry[] hashValues = CreateHashEntry(jObj);
                 await db.HashSetAsync(redisKey, hashValues);
