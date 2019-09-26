@@ -137,7 +137,7 @@ namespace PEIU.Hubbub.Services
 
                         foreach (DiMap map in results)
                         {
-                            if (map.DocumentAddress == 40182)
+                            if (map.DocumentAddress == 40132)
                             {
 
                             }
@@ -307,7 +307,7 @@ namespace PEIU.Hubbub.Services
                 return Hubbub.EventStatus.New;
             else if (evt != null)
             {
-                if(IsActive == false)
+                if(IsActive == false && evt.HasRecovered == false)
                 {
                     return Hubbub.EventStatus.Recover;
                 }
