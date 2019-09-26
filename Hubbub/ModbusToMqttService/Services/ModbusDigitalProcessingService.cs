@@ -116,17 +116,8 @@ namespace PEIU.Hubbub.Services
                     }
 
 
-                    string normalizeDeviceName = $"PCS{DeviceIndex}";
-                    string peiu_event_topic = $"hubbub/{SiteId}/{normalizeDeviceName}/EVENT";
+                    
                     stoppingToken.ThrowIfCancellationRequested();
-                    JObject datarow = new JObject();
-                    DateTime timeStamp = DateTime.Now;
-                    datarow.Add("groupid", 5);
-                    datarow.Add("groupname", "EVENT");
-                    datarow.Add("normalizedeviceid", normalizeDeviceName);
-                    datarow.Add("deviceId", modbus.DeviceName);
-                    datarow.Add("siteId", SiteId);
-                    datarow.Add("timestamp", timeStamp.ToString("yyyyMMddHHmmss"));
                     //var parallelResult = Parallel.ForEach<GroupPoint>(modbus.GroupPoints, (async x =>
                     foreach (var x in modbus.GroupDigitalPoints)
                     {
@@ -147,7 +138,7 @@ namespace PEIU.Hubbub.Services
 
 
                             //cache.Get()
-                            datarow.Add(map.Name, map.Value);
+                            //datarow.Add(map.Name, map.Value);
                             string redis_key = $"{modbus.DeviceName}.{map.DocumentAddress}";
                             ushort redis_value = 0;
                             if (await redis.KeyExistsAsync(redis_key))
@@ -173,7 +164,8 @@ namespace PEIU.Hubbub.Services
                                     summary.SiteId = SiteId;
                                     summary.DeviceName = modbus.DeviceName;
                                     summary.GroupName = map.Name;
-                                    summary.SetTimestamp(timeStamp);
+
+                                    summary.SetTimestamp(DateTime.Now);
                                     foreach (DiFlag evt in map.Flags)
                                     {
                                         EventField ef = event_map.FirstOrDefault(Tx => Tx.Register == map.DocumentAddress && Tx.BitValue == evt.BitValue);
@@ -198,9 +190,8 @@ namespace PEIU.Hubbub.Services
 
                                         string mysql_key_str = $"{modbus.DeviceName}{map.DocumentAddress}{evt.No}";
 
-
+                                        string normalizeDeviceName = map.Source + DeviceIndex;
                                         //ActiveEvent existEvent = session.Get<ActiveEvent>(mysql_key_str);
-
                                         ActiveEvent existEvent = await GetLatestActiveEventAsync(session, mysql_key_str, stoppingToken);
                                         //if (existEvent == null)
                                         //    continue;
