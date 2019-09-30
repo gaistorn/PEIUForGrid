@@ -71,13 +71,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEmailSender", "Test\Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Event", "Event", "{C5EAE627-BD2F-48D4-9828-F25EB149CDC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventModelLib", "Event\EventModelLib\EventModelLib.csproj", "{BB5811B1-BEA2-4528-A737-F2214A57B47F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventModelLib", "Event\EventModelLib\EventModelLib.csproj", "{BB5811B1-BEA2-4528-A737-F2214A57B47F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPublisher", "Event\EventPublisher\EventPublisher.csproj", "{36FE97F9-DF6A-440F-AB47-B132675C33FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventPublisher", "Event\EventPublisher\EventPublisher.csproj", "{36FE97F9-DF6A-440F-AB47-B132675C33FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPublisherLib", "Event\EventPublisherLib\EventPublisherLib.csproj", "{301C179B-A700-45B6-8AA5-C810B26F7A4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventPublisherLib", "Event\EventPublisherLib\EventPublisherLib.csproj", "{301C179B-A700-45B6-8AA5-C810B26F7A4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventPullWorker", "Event\EventPullWorker\EventPullWorker.csproj", "{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventPullWorker", "Event\EventPullWorker\EventPullWorker.csproj", "{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelayDeviceFEP", "Hubbub\RelayDeviceFEP\RelayDeviceFEP.csproj", "{1EB53F86-E777-44D5-AB58-785B293EAE16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -311,6 +313,14 @@ Global
 		{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D}.Release|x64.ActiveCfg = Release|Any CPU
 		{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D}.Release|x64.Build.0 = Release|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Debug|x64.Build.0 = Debug|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Release|x64.ActiveCfg = Release|Any CPU
+		{1EB53F86-E777-44D5-AB58-785B293EAE16}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -343,6 +353,7 @@ Global
 		{36FE97F9-DF6A-440F-AB47-B132675C33FB} = {C5EAE627-BD2F-48D4-9828-F25EB149CDC7}
 		{301C179B-A700-45B6-8AA5-C810B26F7A4A} = {C5EAE627-BD2F-48D4-9828-F25EB149CDC7}
 		{39F1C280-5BA0-48EB-A0C9-CAD3D7F9BF2D} = {C5EAE627-BD2F-48D4-9828-F25EB149CDC7}
+		{1EB53F86-E777-44D5-AB58-785B293EAE16} = {57CD6975-C0C5-42D3-AF5A-18524D8F10DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {56B88DD4-7D56-40EF-8599-7FC5D2EC9128}

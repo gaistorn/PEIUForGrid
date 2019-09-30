@@ -10,4 +10,10 @@
     <ProjectReference Include="..\..\Hubbub\DataModel\DataModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="EasyModbus">
+      <HintPath>..\..\Hubbub\RelayDeviceFEP\AdditionalLibrary\EasyModbus.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
