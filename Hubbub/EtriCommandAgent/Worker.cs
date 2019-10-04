@@ -59,7 +59,10 @@ namespace EtriCommandAgent
             float soc_max = pcs_values[2];
 
             if (await AutoModeCheck(PcsNo) == false)
+            {
+                _logger.LogWarning($"[경고] [PCS{PcsNo}] 현재 Manual 모드입니다");
                 return false;
+            }
 
             if (Command > 0 && soc >= soc_max)
             {
@@ -125,6 +128,8 @@ namespace EtriCommandAgent
                     }
 
                     LastReadingCommandDate = command.Date;
+
+                    _logger.LogInformation($"command pcs1: {command.Ess1} pcs2: {command.Ess2} pcs3: {command.Ess3} pcs4: {command.Ess4}");
                     /// 1단계 SOC 내의 명령인지 체크
                     bool[] ValidSocs = new bool[]
                     {
