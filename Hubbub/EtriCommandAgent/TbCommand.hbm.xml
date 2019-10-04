@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="EtriCommandAgent" namespace="EtriCommandAgent" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="TbCommand" table="vw_currentcommand" schema="etri">
+    <id name="Date" type="DateTime">
+      <column name="date" not-null="true" sql-type="DATETIME" />
+    </id>
+    <property name="Ess1" type="Single">
+      <column name="ess1" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Ess2" type="Single">
+      <column name="ess2" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Ess3" type="Single">
+      <column name="ess3" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Ess4" type="Single">
+      <column name="ess4" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+  </class>
+</hibernate-mapping>

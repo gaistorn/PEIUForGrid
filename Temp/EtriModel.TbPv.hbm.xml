@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="RelayDeviceFEP" namespace="RelayDeviceFEP" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="TbPv" table="tb_pv" schema="etri">
+    <id name="Date" type="DateTime">
+      <column name="`date`" not-null="true" sql-type="DATETIME" />
+      <generator class="assigned" />
+    </id>
+    <property name="Energy1" type="Single">
+      <column name="energy1" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Energy2" type="Single">
+      <column name="energy2" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Energy3" type="Single">
+      <column name="energy3" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Energy4" type="Single">
+      <column name="energy4" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Power1" type="Single">
+      <column name="power1" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Power2" type="Single">
+      <column name="power2" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Power3" type="Single">
+      <column name="power3" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+    <property name="Power4" type="Single">
+      <column name="power4" default="0" not-null="true" sql-type="FLOAT" />
+    </property>
+  </class>
+</hibernate-mapping>

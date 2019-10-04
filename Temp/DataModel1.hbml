@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping p1:Guid="a7363d68-280a-4b5f-867e-6c4e223d3170" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="VwMinuteEssstat" table="vw_minute_essstat" schema="grid" p1:Guid="71f67efb-9ed3-4b42-b809-ec7b4bea1fac">
+    <Documentation>
+      <Summary>VIEW</Summary>
+    </Documentation>
+    <id name="ID" type="Int32" p1:ValidateRequired="true" p1:Guid="8df0616d-f3b2-4e8b-9fd0-d6ef6b923eb6">
+      <column name="ID" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </id>
+    <property name="SiteId" type="Int16" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="6906d9cd-1bbf-4bde-a5b8-5d71579e7db8">
+      <column name="siteId" not-null="false" precision="6" scale="0" sql-type="smallint" p1:unicode="false" />
+    </property>
+    <property name="Timestamp" type="DateTime" p1:ValidateRequired="true" p1:Guid="04fc0e41-c1a9-4786-a487-b7c3d739507d">
+      <column name="`timestamp`" not-null="true" sql-type="datetime" p1:unicode="false" />
+    </property>
+    <property name="SumOfCharging" type="Double" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="a54b35ad-f7b4-430a-a482-7b0cfc6209da">
+      <column name="sumOfCharging" not-null="false" sql-type="double" p1:unicode="false" />
+    </property>
+    <property name="SumOfDischarging" type="Double" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="e0c725c9-f30e-4fff-99e1-f9c46a96bdb1">
+      <column name="sumOfDischarging" not-null="false" sql-type="double" p1:unicode="false" />
+    </property>
+    <property name="SumOfPvPower" type="Double" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="90d25cf5-eb78-410e-bc82-a5bf90522847">
+      <column name="sumOfPvPower" not-null="false" sql-type="double" p1:unicode="false" />
+    </property>
+    <property name="AvgOfSoc" type="Double" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="e5da160d-76b3-48c9-8095-4d4e02f7083c">
+      <column name="avgOfSoc" not-null="false" sql-type="double" p1:unicode="false" />
+    </property>
+    <property name="AvgOfSoh" type="Double" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="4c6f71de-c66e-422a-af2c-75fde582a3d7">
+      <column name="avgOfSoh" not-null="false" sql-type="double" p1:unicode="false" />
+    </property>
+  </class>
+</hibernate-mapping>

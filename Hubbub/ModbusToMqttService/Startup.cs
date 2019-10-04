@@ -132,8 +132,10 @@ new NHibernate.Cfg.Configuration().Configure().AddAssembly(
                 worker.Initialize();
 
                 services.AddSingleton(worker);
-                //services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusBackgroundService>();
+
+                services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusBackgroundService>();
                 services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
+                services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ControlSubscribeWorker>();
                 //services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, ModbusDigitalProcessingService>();
             }
         }

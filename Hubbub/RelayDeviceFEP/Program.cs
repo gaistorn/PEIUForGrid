@@ -1,6 +1,8 @@
 ﻿using EasyModbus;
 using FireworksFramework.Mqtt;
 using NLog;
+using StackExchange.Redis;
+using StackExchange.Redis.Extensions.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +25,16 @@ namespace RelayDeviceFEP
             logger = NLog.LogManager.Configuration.LogFactory.GetLogger("");
 
             AppSetting setting = new AppSetting("appsettings.json");
-            ModbusConfig modbusConfig = setting.GetSection<ModbusConfig>("Modbus");
+            ModbusConfig pvmodbusConfig = setting.GetSection<ModbusConfig>("PVModbus");
+            ModbusConfig essmodbusConfig = setting.GetSection<ModbusConfig>("ESSModbus");
+            var redisConfiguration = setting.GetSection<RedisConfiguration>("redis");
+            ConnectionMultiplexer connectionMultiplexer = ConnectionMultiplexer.Connect(redisConfiguration.ConfigurationOptions);
+            MysqlDataAccess access = new MysqlDataAccess(setting.GetConnectionString("etridb"));
             RelayDataInformation relayDataInformation = setting.GetSection<RelayDataInformation>("Information");
 
             try
             {
-                using (RelayDevicePublisher publisher = new RelayDevicePublisher(relayDataInformation, modbusConfig, logger))
+                using (RelayDevicePublisher publisher = new RelayDevicePublisher(relayDataInformation, pvmodbusConfig, essmodbusConfig, access, connectionMultiplexer, logger))
                 {
                     publisher.Initialize();
                     Task t = publisher.RunningAsync(token.Token);

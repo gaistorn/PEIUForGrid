@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="RelayDeviceFEP" namespace="RelayDeviceFEP" p1:Guid="b320ee96-8ad0-4515-8647-78c73ebb9c7e" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="TbPv" table="tb_pv" schema="etri" p1:Guid="a253ba0a-b8fa-4528-b884-56c8659023f1">
+    <id name="Date" type="DateTime" p1:ValidateRequired="true" p1:Guid="e3447ae7-e21a-40a8-8759-96c0b94bed5b">
+      <column name="`date`" not-null="true" sql-type="datetime" p1:unicode="false" />
+    </id>
+    <property name="Energy1" type="Single" p1:ValidateRequired="true" p1:Guid="d43be250-c1d5-44b8-92f7-1854df757f70">
+      <column name="energy1" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Energy2" type="Single" p1:ValidateRequired="true" p1:Guid="fafd215c-c2d0-4ba8-8777-7cb72f443e3c">
+      <column name="energy2" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Energy3" type="Single" p1:ValidateRequired="true" p1:Guid="0f741405-3484-445e-beda-a7d7e257e23b">
+      <column name="energy3" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Energy4" type="Single" p1:ValidateRequired="true" p1:Guid="d006c4b7-3360-417e-9380-94382b6c5f52">
+      <column name="energy4" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Power1" type="Single" p1:ValidateRequired="true" p1:Guid="dc7fed25-9576-4504-9463-eeddfca552d8">
+      <column name="power1" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Power2" type="Single" p1:ValidateRequired="true" p1:Guid="b857c430-924d-4fd7-a3e8-fbddaa28c2e1">
+      <column name="power2" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Power3" type="Single" p1:ValidateRequired="true" p1:Guid="8c72d2bf-8f0c-4e76-a61f-0e506a30644d">
+      <column name="power3" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Power4" type="Single" p1:ValidateRequired="true" p1:Guid="65e8cfcd-bb79-499d-95ec-733eef890b6b">
+      <column name="power4" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+  </class>
+  <class name="TbStatus" table="tb_status" schema="etri" p1:Guid="0b443dda-383f-4571-809e-b6a126d30893">
+    <id name="Date" type="DateTime" p1:ValidateRequired="true" p1:Guid="3712e5f3-c7d1-432a-ae7c-5bdee5db591a">
+      <column name="`date`" not-null="true" sql-type="datetime" p1:unicode="false" />
+    </id>
+    <property name="Pv" type="Single" p1:ValidateRequired="true" p1:Guid="03257906-6bbd-4c8f-873e-26473945cbeb">
+      <column name="pv" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="PvEng" type="Single" p1:ValidateRequired="true" p1:Guid="3f0294e8-ec4e-434f-bfde-96d2707b22dc">
+      <column name="pv_eng" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Ess" type="Single" p1:ValidateRequired="true" p1:Guid="87fc5dbf-0a9f-4bf3-8880-97f8879ea81e">
+      <column name="ess" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="EssCh" type="Single" p1:ValidateRequired="true" p1:Guid="5a298c5b-08f3-4aa3-81b8-a298ea785d17">
+      <column name="ess_ch" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="EssDch" type="Single" p1:ValidateRequired="true" p1:Guid="29be371d-824a-42bb-a3db-8a7fb8082802">
+      <column name="ess_dch" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Soc1" type="Single" p1:ValidateRequired="true" p1:Guid="45006a5a-7d88-48a1-9b23-9481a4aa503e">
+      <column name="soc1" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Soc2" type="Single" p1:ValidateRequired="true" p1:Guid="94b2ca33-6efe-4ca7-a040-07e6de01d09b">
+      <column name="soc2" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Soc3" type="Single" p1:ValidateRequired="true" p1:Guid="0cb82539-c51a-4356-bd56-ef1bad6ca1a0">
+      <column name="soc3" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Soc4" type="Single" p1:ValidateRequired="true" p1:Guid="95b3ab78-40df-42cd-8914-e7b66c050691">
+      <column name="soc4" default="0" not-null="true" sql-type="float" p1:unicode="false" />
+    </property>
+    <property name="Stat1" type="String" p1:ValidateMaxLength="50" p1:ValidateRequired="true" p1:Guid="e7c0742f-10ef-4d94-b1b9-2ac93d314818">
+      <column name="stat1" not-null="true" length="50" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="Stat2" type="String" p1:ValidateMaxLength="50" p1:ValidateRequired="true" p1:Guid="6e1c9a88-951a-48b9-a4a2-bc3e9eb732c3">
+      <column name="stat2" not-null="true" length="50" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="Stat3" type="String" p1:ValidateMaxLength="50" p1:ValidateRequired="true" p1:Guid="619f6eb0-5f47-43a9-a517-e5893f618b7c">
+      <column name="stat3" not-null="true" length="50" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="Stat4" type="String" p1:ValidateMaxLength="50" p1:ValidateRequired="true" p1:Guid="514c6228-def8-494b-8b69-39cc226e145b">
+      <column name="stat4" not-null="true" length="50" sql-type="varchar" p1:unicode="true" />
+    </property>
+  </class>
+</hibernate-mapping>

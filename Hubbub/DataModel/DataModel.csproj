@@ -47,6 +47,7 @@
     <None Remove="MysqlMap\statistics_minute.hbm.xml" />
     <None Remove="MysqlMap\today_accumchgdhg.hbm.xml" />
     <None Remove="MysqlMap\today_accumpv.hbm.xml" />
+    <None Remove="MysqlMap\VwMinuteEssstat.hbm.xml" />
     <None Remove="MysqlMap\vw_ActiveEvent.hbm.xml" />
   </ItemGroup>
 
@@ -70,6 +71,7 @@
     <EmbeddedResource Include="MysqlMap\monthly_accumpv.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\today_accumpv.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\today_accumchgdhg.hbm.xml" />
+    <EmbeddedResource Include="MysqlMap\VwMinuteEssstat.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\vw_ActiveEvent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\Activeevent.hbm.xml" />
     <EmbeddedResource Include="MysqlMap\BmsData.hbm.xml" />

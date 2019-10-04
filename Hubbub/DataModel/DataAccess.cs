@@ -56,26 +56,40 @@ namespace PEIU.Models
         }
     }
 
-    public class MySqlAccessManager : IDataAccessManager
+    public class MySqlAccessManager
     {
-        internal ISessionFactory SessionFactory { get; private set; }
+        public ISessionFactory SessionFactory { get; private set; }
 
-        public MySqlAccessManager(string connectionString)
+        public MySqlAccessManager(string connectionString, params Assembly[] Assemblies)
         {
-            CreateSessionFactory(connectionString);
+            CreateSessionFactory(connectionString, Assemblies);
         }
 
-        public ISessionFactory CreateSessionFactory(string connectionString)
+        public ISessionFactory CreateSessionFactory(string connectionString, params Assembly[] Assemblies)
         {
-            SessionFactory = new Configuration()
-                        .AddProperties(new Dictionary<string, string> {
+            var conf = new Configuration()
+                       .AddProperties(new Dictionary<string, string> {
                     {NHibernate.Cfg.Environment.ConnectionDriver, typeof (NHibernate.Driver.MySqlDataDriver).FullName},
                    // {NHibernate.Cfg.Environment.ProxyFactoryFactoryClass, typeof (NHibernate.ByteCode.Castle.ProxyFactoryFactory).AssemblyQualifiedName},
-                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MySQL55InnoDBDialect).FullName},
+                    {NHibernate.Cfg.Environment.Dialect, typeof (NHibernate.Dialect.MySQLDialect).FullName},
                     {NHibernate.Cfg.Environment.ConnectionProvider, typeof (NHibernate.Connection.DriverConnectionProvider).FullName},
                     {NHibernate.Cfg.Environment.ConnectionString, connectionString},
-                    })
-                    .AddAssembly(Assembly.GetExecutingAssembly()).BuildSessionFactory();
+                    //{NHibernate.Cfg.Environment., connectionString},
+                            {"hibernate.connection.CharSet", "utf-8"},
+                            {"hibernate.connection.characterEncoding", "utf-8" },
+                            {"hibernate.connection.useUnicode", "true" },
+
+//#if DEBUG
+//                            {NHibernate.Cfg.Environment.ShowSql, "false" }
+//#endif
+
+                       });
+            foreach (Assembly type in Assemblies)
+                conf = conf.AddAssembly(type);
+
+
+
+            SessionFactory = conf.BuildSessionFactory();
             return SessionFactory;
         }
     }

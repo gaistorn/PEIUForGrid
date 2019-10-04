@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "EtriCommandAgent": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

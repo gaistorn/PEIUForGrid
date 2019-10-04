@@ -39,9 +39,10 @@ namespace WebApiService.Controllers
         private readonly PeiuGridDataContext _peiuGridDataContext;
         private readonly IDatabaseAsync _redisDb;
         private readonly ConnectionMultiplexer _redisConn;
+        readonly ILogger<StatisticsController> logger;
 
         public StatisticsController(UserManager<UserAccount> userManager,
-            SignInManager<UserAccount> signInManager, RoleManager<Role> _roleManager, IRedisConnectionFactory redis,
+            SignInManager<UserAccount> signInManager, RoleManager<Role> _roleManager, IRedisConnectionFactory redis, ILogger<StatisticsController> logger,
             IEmailSender emailSender, IHTMLGenerator _htmlGenerator, IClaimServiceFactory claimsManager, PeiuGridDataContext peiuGridDataContext,
             AccountDataContext accountContext)
         {
@@ -55,6 +56,7 @@ namespace WebApiService.Controllers
             _peiuGridDataContext = peiuGridDataContext;
             _redisConn = redis.Connection();
             _redisDb = _redisConn.GetDatabase();
+            this.logger = logger;
         }
 
         private IEnumerable<int> GetAvaliableSiteIds()
@@ -105,6 +107,26 @@ namespace WebApiService.Controllers
                 siteIds = _accountContext.VwContractorsites.Where(x => x.UserId != null && x.AggGroupId == groupId);
             }
             return siteIds;
+        }
+
+        [Authorize(Policy = UserPolicyTypes.AllUserPolicy)]
+        [HttpGet, Route("getmonthlyaccumuactivepower")]
+        public async Task<IActionResult> GetMinuteStatistics(DateTime date)
+        {
+            try
+            {
+                using(var statelessSession = _peiuGridDataContext.SessionFactory.OpenStatelessSession())
+                {
+                    JObject result = new JObject();
+
+                    var result = statelessSession.CreateCriteria<VwMinuteEssstat>()
+                        .Add(Restrictions.)
+                }
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+            }
         }
 
         [Authorize(Policy = UserPolicyTypes.AllUserPolicy)]
