@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping schema="grid" assembly="EventModelLib" namespace="PEIU.Events.Alarm" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="DiMap" table="di_map">
+    <id name="DICode" type="Int32">
+      <column name="DICode" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+      <generator class="identity" />
+    </id>
+    <property name="BitFlag" type="Int32">
+      <column name="BitFlag" not-null="true" length="9" sql-type="MEDIUMINT" />
+    </property>
+    <property name="Name" type="String">
+      <column name="Name" not-null="true" length="128" sql-type="VARCHAR(128)" />
+    </property>
+    <property name="GroupCode" type="Int32">
+      <column name="GroupCode" not-null="true" length="9" sql-type="MEDIUMINT" />
+    </property>
+    <property name="Level" type="SByte">
+      <column name="Level" default="4" not-null="true" scale="0" sql-type="TINYINT" />
+    </property>
+    <property name="DeviceName" type="String">
+      <column name="DeviceName" not-null="false" length="45" sql-type="VARCHAR(45)" />
+    </property>
+    <property name="FactoryCode" type="Int32">
+      <column name="FactoryCode" not-null="true" sql-type="INT" />
+    </property>
+    <!--<many-to-one name="ModbusFactory" class="ModbusFactory">
+      <column name="FactoryCode" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+    </many-to-one>-->
+    <set name="EventRecords" inverse="true" generic="true">
+      <key>
+        <column name="DICode" />
+      </key>
+      <one-to-many class="EventRecord" />
+    </set>
+  </class>
+</hibernate-mapping>

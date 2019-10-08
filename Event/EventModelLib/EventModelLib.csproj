@@ -10,13 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Alarm\AlarmNHibernateModel.EventMap.hbm.xml" />
     <None Remove="Alarm\AlarmNHibernateModel.EventRecord.hbm.xml" />
     <None Remove="Alarm\AlarmNHibernateModel.VwEventRecord.hbm.xml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Alarm\AlarmNHibernateModel.EventMap.hbm.xml" />
     <EmbeddedResource Include="Alarm\AlarmNHibernateModel.EventRecord.hbm.xml" />
     <EmbeddedResource Include="Alarm\AlarmNHibernateModel.VwEventRecord.hbm.xml" />
   </ItemGroup>

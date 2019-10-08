@@ -10,17 +10,12 @@ namespace PEIU.Events.Alarm
     {
         public int SiteId { get; set; }
         public string DeviceId { get; set; }
-        public int EventCode { get; set; }
         public long UnixTimestamp { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public EventStatus Status { get; set; }
 
-    }
-
-    public class EventMqttModel : EventModel
-    {
-        public EventMap Detail { get; set; }
+        public DiMap Detail { get; set; }
         public DateTime TimeStamp
         {
             get
@@ -28,6 +23,7 @@ namespace PEIU.Events.Alarm
                 return new DateTime(1970, 1, 1).AddSeconds(UnixTimestamp).ToLocalTime();
             }
         }
+
     }
 
     public enum EventStatus

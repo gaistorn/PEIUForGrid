@@ -17,6 +17,9 @@
     <property name="SumOfDischarging" type="Double">
       <column name="sumOfDischarging" not-null="false" sql-type="DOUBLE" />
     </property>
+    <property name="SumOfActPwr" type="Double">
+      <column name="sumOfActPwr" not-null="false" sql-type="DOUBLE" />
+    </property>
     <property name="SumOfPvPower" type="Double">
       <column name="sumOfPvPower" not-null="false" sql-type="DOUBLE" />
     </property>

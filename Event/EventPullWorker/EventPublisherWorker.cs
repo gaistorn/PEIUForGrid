@@ -21,7 +21,7 @@ namespace PEIU.Events
             return $"hubbub/{SiteId}/{DeviceId}/Event";
         }
 
-        public Task PublishEvent(EventMap map, int SiteId, string DeviceId, int EventCode, EventStatus status, CancellationToken token)
+        public Task PublishEvent(int SiteId, int FactoryCode, int GroupCode, ushort bitValue,  string DeviceId, EventStatus status, CancellationToken token)
         {
             EventMqttModel record = new EventMqttModel();
             record.UnixTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds();

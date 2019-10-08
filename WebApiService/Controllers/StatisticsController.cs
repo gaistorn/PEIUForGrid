@@ -59,6 +59,11 @@ namespace WebApiService.Controllers
             this.logger = logger;
         }
 
+        private IQueryable<IGrouping<int, int>> GetRccCodeGroup()
+        {
+            return _accountContext.VwContractorsites.GroupBy(key => key.RCC, value => value.SiteId);
+        }
+
         private IEnumerable<int> GetAvaliableSiteIds()
         {
             IEnumerable<int> siteIds = null;
@@ -110,22 +115,183 @@ namespace WebApiService.Controllers
         }
 
         [Authorize(Policy = UserPolicyTypes.AllUserPolicy)]
-        [HttpGet, Route("getmonthlyaccumuactivepower")]
-        public async Task<IActionResult> GetMinuteStatistics(DateTime date)
+        [HttpGet, Route("getminutestatisticsbysiteid")]
+        public async Task<IActionResult> GetMinuteStatisticsBySiteId(DateTime date, int siteId = -1)
         {
             try
             {
-                using(var statelessSession = _peiuGridDataContext.SessionFactory.OpenStatelessSession())
+                if (date == default(DateTime))
+                    return BadRequest();
+                IEnumerable<int> siteIds = null;
+                if (siteId == -1)
+                    siteIds = GetAvaliableSiteIds();
+                else
+                    siteIds = new int[] { siteId };
+                using (var statelessSession = _peiuGridDataContext.SessionFactory.OpenStatelessSession())
                 {
                     JObject result = new JObject();
 
-                    var result = statelessSession.CreateCriteria<VwMinuteEssstat>()
-                        .Add(Restrictions.)
+                    var result_query = await statelessSession.CreateCriteria<VwMinuteEssstat>()
+                        .Add(Restrictions.InG<int>("SiteId", siteIds))
+                        .Add(Restrictions.Where<VwMinuteEssstat>(x => x.Timestamp.Date == date))
+                        .AddOrder(NHibernate.Criterion.Order.Asc("Timestamp"))
+                        .ListAsync<VwMinuteEssstat>();
+                    if (result_query.Count > 0)
+                    {
+                       
+                        JArray timestamps = new JArray(result_query.Select(x => x.Timestamp.TimeOfDay).ToArray());
+                        if (siteId != -1)
+                        {
+                            JArray socs = new JArray(result_query.Select(x => x.AvgOfSoc).ToArray());
+                            result.Add("avgOfSocs", socs);
+                        }
+                        JArray actPwrs = new JArray(result_query.Select(x => x.SumOfActPwr).ToArray());
+                        JArray pwPwrs = new JArray(result_query.Select(x => x.SumOfPvPower).ToArray());
+                        result.Add("timestamps", timestamps);
+                        
+                        result.Add("sumOfActPwrs", actPwrs);
+                        result.Add("sumOfPvPwrs", pwPwrs);
+                        //result.Add("siteids", siteIds);
+                    }
+                    return Ok(result);
+
                 }
             }
             catch(Exception ex)
             {
                 logger.LogError(ex, ex.Message);
+                return BadRequest();
+            }
+        }
+
+        private IEnumerable<int> GetSiteIdsByRcc(int rcc)
+        {
+            IEnumerable<int>  siteIds = _accountContext.VwContractorsites.Where(x => x.RCC == rcc).Select(x => x.SiteId).Distinct();
+            return siteIds;
+        }
+
+        [Authorize(Policy = UserPolicyTypes.OnlySupervisor)]
+        [HttpGet, Route("getstatisticscurrentvaluebyrcc")]
+        public async Task<IActionResult> GetStatisticsCurrentValueByRcc()
+        {
+            JObject row_j = null;
+            try
+            {
+                IQueryable<IGrouping<int, int>> idsGroup = GetRccCodeGroup();
+                JArray result = new JArray();
+                List<double> total_socs = new List<double>();
+                foreach (IGrouping<int, int> row in idsGroup)
+                {
+                    double total_energy_power = 0;
+                    double total_actPwr_charging = 0;
+                    double total_actPwr_discharging = 0;
+                    List<double> socs = new List<double>();
+                    List<double> sohs = new List<double>();
+                    JObject weather_obj = null;
+                    foreach (int SiteId in row)
+                    {
+                        if (weather_obj == null)
+                            weather_obj = await CommonFactory.RetriveWeather(SiteId, _redisDb);
+                        // PV 
+                        string target_redis_key = CommonFactory.CreateRedisKey(SiteId, 4, "PV*");
+                        var redis_keys = CommonFactory.SearchKeys(_redisConn, target_redis_key);
+                        foreach (RedisKey pv_key in redis_keys)
+                        {
+                            double TotalActivePower = (double)await _redisDb.HashGetAsync(pv_key, "TotalActivePower");
+                            total_energy_power += TotalActivePower;
+                        }
+
+                        // PCS
+                        target_redis_key = CommonFactory.CreateRedisKey(SiteId, 1, "PCS*");
+                        redis_keys = CommonFactory.SearchKeys(_redisConn, target_redis_key);
+                        foreach (RedisKey key in redis_keys)
+                        {
+                            double TotalActivePower = (double)await _redisDb.HashGetAsync(key, "actPwrKw");
+                            if (TotalActivePower > 0)
+                                total_actPwr_discharging += TotalActivePower;
+                            else
+                                total_actPwr_charging += TotalActivePower;
+
+                        }
+
+                        // BMS
+                        target_redis_key = CommonFactory.CreateRedisKey(SiteId, 2, "BMS*");
+                        redis_keys = CommonFactory.SearchKeys(_redisConn, target_redis_key);
+                        foreach (RedisKey key in redis_keys)
+                        {
+                            double soc = (double)await _redisDb.HashGetAsync(key, "bms_soc");
+                            socs.Add(soc);
+                            total_socs.Add(soc);
+                            double soh = (double)await _redisDb.HashGetAsync(key, "bms_soh");
+                            sohs.Add(soh);
+                        }
+                    }
+
+                    row_j = new JObject();
+                    row_j.Add("rcc", row.Key);
+                    row_j.Add("total_pvpower", total_energy_power);
+                    row_j.Add("total_charging", Math.Abs(total_actPwr_charging));
+                    row_j.Add("total_discharging", total_actPwr_discharging);
+                    row_j.Add("average_soc", socs.Count() > 0 ? socs.Average() : 0);
+                    row_j.Add("average_soh", sohs.Count() > 0 ? sohs.Average() : 0);
+                    row_j.Add("total_count", row.Count());
+                    row_j.Add("weather", weather_obj);
+                    result.Add(row_j);
+                }
+
+                JObject center_weather = await CommonFactory.RetriveWeather(0, _redisDb);
+
+                return Ok(new { group = result, total_average_soc = total_socs.Average(), total_event_count = 0, controlcenter_weather = center_weather });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [Authorize(Policy = UserPolicyTypes.OnlySupervisor)]
+        [HttpGet, Route("getminutestatisticsbyrcc")]
+        public async Task<IActionResult> GetMinuteStatisticsByRcc(DateTime date, int rcc)
+        {
+            try
+            {
+                if (date == default(DateTime))
+                    return BadRequest();
+                IEnumerable<int> siteIds = GetSiteIdsByRcc(rcc);
+                using (var statelessSession = _peiuGridDataContext.SessionFactory.OpenStatelessSession())
+                {
+                    JObject result = new JObject();
+
+                    var result_query = await statelessSession.CreateCriteria<VwMinuteEssstat>()
+                        .Add(Restrictions.InG<int>("SiteId", siteIds))
+                        .Add(Restrictions.Where<VwMinuteEssstat>(x => x.Timestamp.Date == date))
+                        .AddOrder(NHibernate.Criterion.Order.Asc("Timestamp"))
+                        .ListAsync<VwMinuteEssstat>();
+                    if (result_query.Count > 0)
+                    {
+
+                        JArray timestamps = new JArray(result_query.Select(x => x.Timestamp.TimeOfDay).ToArray());
+                        //if (siteId != -1)
+                        //{
+                        //    JArray socs = new JArray(result_query.Select(x => x.AvgOfSoc).ToArray());
+                        //    result.Add("avgOfSocs", socs);
+                        //}
+                        JArray actPwrs = new JArray(result_query.Select(x => x.SumOfActPwr).ToArray());
+                        JArray pwPwrs = new JArray(result_query.Select(x => x.SumOfPvPower).ToArray());
+                        result.Add("timestamps", timestamps);
+
+                        result.Add("sumOfActPwrs", actPwrs);
+                        result.Add("sumOfPvPwrs", pwPwrs);
+                        //result.Add("siteids", siteIds);
+                    }
+                    return Ok(result);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                return BadRequest();
             }
         }
 

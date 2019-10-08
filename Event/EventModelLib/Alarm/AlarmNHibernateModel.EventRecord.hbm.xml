@@ -23,11 +23,8 @@
     <property name="DeviceId" type="String">
       <column name="DeviceId" not-null="true" length="45" sql-type="VARCHAR(45)" />
     </property>
-    <property name="EventId" type="Int32">
-      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
-    </property>
-    <!--<many-to-one name="EventMap" class="EventMap">
-      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
-    </many-to-one>-->
+    <many-to-one name="DiMap" class="DiMap">
+      <column name="DICode" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+    </many-to-one>
   </class>
 </hibernate-mapping>

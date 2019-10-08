@@ -133,14 +133,6 @@ namespace PEIU.Hubbub.Controllers
                 return NoContent();
             }
 
-#if CONTROL_TEST
-            if(DocumentAddress == 190)
-            {
-                LastControl = (Value / 10);
-            }
-#endif
-
-
             await modbus.WriteMultipleRegistersAsync(cancellationTokenSource.Token, DocumentAddress, new ushort[] { uvalue });
             return Ok();
         }

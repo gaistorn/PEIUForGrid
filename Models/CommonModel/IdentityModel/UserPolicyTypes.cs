@@ -8,5 +8,6 @@ namespace PEIU.Models.IdentityModel
     {
         public const string AllUserPolicy = CommonTypes.IDENTITY_NAMESPACE_URI + "/policy/alluserpolicy";
         public const string RequiredManager = CommonTypes.IDENTITY_NAMESPACE_URI + "/policy/requiredmanager";
+        public const string OnlySupervisor = CommonTypes.IDENTITY_NAMESPACE_URI + "/policy/onlysupervisor";
     }
 }

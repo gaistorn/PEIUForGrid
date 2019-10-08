@@ -80,6 +80,8 @@ namespace PEIU.Models.Database
         public virtual string AggGroupId { get; set; }
         public virtual string AggName { get; set; }
         public virtual string AggRepresentation { get; set; }
+
+        public virtual int RCC { get; set; }
         public virtual string Email { get; set; }
         public virtual string Firstname { get; set; }
         public virtual string Lastname { get; set; }

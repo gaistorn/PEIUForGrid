@@ -1,106 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hibernate-mapping schema="grid" assembly="EventModelLib" namespace="PEIU.Events.Alarm" p1:Guid="e8858ed9-5afe-4c3f-8d92-657abfe40e5b" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0" xmlns="urn:nhibernate-mapping-2.2">
-  <class name="EventMap" table="EventMap" p1:Guid="96613e6c-fb9d-4cd6-a3b3-7a4926a68eb6">
-    <id name="EventId" type="Int32" p1:ValidateRequired="true" p1:Guid="be630c7f-8f66-4f45-b70f-a9e3b700e23f">
-      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+  <class name="VwEventRecord" table="vwEventRecord" p1:Guid="488d43c7-b221-4574-bc67-55f0c6c4fa1b">
+    <Documentation>
+      <Summary>VIEW</Summary>
+    </Documentation>
+    <id name="EventRecordId" type="Int32" p1:ValidateRequired="true" p1:Guid="759d08d8-5257-428c-a00e-725c7da66c0b">
+      <column name="EventRecordId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
     </id>
-    <property name="Level" type="Int16" p1:ValidateRequired="true" p1:Guid="5bf12d82-3fba-4a9e-9aba-e888c31e6878">
-      <column name="Level" not-null="true" precision="6" scale="0" sql-type="smallint" p1:unicode="false" />
+    <property name="DICode" type="Int32" p1:ValidateRequired="true" p1:Guid="32498d7d-f5f5-4d0e-9964-0a1ae38475bf">
+      <column name="DICode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
     </property>
-    <property name="Type" type="Int16" p1:ValidateRequired="true" p1:Guid="d477f9e6-2443-4f7e-bc66-40f111a8ee2f">
-      <column name="Type" not-null="true" precision="6" scale="0" sql-type="smallint" p1:unicode="false" />
+    <property name="CreateDT" type="DateTime" p1:ValidateRequired="true" p1:Guid="731c7e05-c1e5-422e-b1f1-085f5b43e186">
+      <column name="CreateDT" not-null="true" sql-type="datetime" p1:unicode="false" />
     </property>
-    <property name="Source" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="f30305d0-4e0c-4dd5-bffe-787b199350dc">
-      <column name="Source" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
+    <property name="RecoveryDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="41bf0738-5db6-4e30-b52a-ead51e29125a">
+      <column name="RecoveryDT" not-null="false" sql-type="datetime" p1:unicode="false" />
     </property>
-    <property name="Category" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="74071c13-2269-4135-ae27-124c82c0584a">
-      <column name="Category" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
+    <property name="AckDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="43eb6ad4-fecf-4555-873f-af8df8a77c85">
+      <column name="AckDT" not-null="false" sql-type="datetime" p1:unicode="false" />
     </property>
-    <property name="Name" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="9bb3f564-025c-41d0-9a5f-404e3e3e7ac1">
+    <property name="AckUserId" type="String" p1:nullable="true" p1:ValidateMaxLength="255" p1:ValidateRequired="false" p1:Guid="8b81f78c-f2b7-4c60-9522-a14dbab1c94f">
+      <column name="AckUserId" not-null="false" length="255" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="SiteId" type="Int32" p1:ValidateRequired="true" p1:Guid="69472729-708b-48b4-8781-44825d121dc5">
+      <column name="SiteId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </property>
+    <property name="DeviceId" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="a9f84b8c-ac10-4101-ae83-2c5d4e204f27">
+      <column name="DeviceId" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="Level" type="SByte" p1:ValidateRequired="true" p1:Guid="4d39ba3b-40f0-4ed5-a91d-f25e3ce99f58">
+      <Documentation>
+        <Summary>??? ??
+0 : ??
+1 ~ 3 : ??
+4 ~ : ??</Summary>
+      </Documentation>
+      <column name="Level" not-null="true" scale="0" sql-type="tinyint" p1:unicode="false" />
+    </property>
+    <property name="FactoryCode" type="Int32" p1:ValidateRequired="true" p1:Guid="1a0ab18b-84e4-486e-9954-7b57803158cd">
+      <column name="FactoryCode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </property>
+    <property name="BitFlag" type="Int32" p1:ValidateRequired="true" p1:Guid="becb3c2c-cf87-49bc-ab32-ac65787e25f6">
+      <column name="BitFlag" not-null="true" length="9" sql-type="mediumint" p1:unicode="false" />
+    </property>
+    <property name="DeviceName" type="String" p1:nullable="true" p1:ValidateMaxLength="45" p1:ValidateRequired="false" p1:Guid="903508e0-e098-40f2-8c24-d98cc8531472">
+      <column name="DeviceName" not-null="false" length="45" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="Name" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="6c8e87b7-1f08-477d-a5bb-c87829ba70a7">
       <column name="Name" not-null="true" length="128" sql-type="varchar" p1:unicode="true" />
     </property>
-    <property name="Description" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="61f912a6-35be-42b8-9a85-a264c36ab26c">
-      <column name="Description" not-null="true" length="128" sql-type="varchar" p1:unicode="true" />
+  </class>
+  <class name="EventRecord" table="EventRecord" p1:Guid="003f8e83-3b30-4964-a0b7-66b473df4584">
+    <id name="EventRecordId" type="Int32" p1:ValidateRequired="true" p1:Guid="86498757-dc08-4bae-8561-2051ece8bd0c">
+      <column name="EventRecordId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+      <generator class="identity" />
+    </id>
+    <property name="CreateDT" type="DateTime" p1:ValidateRequired="true" p1:Guid="a33d64d5-4b9c-4f95-bfc5-ef7e7cddaa00">
+      <column name="CreateDT" not-null="true" sql-type="datetime" p1:unicode="false" />
     </property>
-    <set name="EventRecords" inverse="true" generic="true" p1:AssociationGuid="d59d625f-fce1-4650-8d3f-47d3067ccc10" p1:Guid="c9ae7fd2-1b5a-4887-a1ff-cbfcd2b5e3ce">
+    <property name="RecoveryDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="0732671a-30f9-4fc5-aff7-d0b8dda9ae9b">
+      <column name="RecoveryDT" not-null="false" sql-type="datetime" p1:unicode="false" />
+    </property>
+    <property name="AckDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="8d1de3a9-2fd8-4f5d-a659-d167dd638552">
+      <column name="AckDT" not-null="false" sql-type="datetime" p1:unicode="false" />
+    </property>
+    <property name="AckUserId" type="String" p1:nullable="true" p1:ValidateMaxLength="255" p1:ValidateRequired="false" p1:Guid="192c86b5-be1b-40ca-87b2-05fe60f9f1d6">
+      <column name="AckUserId" not-null="false" length="255" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="SiteId" type="Int32" p1:ValidateRequired="true" p1:Guid="9658600c-5430-48e2-914e-1fbe8ba329f8">
+      <column name="SiteId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </property>
+    <property name="DeviceId" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="3e396406-b19e-4c37-8417-331304d935a0">
+      <column name="DeviceId" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <many-to-one name="DiMap" class="DiMap" p1:AssociationGuid="9e5abc12-44b3-428f-9ce3-59c68c7b69f3" p1:Guid="83578bb5-ae64-41ff-841d-319586a218aa">
+      <column name="DICode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </many-to-one>
+  </class>
+  <class name="DiMap" table="di_map" p1:Guid="8dedb914-a587-4e4c-ba00-9125c4ed5410">
+    <id name="DICode" type="Int32" p1:ValidateRequired="true" p1:Guid="b5aace22-e7d7-47dc-b030-17c7df12c721">
+      <column name="DICode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+      <generator class="identity" />
+    </id>
+    <property name="BitFlag" type="Int32" p1:ValidateRequired="true" p1:Guid="fd48eda3-d15c-4a6c-822c-a0915f839c2f">
+      <column name="BitFlag" not-null="true" length="9" sql-type="mediumint" p1:unicode="false" />
+    </property>
+    <property name="Name" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="f9da2bcc-c0e7-48d9-8ffa-ea27c142a0ad">
+      <column name="Name" not-null="true" length="128" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <property name="GroupCode" type="Int32" p1:ValidateRequired="true" p1:Guid="2c0cf083-3f6d-4d7a-afde-d790007bd35e">
+      <column name="GroupCode" not-null="true" length="9" sql-type="mediumint" p1:unicode="false" />
+    </property>
+    <property name="Level" type="SByte" p1:ValidateRequired="true" p1:Guid="59237128-e8ea-4b97-b7c6-6d1b99e4f641">
+      <Documentation>
+        <Summary>??? ??
+0 : ??
+1 ~ 3 : ??
+4 ~ : ??</Summary>
+      </Documentation>
+      <column name="Level" default="4" not-null="true" scale="0" sql-type="tinyint" p1:unicode="false" />
+    </property>
+    <property name="DeviceName" type="String" p1:nullable="true" p1:ValidateMaxLength="45" p1:ValidateRequired="false" p1:Guid="851fc2ac-4fc5-4fd5-ba60-384f753e8e7b">
+      <column name="DeviceName" not-null="false" length="45" sql-type="varchar" p1:unicode="true" />
+    </property>
+    <many-to-one name="ModbusFactory" class="ModbusFactory" p1:AssociationGuid="3f87e409-5729-48ef-bbb5-dd123f742364" p1:Guid="aaefe544-a9ba-4a2f-be2a-c13b2c8aa9b3">
+      <column name="FactoryCode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+    </many-to-one>
+    <set name="EventRecords" inverse="true" generic="true" p1:AssociationGuid="9e5abc12-44b3-428f-9ce3-59c68c7b69f3" p1:Guid="36d4e8f7-e07e-4dae-918a-0fe410cf4e2a">
       <key>
-        <column name="EventId" />
+        <column name="DICode" />
       </key>
       <one-to-many class="EventRecord" />
     </set>
   </class>
-  <class name="EventRecord" table="EventRecord" p1:Guid="228f77b9-c4ba-47a2-990d-270849d22cdb">
-    <id name="EventRecordId" type="Int32" p1:ValidateRequired="true" p1:Guid="1fd03dab-4d55-454d-9e21-4ab194baf33f">
-      <column name="EventRecordId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
+  <class name="ModbusFactory" table="ModbusFactory" p1:Guid="2cdbae09-d15f-4806-b6d7-8013a038043b">
+    <id name="FactoryCode" type="Int32" p1:ValidateRequired="true" p1:Guid="5824ad0b-febe-4aa5-80ab-f88e26dc12c2">
+      <column name="FactoryCode" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
       <generator class="identity" />
     </id>
-    <property name="CreateDT" type="DateTime" p1:ValidateRequired="true" p1:Guid="50853e5a-ad0a-4717-aff0-1339c492d0ed">
-      <column name="CreateDT" not-null="true" sql-type="datetime" p1:unicode="false" />
+    <property name="Name" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="daf432f5-bf9b-4d10-a5c6-ecffa2560216">
+      <column name="Name" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
     </property>
-    <property name="RecoveryDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="5016676f-9acc-48c7-9404-991881499592">
-      <column name="RecoveryDT" not-null="false" sql-type="datetime" p1:unicode="false" />
+    <property name="MajorVersion" type="SByte" p1:ValidateRequired="true" p1:Guid="d1d66116-5197-4b5f-b4eb-5b6f3d3a6264">
+      <column name="MajorVersion" not-null="true" scale="0" sql-type="tinyint" p1:unicode="false" />
     </property>
-    <property name="AckDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="ff34a3e4-4517-4eba-99d3-684db67a315a">
-      <column name="AckDT" not-null="false" sql-type="datetime" p1:unicode="false" />
+    <property name="MinorVersion" type="SByte" p1:ValidateRequired="true" p1:Guid="eaa23839-62c0-48f0-bb26-525c648a57bb">
+      <column name="MinorVersion" not-null="true" scale="0" sql-type="tinyint" p1:unicode="false" />
     </property>
-    <property name="AckUserId" type="String" p1:nullable="true" p1:ValidateMaxLength="255" p1:ValidateRequired="false" p1:Guid="17422de2-1e0e-4773-9c68-2390847a1d1c">
-      <column name="AckUserId" not-null="false" length="255" sql-type="varchar" p1:unicode="true" />
+    <property name="Description" type="String" p1:nullable="true" p1:ValidateMaxLength="128" p1:ValidateRequired="false" p1:Guid="d6c26825-7933-4199-86ac-e6489ef1ee51">
+      <column name="Description" not-null="false" length="128" sql-type="varchar" p1:unicode="true" />
     </property>
-    <property name="SiteId" type="Int32" p1:ValidateRequired="true" p1:Guid="6736d25d-59ee-4c41-9455-b269265660ad">
-      <column name="SiteId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
-    </property>
-    <property name="DeviceId" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="e49a0faa-f7b0-4844-99ae-726591dd04ed">
-      <column name="DeviceId" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <many-to-one name="EventMap" class="EventMap" p1:AssociationGuid="d59d625f-fce1-4650-8d3f-47d3067ccc10" p1:Guid="c3a34e5b-705a-4d80-a396-f2dc0bf2d56d">
-      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
-    </many-to-one>
-  </class>
-  <class name="VwEventRecord" table="vwEventRecord" p1:Guid="de51fb26-a222-4ec2-a59b-fde59411a2a8">
-    <Documentation>
-      <Summary>VIEW</Summary>
-    </Documentation>
-    <id name="EventRecordId" type="Int32" p1:ValidateRequired="true" p1:Guid="7c8040e6-4f8c-40dd-8fc3-11976208b57b">
-      <column name="EventRecordId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
-    </id>
-    <property name="EventId" type="Int32" p1:ValidateRequired="true" p1:Guid="efd07659-381d-4a51-b81d-eed29a7c8534">
-      <column name="EventId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
-    </property>
-    <property name="CreateDT" type="DateTime" p1:ValidateRequired="true" p1:Guid="18ffa0be-2a1e-4304-9216-7947aea1e8bb">
-      <column name="CreateDT" not-null="true" sql-type="datetime" p1:unicode="false" />
-    </property>
-    <property name="RecoveryDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="88df4d9f-2516-4418-a6dd-4952b596b206">
-      <column name="RecoveryDT" not-null="false" sql-type="datetime" p1:unicode="false" />
-    </property>
-    <property name="AckDT" type="DateTime" p1:nullable="true" p1:ValidateRequired="false" p1:Guid="b1bab361-a7bf-40ed-9e58-dded4f0bf51b">
-      <column name="AckDT" not-null="false" sql-type="datetime" p1:unicode="false" />
-    </property>
-    <property name="AckUserId" type="String" p1:nullable="true" p1:ValidateMaxLength="255" p1:ValidateRequired="false" p1:Guid="87803030-4438-4dda-9846-7379e0f65529">
-      <column name="AckUserId" not-null="false" length="255" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <property name="SiteId" type="Int32" p1:ValidateRequired="true" p1:Guid="bb3a9182-0ee5-4e0c-b75e-0104621d142b">
-      <column name="SiteId" not-null="true" precision="11" scale="0" sql-type="int" p1:unicode="false" />
-    </property>
-    <property name="DeviceId" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="ab726241-3ef6-4d6f-ba2b-0adb2b0397ff">
-      <column name="DeviceId" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <property name="Level" type="Int16" p1:ValidateRequired="true" p1:Guid="7d1742ed-7e87-4f2f-a48f-598b59dcd7ac">
-      <column name="Level" not-null="true" precision="6" scale="0" sql-type="smallint" p1:unicode="false" />
-    </property>
-    <property name="Type" type="Int16" p1:ValidateRequired="true" p1:Guid="e4c881b7-f9ea-46e5-a3eb-b4de54f528b8">
-      <column name="Type" not-null="true" precision="6" scale="0" sql-type="smallint" p1:unicode="false" />
-    </property>
-    <property name="Source" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="68bc1a53-eb8d-4ec1-8e7d-c9267e824988">
-      <column name="Source" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <property name="Category" type="String" p1:ValidateMaxLength="45" p1:ValidateRequired="true" p1:Guid="a120baee-4343-470c-841a-ffee1dfd6071">
-      <column name="Category" not-null="true" length="45" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <property name="Name" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="3e3b5b37-7141-4e04-b315-5d1d6c0bffd3">
-      <column name="Name" not-null="true" length="128" sql-type="varchar" p1:unicode="true" />
-    </property>
-    <property name="Description" type="String" p1:ValidateMaxLength="128" p1:ValidateRequired="true" p1:Guid="14a94b44-1eff-4f4f-ba62-f433446a05e8">
-      <column name="Description" not-null="true" length="128" sql-type="varchar" p1:unicode="true" />
-    </property>
+    <set name="DiMaps" inverse="true" generic="true" p1:AssociationGuid="3f87e409-5729-48ef-bbb5-dd123f742364" p1:Guid="3f44a08e-2f5b-4e1a-98af-0f3d19f74ddc">
+      <key>
+        <column name="FactoryCode" />
+      </key>
+      <one-to-many class="DiMap" />
+    </set>
   </class>
 </hibernate-mapping>

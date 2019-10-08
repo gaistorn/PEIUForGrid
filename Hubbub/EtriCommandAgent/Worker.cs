@@ -98,61 +98,76 @@ namespace EtriCommandAgent
 
         private async Task SendCommandWhenOK(bool IsOK, int pcsNo, float etri_command, CancellationToken stoppingToken)
         {
-            if (IsOK == false)
+            try
             {
-                //await Task.CompletedTask;
-                return;
+                if (IsOK == false)
+                {
+                    //await Task.CompletedTask;
+                    return;
+                }
+                float cmdValue = await ValidatingPV(1, etri_command);
+                ushort cmdUshort = (ushort)(cmdValue * 10);
+                await publisher.PublishAsync(stoppingToken, pcsNo, 190, cmdUshort);
             }
-            float cmdValue = await ValidatingPV(1, etri_command);
-            ushort cmdUshort = Convert.ToUInt16(cmdValue * 10);
-            await publisher.PublishAsync(stoppingToken, pcsNo, 190, cmdUshort);
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using (IStatelessSession session = mysqlDataAccess.GetStatelessSession())
-                using (var transaction = session.BeginTransaction())
+                try
                 {
-
-                    var command = await session.CreateCriteria<TbCommand>()
-                        // .Add(Restrictions.Ge("date", "2019-10-01 15:18:00"))
-                        // .AddOrder(NHibernate.Criterion.Order.Desc("date"))
-                        .UniqueResultAsync<TbCommand>();
-                    if (command == null || command.Date == LastReadingCommandDate)
+                    using (IStatelessSession session = mysqlDataAccess.GetStatelessSession())
+                    using (var transaction = session.BeginTransaction())
                     {
-                        /// 제어 명령이 없으면 SOC 프로텍션 기능 실행
-                        await SOCProtectFunction(stoppingToken);
-                        continue;
-                    }
 
-                    LastReadingCommandDate = command.Date;
+                        var command = await session.CreateCriteria<TbCommand>()
+                            // .Add(Restrictions.Ge("date", "2019-10-01 15:18:00"))
+                            // .AddOrder(NHibernate.Criterion.Order.Desc("date"))
+                            .UniqueResultAsync<TbCommand>();
+                        if (command == null || command.Date == LastReadingCommandDate)
+                        {
+                            /// 제어 명령이 없으면 SOC 프로텍션 기능 실행
+                            await SOCProtectFunction(stoppingToken);
+                            continue;
+                        }
 
-                    _logger.LogInformation($"command pcs1: {command.Ess1} pcs2: {command.Ess2} pcs3: {command.Ess3} pcs4: {command.Ess4}");
-                    /// 1단계 SOC 내의 명령인지 체크
-                    bool[] ValidSocs = new bool[]
-                    {
+                        LastReadingCommandDate = command.Date;
+
+                        _logger.LogInformation($"command pcs1: {command.Ess1} pcs2: {command.Ess2} pcs3: {command.Ess3} pcs4: {command.Ess4}");
+                        /// 1단계 SOC 내의 명령인지 체크
+                        bool[] ValidSocs = new bool[]
+                        {
                     await ValidatingSOC(1, command.Ess1),
                     await ValidatingSOC(2, command.Ess2),
                     await ValidatingSOC(3, command.Ess3),
                     await ValidatingSOC(4, command.Ess4)
-                    };
+                        };
 
 
-                    bool pcs1_ok = ValidSocs[0];
-                    bool pcs2_ok = ValidSocs[1];
-                    bool pcs3_ok = ValidSocs[2];
-                    bool pcs4_ok = ValidSocs[3];
+                        bool pcs1_ok = ValidSocs[0];
+                        bool pcs2_ok = ValidSocs[1];
+                        bool pcs3_ok = ValidSocs[2];
+                        bool pcs4_ok = ValidSocs[3];
 
 
-                    await SendCommandWhenOK(ValidSocs[0], 1, command.Ess1, stoppingToken);
-                    await SendCommandWhenOK(ValidSocs[1], 2, command.Ess1, stoppingToken);
-                    await SendCommandWhenOK(ValidSocs[2], 3, command.Ess1, stoppingToken);
-                    await SendCommandWhenOK(ValidSocs[3], 4, command.Ess1, stoppingToken);
-                    await Task.Delay(1000, stoppingToken);
+                        await SendCommandWhenOK(ValidSocs[0], 1, command.Ess1, stoppingToken);
+                        await SendCommandWhenOK(ValidSocs[1], 2, command.Ess2, stoppingToken);
+                        await SendCommandWhenOK(ValidSocs[2], 3, command.Ess3, stoppingToken);
+                        await SendCommandWhenOK(ValidSocs[3], 4, command.Ess4, stoppingToken);
+                        await Task.Delay(1000, stoppingToken);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
                 }
             }
+
         }
 
         private async Task<float[]> GetDeviceValues(int PcsNo, params RedisValue[] FieldNames)

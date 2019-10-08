@@ -223,6 +223,8 @@ namespace PEIU.Service.WebApiService
                      policy => policy.RequireRole(UserRoleTypes.Aggregator, UserRoleTypes.Contractor, UserRoleTypes.Supervisor));
                 options.AddPolicy(UserPolicyTypes.RequiredManager,
                     policy => policy.RequireRole(UserRoleTypes.Aggregator, UserRoleTypes.Supervisor));
+                options.AddPolicy(UserPolicyTypes.OnlySupervisor,
+                    policy => policy.RequireRole(UserRoleTypes.Supervisor));
             });
 
             // register the scope authorization handler

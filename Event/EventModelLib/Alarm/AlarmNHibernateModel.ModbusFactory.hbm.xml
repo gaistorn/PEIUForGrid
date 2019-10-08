@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping schema="grid" assembly="EventModelLib" namespace="PEIU.Events.Alarm" xmlns="urn:nhibernate-mapping-2.2">
+  <class name="ModbusFactory" table="ModbusFactory">
+    <id name="FactoryCode" type="Int32">
+      <column name="FactoryCode" not-null="true" precision="11" scale="0" sql-type="INT(11)" />
+      <generator class="identity" />
+    </id>
+    <property name="Name" type="String">
+      <column name="Name" not-null="true" length="45" sql-type="VARCHAR(45)" />
+    </property>
+    <property name="MajorVersion" type="SByte">
+      <column name="MajorVersion" not-null="true" scale="0" sql-type="TINYINT" />
+    </property>
+    <property name="MinorVersion" type="SByte">
+      <column name="MinorVersion" not-null="true" scale="0" sql-type="TINYINT" />
+    </property>
+    <property name="Description" type="String">
+      <column name="Description" not-null="false" length="128" sql-type="VARCHAR(128)" />
+    </property>
+    <set name="DiMaps" inverse="true" generic="true">
+      <key>
+        <column name="FactoryCode" />
+      </key>
+      <one-to-many class="DiMap" />
+    </set>
+  </class>
+</hibernate-mapping>
